@@ -566,8 +566,8 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
       // STAGE 6: Wings Expand (55% to 85% progress)
       // Wings pass viewport edges; star ring orbits (rotate on single wrapper)
       // ---------------------------------------------------------
-      const wingExpansionScale = signals.isTouch ? 1.35 : 1.65;
-      const wingShiftX = signals.isTouch ? 35 : 55;
+      const wingExpansionScale = signals.isTouch ? 1.45 : 1.65;
+      const wingShiftX = signals.isTouch ? 45 : 55;
 
       masterTl.to(
         wingBackL,
@@ -855,21 +855,24 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
           ))}
         </div>
 
-        <div data-layer="stars-3" className="absolute inset-0">
-          {STARS_LAYER_3.map((star, idx) => (
-            <span
-              key={`star3-${idx}`}
-              className="absolute rounded-full bg-star shadow-[0_0_4px_rgba(94,225,230,0.8)]"
-              style={{
-                top: star.top,
-                left: star.left,
-                width: `${star.size}px`,
-                height: `${star.size}px`,
-                opacity: star.opacity,
-              }}
-            />
-          ))}
-        </div>
+        {/* Parallax star layer 3: desktop only (reduced from 3 to 2 on mobile per P1-6) */}
+        {!signals.isTouch && (
+          <div data-layer="stars-3" className="absolute inset-0">
+            {STARS_LAYER_3.map((star, idx) => (
+              <span
+                key={`star3-${idx}`}
+                className="absolute rounded-full bg-star shadow-[0_0_4px_rgba(94,225,230,0.8)]"
+                style={{
+                  top: star.top,
+                  left: star.left,
+                  width: `${star.size}px`,
+                  height: `${star.size}px`,
+                  opacity: star.opacity,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ========================================================= */}
@@ -913,7 +916,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
       {/* ========================================================= */}
       {/* DOKJA STAGE FIGURE: Layers 3 to 9 in exact /docs/06 order */}
       {/* ========================================================= */}
-      <div className="hero-dokja-figure relative z-10 w-[300px] h-[380px] sm:w-[360px] sm:h-[440px] flex items-center justify-center">
+      <div className="hero-dokja-figure relative z-10 w-[270px] h-[350px] xs:w-[300px] xs:h-[380px] sm:w-[360px] sm:h-[440px] flex items-center justify-center">
         <svg
           viewBox="0 0 320 400"
           fill="none"
@@ -1309,10 +1312,10 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
       {/* ========================================================= */}
       <div
         data-layer="biyoo"
-        className="absolute bottom-6 left-4 sm:bottom-10 sm:left-10 z-25 pointer-events-auto"
+        className="absolute bottom-4 left-3 sm:bottom-10 sm:left-10 z-25 pointer-events-auto"
       >
         <Biyoo
-          size={signals.isTouch ? 130 : 170}
+          size={signals.isTouch ? 115 : 170}
           introDone={heroState.introDone}
           idleSeconds={readerSignals.idleSeconds}
           scrollSpeed={readerSignals.scrollSpeed}

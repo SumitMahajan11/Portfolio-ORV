@@ -38,6 +38,11 @@
   --font-narration: var(--font-cormorant-garamond), serif;
 }
 
+html {
+  touch-action: pan-y;
+  -webkit-text-size-adjust: 100%;
+}
+
 /* Base Body Defaults */
 body {
   background-color: var(--void);
@@ -45,6 +50,7 @@ body {
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Visible focus ring using --star for all focusable elements */

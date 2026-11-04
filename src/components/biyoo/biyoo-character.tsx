@@ -646,7 +646,7 @@ export function Biyoo({
       {/* Mini SystemWindow Speech Bubble */}
       {speechBubble && (
         <div
-          className="absolute -top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none transition-all duration-300"
+          className="absolute -top-16 left-0 sm:left-1/2 sm:-translate-x-1/2 z-30 pointer-events-none transition-all duration-300"
           role="status"
           aria-live="polite"
         >
@@ -671,7 +671,7 @@ export function Biyoo({
 
             {/* Bubble Tail */}
             <div
-              className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-star/70"
+              className="absolute -bottom-1.5 left-6 sm:left-1/2 sm:-translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-star/70"
               aria-hidden="true"
             />
 
@@ -682,11 +682,19 @@ export function Biyoo({
         </div>
       )}
 
-      {/* Lerped Follow Wrapper */}
+      {/* Lerped Follow / Interactive Touch Wrapper (min-w-[44px] min-h-[44px]) */}
       <div
         ref={followRef}
         onClick={handlePoke}
-        className="cursor-pointer will-change-transform"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handlePoke();
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-label="Biyoo companion: tap to interact"
+        className="cursor-pointer will-change-transform min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1"
       >
         <div className="biyoo-bob-target will-change-transform">
           <svg

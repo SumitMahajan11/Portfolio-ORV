@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Cinzel, Space_Grotesk, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
@@ -33,6 +33,13 @@ const cormorantGaramond = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: "Sumit Mahajan | Portfolio",
   description: "ORV Story Portfolio - Distributed Systems & Correctness",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#07080B",
 };
 
 export default function RootLayout({

@@ -47,6 +47,8 @@ export function registerMotionPlugins(): void {
   }
 
   gsap.registerPlugin(ScrollTrigger, useGSAP);
+  // Prevent mobile address bar show/hide from triggering ScrollTrigger jumps
+  ScrollTrigger.config({ ignoreMobileResize: true });
   isRegistered = true;
 }
 
