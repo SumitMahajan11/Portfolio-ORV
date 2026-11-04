@@ -72,13 +72,21 @@ export function runFrameProbe(
         // Average frame time > 24ms (under 42fps) or severe frame jitter
         const isSlow = avgFrameTimeMs > 24;
 
-        onComplete({
+        const result: ProbeResult = {
           state: "completed",
           avgFrameTimeMs: Math.round(avgFrameTimeMs * 100) / 100,
           fps,
           isSlow,
           frameCount: deltas.length,
-        });
+        };
+
+        if (typeof window !== "undefined") {
+          console.log(
+            `[FrameProbe] Probe finished: avgFrameTime=${result.avgFrameTimeMs}ms, fps=${result.fps}, isSlow=${result.isSlow}, frameCount=${result.frameCount}`
+          );
+        }
+
+        onComplete(result);
       }
     };
 

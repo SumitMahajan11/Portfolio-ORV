@@ -48,7 +48,7 @@ export function Biyoo({
   const activeTimelineRef = useRef<gsap.core.Timeline | null>(null);
   const speechTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { reducedMotion, signals } = useMode();
+  const { mode, reducedMotion, signals } = useMode();
 
   // State management
   const [currentState, setCurrentState] = useState<BiyooState>(() => {
@@ -105,7 +105,13 @@ export function Biyoo({
   // CURSOR FOLLOWING (Desktop only, lerped within bounded box)
   // =========================================================
   useEffect(() => {
-    if (signals.isTouch || reducedMotion || typeof window === "undefined") {
+    // In light mode, touch mode, or reduced motion: disable cursor follow RAF loop
+    if (
+      signals.isTouch ||
+      reducedMotion ||
+      mode === "light" ||
+      typeof window === "undefined"
+    ) {
       return;
     }
 
@@ -141,7 +147,7 @@ export function Biyoo({
     return () => {
       cancelAnimationFrame(rafId);
     };
-  }, [pointerPosition, signals.isTouch, reducedMotion]);
+  }, [pointerPosition, signals.isTouch, reducedMotion, mode]);
 
   // =========================================================
   // STATE ANIMATION RUNNER (GSAP Timelines on Phase 0 layers)
@@ -187,16 +193,28 @@ export function Biyoo({
           setActiveMouthVariant("smile");
 
           if (bobTarget) {
-            tl.to(bobTarget, {
-              y: -8,
-              scaleY: 1.04,
-              scaleX: 0.97,
-              duration: 2.2,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-              transformOrigin: "bottom center",
-            });
+            if (mode === "light") {
+              // Simplified breathing scale loop for light mode
+              tl.to(bobTarget, {
+                scale: 1.03,
+                duration: 2.2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                transformOrigin: "bottom center",
+              });
+            } else {
+              tl.to(bobTarget, {
+                y: -8,
+                scaleY: 1.04,
+                scaleX: 0.97,
+                duration: 2.2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                transformOrigin: "bottom center",
+              });
+            }
           }
           break;
         }
@@ -207,6 +225,27 @@ export function Biyoo({
         case "yawn-wake": {
           setActiveEyeVariant("sleepy");
           setActiveMouthVariant("yawn");
+
+          if (mode === "light") {
+            if (bobTarget) {
+              tl.to(bobTarget, {
+                scale: 1.08,
+                duration: 0.6,
+                ease: "power2.out",
+                transformOrigin: "bottom center",
+              });
+              tl.to(bobTarget, {
+                scale: 1.0,
+                duration: 0.6,
+                ease: "power2.out",
+              });
+            }
+            tl.add(() => {
+              setActiveEyeVariant("awake");
+              setActiveMouthVariant("smile");
+            }, 0.7);
+            break;
+          }
 
           tl.to(
             [armsL, armsR],
@@ -270,6 +309,22 @@ export function Biyoo({
         case "startled": {
           setActiveEyeVariant("wide");
           setActiveMouthVariant("yawn");
+
+          if (mode === "light") {
+            if (bobTarget) {
+              tl.to(bobTarget, {
+                scale: 1.15,
+                duration: 0.25,
+                ease: "power2.out",
+              });
+              tl.to(bobTarget, {
+                scale: 1.0,
+                duration: 0.5,
+                ease: "power2.out",
+              });
+            }
+            break;
+          }
 
           tl.to(
             bobTarget,
@@ -335,6 +390,17 @@ export function Biyoo({
           setActiveEyeVariant("awake");
           setActiveMouthVariant("smile");
 
+          if (mode === "light") {
+            if (bobTarget) {
+              tl.to(bobTarget, {
+                scale: 1.05,
+                duration: 0.4,
+                ease: "power2.out",
+              });
+            }
+            break;
+          }
+
           tl.to(
             head,
             {
@@ -365,6 +431,19 @@ export function Biyoo({
         case "happy": {
           setActiveEyeVariant("awake");
           setActiveMouthVariant("smile");
+
+          if (mode === "light") {
+            if (bobTarget) {
+              tl.to(bobTarget, {
+                scale: 1.1,
+                duration: 0.35,
+                repeat: 1,
+                yoyo: true,
+                ease: "power2.out",
+              });
+            }
+            break;
+          }
 
           tl.to(
             bobTarget,
@@ -400,6 +479,17 @@ export function Biyoo({
         case "proud": {
           setActiveEyeVariant("awake");
           setActiveMouthVariant("smile");
+
+          if (mode === "light") {
+            if (bobTarget) {
+              tl.to(bobTarget, {
+                scale: 1.08,
+                duration: 0.5,
+                ease: "power2.out",
+              });
+            }
+            break;
+          }
 
           tl.to(
             body,
@@ -442,6 +532,18 @@ export function Biyoo({
         case "sleepy-again": {
           setActiveEyeVariant("sleepy");
           setActiveMouthVariant("droop");
+
+          if (mode === "light") {
+            if (bobTarget) {
+              tl.to(bobTarget, {
+                scale: 0.94,
+                opacity: 0.85,
+                duration: 1.0,
+                ease: "power2.out",
+              });
+            }
+            break;
+          }
 
           tl.to(
             body,

@@ -209,7 +209,7 @@ function SideQuestCard({ project, onHover, onClick }: SideQuestCardProps) {
  */
 export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
   const containerRef = useRef<HTMLElement>(null);
-  const { reducedMotion } = useMode();
+  const { mode, reducedMotion } = useMode();
 
   // Dynamic separation of projects
   const isProduction = process.env.NODE_ENV === "production";
@@ -256,7 +256,7 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
         ease: "power3.out",
       });
     },
-    { scope: containerRef, dependencies: [reducedMotion, flagshipProjects.length] }
+    { scope: containerRef, dependencies: [reducedMotion, mode, flagshipProjects.length] }
   );
 
   return (

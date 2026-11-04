@@ -21,6 +21,9 @@ import {
   getParticleCap,
 } from "./device/detect";
 import { runFrameProbe } from "./device/probe";
+import { ScrollTrigger } from "@/lib/motion";
+
+const SESSION_STORAGE_MOTION_KEY = "antigravity_motion_mode";
 
 /**
  * FeatureFlags interface per /docs/04 and task requirements:
@@ -42,6 +45,7 @@ export interface FeatureFlags {
   setSoundOn: (on: boolean | ((prev: boolean) => boolean)) => void;
   setCameraOn: (on: boolean | ((prev: boolean) => boolean)) => void;
   forceMode: (mode: DeviceMode | null) => void;
+  toggleMotionMode: () => void;
 }
 
 const defaultInitialState = getInitialDeviceState();
@@ -58,6 +62,7 @@ const defaultContextValue: FeatureFlags = {
   setSoundOn: () => {},
   setCameraOn: () => {},
   forceMode: () => {},
+  toggleMotionMode: () => {},
 };
 
 export const ModeContext = createContext<FeatureFlags>(defaultContextValue);
@@ -67,6 +72,27 @@ export interface ModeProviderProps {
 }
 
 const emptySubscribe = () => () => {};
+
+function subscribeReducedMotion(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (typeof mql.addEventListener === "function") {
+    mql.addEventListener("change", callback);
+    return () => mql.removeEventListener("change", callback);
+  } else {
+    mql.addListener(callback);
+    return () => mql.removeListener(callback);
+  }
+}
+
+function getReducedMotionSnapshot(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot(): boolean {
+  return false;
+}
 
 /**
  * ModeProvider:
@@ -84,6 +110,13 @@ export function ModeProvider({ children }: ModeProviderProps) {
     () => false
   );
 
+  // Synchronous, reactive subscription to system prefers-reduced-motion
+  const systemReducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot
+  );
+
   const [signals, setSignals] = useState<DeviceSignals>(
     defaultInitialState.signals
   );
@@ -96,44 +129,42 @@ export function ModeProvider({ children }: ModeProviderProps) {
   // Compute active mode
   const mode = useMemo<DeviceMode>(() => {
     // If reduced-motion is requested by user, it strictly overrides everything
-    if (signals.reducedMotion) {
+    if (systemReducedMotion || signals.reducedMotion) {
       return "reduced";
     }
 
-    // Manual developer override (e.g. from /dev/mode UI)
+    // Manual developer/user override (e.g. from Motion: Full / Light toggle or /dev/mode UI)
     if (manualModeOverride) {
       return manualModeOverride;
     }
 
-    return resolveDeviceMode(signals);
-  }, [signals, manualModeOverride]);
+    return resolveDeviceMode({
+      ...signals,
+      reducedMotion: systemReducedMotion || signals.reducedMotion,
+    });
+  }, [systemReducedMotion, signals, manualModeOverride]);
 
   const particleCap = useMemo<number>(() => {
     return getParticleCap(mode, signals.isTouch || signals.isCoarsePointer);
   }, [mode, signals.isTouch, signals.isCoarsePointer]);
 
-  // Client mounting, media query listener, and frame probe
+  // Client mounting: read client hardware capabilities, session storage, and run frame probe
   useEffect(() => {
-    // Read initial client signals after paint
     const initialSignals = readClientSignals();
+    initialSignals.reducedMotion = systemReducedMotion;
+
     requestAnimationFrame(() => {
       setSignals(initialSignals);
+
+      try {
+        const savedMode = sessionStorage.getItem(SESSION_STORAGE_MOTION_KEY);
+        if (savedMode === "light" || savedMode === "full") {
+          setManualModeOverride(savedMode);
+        }
+      } catch {
+        // Ignore sessionStorage access errors
+      }
     });
-
-    // Live listener for prefers-reduced-motion
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      setSignals((prev) => ({
-        ...prev,
-        reducedMotion: e.matches,
-      }));
-    };
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", handleMotionChange);
-    } else {
-      mediaQuery.addListener(handleMotionChange);
-    }
 
     // Run frame-time probe after ~500ms
     const cancelProbe = runFrameProbe((probeResult: ProbeResult) => {
@@ -144,18 +175,51 @@ export function ModeProvider({ children }: ModeProviderProps) {
     }, 500);
 
     return () => {
-      if (typeof mediaQuery.removeEventListener === "function") {
-        mediaQuery.removeEventListener("change", handleMotionChange);
-      } else {
-        mediaQuery.removeListener(handleMotionChange);
-      }
       cancelProbe();
     };
-  }, []);
+  }, [systemReducedMotion]);
 
   const forceMode = useCallback((newMode: DeviceMode | null) => {
+    if (typeof window !== "undefined") {
+      const beforeCount = ScrollTrigger.getAll().length;
+      console.log(
+        `[ModeSwitch] ScrollTrigger.getAll().length BEFORE switch to '${newMode}': ${beforeCount}`
+      );
+    }
+
     setManualModeOverride(newMode);
+
+    try {
+      if (newMode === "light" || newMode === "full") {
+        sessionStorage.setItem(SESSION_STORAGE_MOTION_KEY, newMode);
+      } else {
+        sessionStorage.removeItem(SESSION_STORAGE_MOTION_KEY);
+      }
+    } catch {
+      // Ignore
+    }
+
+    if (typeof window !== "undefined") {
+      // Check count after React finishes re-rendering and useScene hooks update
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const afterCount = ScrollTrigger.getAll().length;
+          console.log(
+            `[ModeSwitch] ScrollTrigger.getAll().length AFTER switch to '${newMode}': ${afterCount}`
+          );
+        }, 50);
+      });
+    }
   }, []);
+
+  const toggleMotionMode = useCallback(() => {
+    // Cannot force Full when the OS says reduce motion
+    if (systemReducedMotion || signals.reducedMotion) {
+      return;
+    }
+    const nextMode = mode === "light" ? "full" : "light";
+    forceMode(nextMode);
+  }, [systemReducedMotion, signals.reducedMotion, mode, forceMode]);
 
   const value: FeatureFlags = useMemo(
     () => ({
@@ -165,13 +229,27 @@ export function ModeProvider({ children }: ModeProviderProps) {
       soundOn,
       cameraOn,
       particleCap,
-      signals,
+      signals: {
+        ...signals,
+        reducedMotion: systemReducedMotion || signals.reducedMotion,
+      },
       isHydrated,
       setSoundOn,
       setCameraOn,
       forceMode,
+      toggleMotionMode,
     }),
-    [mode, soundOn, cameraOn, particleCap, signals, isHydrated, forceMode]
+    [
+      mode,
+      soundOn,
+      cameraOn,
+      particleCap,
+      signals,
+      systemReducedMotion,
+      isHydrated,
+      forceMode,
+      toggleMotionMode,
+    ]
   );
 
   return React.createElement(ModeContext.Provider, { value }, children);

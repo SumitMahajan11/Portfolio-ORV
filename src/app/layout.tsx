@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Cinzel, Space_Grotesk, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
+import { MotionToggle } from "@/components/ui/motion-toggle";
 import "@/styles/globals.css";
 
 const cinzel = Cinzel({
@@ -64,13 +65,18 @@ export default function RootLayout({
                 SUMIT MAHAJAN
               </Link>
 
-              {/* Skip to plain version link - visible on first paint, keyboard focusable */}
-              <Link
-                href="/skip"
-                className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-              >
-                Skip to plain version &rarr;
-              </Link>
+              <div className="flex items-center gap-3 sm:gap-6">
+                {/* Motion mode toggle: Full / Light */}
+                <MotionToggle />
+
+                {/* Skip to plain version link - visible on first paint, keyboard focusable */}
+                <Link
+                  href="/skip"
+                  className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                >
+                  Skip to plain version &rarr;
+                </Link>
+              </div>
             </div>
           </header>
 

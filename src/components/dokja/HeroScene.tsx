@@ -82,7 +82,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
   const [glitchActive, setGlitchActive] = useState(false);
   const [glitchVisible, setGlitchVisible] = useState(false);
 
-  const { reducedMotion, particleCap, signals } = useMode();
+  const { mode, reducedMotion, particleCap, signals, isHydrated } = useMode();
   const { heroState, setHeroState } = useHeroContext();
 
   // Local-only reader tracker: idle seconds, scroll speed, pointer pos, hover, local hour
@@ -170,7 +170,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
   useScene(
     () => {
       // In reduced motion mode: strictly no ScrollTrigger pinning or scrubbing
-      if (reducedMotion) {
+      if (isHydrated && reducedMotion) {
         setHeroState({
           stage: 1,
           scrollProgress: 0,
@@ -246,10 +246,24 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
       // Initial visual states for stages 4-7 elements
       gsap.set(horns, { scale: 0.45 });
       gsap.set(hornsRedRim, { opacity: 0 });
-      gsap.set(wingBackL, { scale: 0.2, opacity: 0, rotation: 24 });
-      gsap.set(wingBackR, { scale: 0.2, opacity: 0, rotation: -24 });
-      gsap.set(wingFrontL, { scale: 0.2, opacity: 0, rotation: 28 });
-      gsap.set(wingFrontR, { scale: 0.2, opacity: 0, rotation: -28 });
+
+      // In light mode: wings as ONE layer using scale/opacity (no rotation)
+      if (mode === "light") {
+        gsap.set([wingFrontL, wingFrontR], { opacity: 0, scale: 0 });
+        gsap.set([wingBackL, wingBackR], {
+          scale: 0.2,
+          opacity: 0,
+          rotation: 0,
+          x: 0,
+          transformOrigin: "center center",
+        });
+      } else {
+        gsap.set(wingBackL, { scale: 0.2, opacity: 0, rotation: 24 });
+        gsap.set(wingBackR, { scale: 0.2, opacity: 0, rotation: -24 });
+        gsap.set(wingFrontL, { scale: 0.2, opacity: 0, rotation: 28 });
+        gsap.set(wingFrontR, { scale: 0.2, opacity: 0, rotation: -28 });
+      }
+
       gsap.set(starRing, { opacity: 0, scale: 0.65, rotation: 0 });
       gsap.set(shatterTiles, {
         opacity: 0,
@@ -512,123 +526,164 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
 
       // ---------------------------------------------------------
       // STAGE 5: Wings Emerge (25% to 55% progress)
-      // Split back/front layers, rotate from shoulder pivots, slow/heavy easing
+      // Light mode: wings as ONE layer using scale/opacity
+      // Full mode: split back/front layers, rotate from shoulder pivots, slow/heavy easing
       // ---------------------------------------------------------
-      masterTl.to(
-        wingBackL,
-        {
-          scale: 1.0,
-          opacity: 0.85,
-          rotation: 0,
-          duration: 30,
-          ease: "power2.inOut",
-        },
-        25
-      );
+      if (mode === "light") {
+        masterTl.to(
+          [wingBackL, wingBackR],
+          {
+            scale: 1.0,
+            opacity: 0.9,
+            duration: 30,
+            ease: "power2.inOut",
+          },
+          25
+        );
+      } else {
+        masterTl.to(
+          wingBackL,
+          {
+            scale: 1.0,
+            opacity: 0.85,
+            rotation: 0,
+            duration: 30,
+            ease: "power2.inOut",
+          },
+          25
+        );
 
-      masterTl.to(
-        wingBackR,
-        {
-          scale: 1.0,
-          opacity: 0.85,
-          rotation: 0,
-          duration: 30,
-          ease: "power2.inOut",
-        },
-        25
-      );
+        masterTl.to(
+          wingBackR,
+          {
+            scale: 1.0,
+            opacity: 0.85,
+            rotation: 0,
+            duration: 30,
+            ease: "power2.inOut",
+          },
+          25
+        );
 
-      masterTl.to(
-        wingFrontL,
-        {
-          scale: 1.0,
-          opacity: 1.0,
-          rotation: 0,
-          duration: 30,
-          ease: "power2.inOut",
-        },
-        25
-      );
+        masterTl.to(
+          wingFrontL,
+          {
+            scale: 1.0,
+            opacity: 1.0,
+            rotation: 0,
+            duration: 30,
+            ease: "power2.inOut",
+          },
+          25
+        );
 
-      masterTl.to(
-        wingFrontR,
-        {
-          scale: 1.0,
-          opacity: 1.0,
-          rotation: 0,
-          duration: 30,
-          ease: "power2.inOut",
-        },
-        25
-      );
+        masterTl.to(
+          wingFrontR,
+          {
+            scale: 1.0,
+            opacity: 1.0,
+            rotation: 0,
+            duration: 30,
+            ease: "power2.inOut",
+          },
+          25
+        );
+      }
 
       // ---------------------------------------------------------
       // STAGE 6: Wings Expand (55% to 85% progress)
-      // Wings pass viewport edges; star ring orbits (rotate on single wrapper)
+      // Light mode: scale/opacity expand only; static star ring (no orbit)
+      // Full mode: wings pass viewport edges; star ring orbits
       // ---------------------------------------------------------
-      const wingExpansionScale = signals.isTouch ? 1.45 : 1.65;
-      const wingShiftX = signals.isTouch ? 45 : 55;
+      if (mode === "light") {
+        masterTl.to(
+          [wingBackL, wingBackR],
+          {
+            scale: 1.45,
+            opacity: 1.0,
+            duration: 30,
+            ease: "power2.out",
+          },
+          55
+        );
 
-      masterTl.to(
-        wingBackL,
-        {
-          scale: wingExpansionScale,
-          x: -wingShiftX,
-          rotation: -12,
-          duration: 30,
-          ease: "power2.out",
-        },
-        55
-      );
+        // Static star ring without orbit per P1-7
+        masterTl.to(
+          starRing,
+          {
+            opacity: 0.85,
+            scale: 1.0,
+            rotation: 0,
+            duration: 30,
+            ease: "power1.inOut",
+          },
+          55
+        );
+      } else {
+        const wingExpansionScale = signals.isTouch ? 1.45 : 1.65;
+        const wingShiftX = signals.isTouch ? 45 : 55;
 
-      masterTl.to(
-        wingBackR,
-        {
-          scale: wingExpansionScale,
-          x: wingShiftX,
-          rotation: 12,
-          duration: 30,
-          ease: "power2.out",
-        },
-        55
-      );
+        masterTl.to(
+          wingBackL,
+          {
+            scale: wingExpansionScale,
+            x: -wingShiftX,
+            rotation: -12,
+            duration: 30,
+            ease: "power2.out",
+          },
+          55
+        );
 
-      masterTl.to(
-        wingFrontL,
-        {
-          scale: wingExpansionScale,
-          x: -wingShiftX,
-          rotation: -12,
-          duration: 30,
-          ease: "power2.out",
-        },
-        55
-      );
+        masterTl.to(
+          wingBackR,
+          {
+            scale: wingExpansionScale,
+            x: wingShiftX,
+            rotation: 12,
+            duration: 30,
+            ease: "power2.out",
+          },
+          55
+        );
 
-      masterTl.to(
-        wingFrontR,
-        {
-          scale: wingExpansionScale,
-          x: wingShiftX,
-          rotation: 12,
-          duration: 30,
-          ease: "power2.out",
-        },
-        55
-      );
+        masterTl.to(
+          wingFrontL,
+          {
+            scale: wingExpansionScale,
+            x: -wingShiftX,
+            rotation: -12,
+            duration: 30,
+            ease: "power2.out",
+          },
+          55
+        );
 
-      // Constellation star ring fades in and orbits (rotation on single wrapper)
-      masterTl.to(
-        starRing,
-        {
-          opacity: 0.85,
-          scale: 1.0,
-          rotation: 180,
-          duration: 30,
-          ease: "power1.inOut",
-        },
-        55
-      );
+        masterTl.to(
+          wingFrontR,
+          {
+            scale: wingExpansionScale,
+            x: wingShiftX,
+            rotation: 12,
+            duration: 30,
+            ease: "power2.out",
+          },
+          55
+        );
+
+        // Constellation star ring fades in and orbits (rotation on single wrapper)
+        masterTl.to(
+          starRing,
+          {
+            opacity: 0.85,
+            scale: 1.0,
+            rotation: 180,
+            duration: 30,
+            ease: "power1.inOut",
+          },
+          55
+        );
+      }
 
       // ---------------------------------------------------------
       // STAGE 7: Final Form (85% to 100% progress)
@@ -660,19 +715,18 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
     },
     {
       scope: containerRef,
-      dependencies: [reducedMotion, signals.isTouch],
+      dependencies: [mode, reducedMotion, signals.isTouch],
     }
   );
 
-  // =========================================================
-  // STATIC FALLBACK FOR REDUCED MOTION (Requirement 9)
-  // Three stacked static frames: Stage 1, Stage 5, Stage 7
-  // =========================================================
-  if (reducedMotion) {
-    return (
+  return (
+    <div className="w-full relative">
+      {/* STATIC FALLBACK FOR REDUCED MOTION (Requirement 2) */}
+      {/* Both containers always in DOM to prevent GSAP pin-spacer reconciliation mismatch */}
       <div
         id="hero-scene-reduced"
-        className={`w-full bg-void text-feather flex flex-col items-center py-12 px-4 space-y-24 ${className}`}
+        style={{ display: reducedMotion ? "flex" : "none" }}
+        className={`w-full bg-void text-feather flex-col items-center py-12 px-4 space-y-24 ${className}`}
         aria-label="Dokja Transformation - Reduced Motion Accessible Overview"
       >
         {/* Frame 1: Stage 1 (Reading) */}
@@ -793,16 +847,12 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
           </div>
         </section>
       </div>
-    );
-  }
 
-  // =========================================================
-  // FULL MOTION MODE: 100svh pinned container with master scrub
-  // =========================================================
-  return (
-    <section
+      {/* FULL / LIGHT MOTION MODE: 100svh pinned container */}
+      <section
       ref={containerRef}
       id="hero-scene"
+      style={{ display: reducedMotion ? "none" : undefined }}
       className={`relative w-full h-[100svh] min-h-[100svh] max-h-[100svh] overflow-hidden bg-void select-none flex items-center justify-center ${className}`}
       aria-label="Omniscient Reader's Viewpoint Hero Prologue"
     >
@@ -839,24 +889,27 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
           ))}
         </div>
 
-        <div data-layer="stars-2" className="absolute inset-0">
-          {STARS_LAYER_2.map((star, idx) => (
-            <span
-              key={`star2-${idx}`}
-              className="absolute rounded-full bg-rim"
-              style={{
-                top: star.top,
-                left: star.left,
-                width: `${star.size}px`,
-                height: `${star.size}px`,
-                opacity: star.opacity,
-              }}
-            />
-          ))}
-        </div>
+        {/* Parallax star layer 2: suppressed in light mode per P1-7 */}
+        {mode !== "light" && (
+          <div data-layer="stars-2" className="absolute inset-0">
+            {STARS_LAYER_2.map((star, idx) => (
+              <span
+                key={`star2-${idx}`}
+                className="absolute rounded-full bg-rim"
+                style={{
+                  top: star.top,
+                  left: star.left,
+                  width: `${star.size}px`,
+                  height: `${star.size}px`,
+                  opacity: star.opacity,
+                }}
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Parallax star layer 3: desktop only (reduced from 3 to 2 on mobile per P1-6) */}
-        {!signals.isTouch && (
+        {/* Parallax star layer 3: desktop full mode only */}
+        {mode === "full" && !signals.isTouch && (
           <div data-layer="stars-3" className="absolute inset-0">
             {STARS_LAYER_3.map((star, idx) => (
               <span
@@ -1172,11 +1225,13 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
 
           {/* ===================================================== */}
           {/* LAYER 7: wings-front (forward primary wings)          */}
+          {/* In light mode: suppressed so wings act as ONE layer  */}
           {/* ===================================================== */}
           <g
             id="dokja_wings_front"
             data-layer="wings-front"
             className="dokja-layer-wings-front"
+            style={{ display: mode === "light" ? "none" : undefined }}
           >
             <g
               id="dokja_wings_front_l"
@@ -1360,6 +1415,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
         </span>
       </div>
     </section>
+    </div>
   );
 }
 

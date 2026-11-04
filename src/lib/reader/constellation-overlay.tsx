@@ -16,7 +16,7 @@ export interface ConstellationOverlayProps {
  *
  * Rules:
  * - Floating teal system comment style
- * - In reduced motion mode: appears statically without float animation
+ * - In reduced motion mode: appears statically without float animation or ping effects
  * - Auto-hidden by engine or dismissible
  */
 export function ConstellationOverlay({
@@ -58,7 +58,11 @@ export function ConstellationOverlay({
         {/* Header tag */}
         <div className="flex items-center justify-between gap-2 border-b border-line/60 pb-1.5 mb-2">
           <div className="flex items-center gap-1.5 text-star">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-star animate-ping" />
+            <span
+              className={`inline-block w-1.5 h-1.5 rounded-full bg-star ${
+                reducedMotion ? "" : "animate-ping"
+              }`}
+            />
             <span className="font-display text-[10px] sm:text-xs font-semibold tracking-wider uppercase">
               [CONSTELLATION BROADCAST]
             </span>

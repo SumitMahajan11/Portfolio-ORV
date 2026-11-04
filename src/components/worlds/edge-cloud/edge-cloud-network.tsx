@@ -88,13 +88,13 @@ export function EdgeCloudNetwork({
   const containerRef = useRef<HTMLDivElement>(null);
   const clearedRef = useRef(false);
 
-  const { reducedMotion, particleCap, signals } = useMode();
+  const { mode, reducedMotion, signals } = useMode();
 
-  // Dynamic cap: desktop max 54 ambient, mobile 24, light 14
-  const ambientCap = Math.max(
-    14,
-    Math.min(signals.isTouch ? 24 : 54, particleCap - 6)
-  );
+  // Star network node caps per /docs/02, /docs/09 & P1-7:
+  // Desktop full: 54 ambient + 6 key = 60 total
+  // Mobile full: 24 ambient + 6 key = 30 total
+  // Light mode: 14 ambient + 6 key = 20 total
+  const ambientCap = mode === "light" ? 14 : signals.isTouch ? 24 : 54;
   const activeAmbientNodes = AMBIENT_STAR_NODES.slice(0, ambientCap);
 
   // Trigger star goggles costume on mount, reset on unmount
@@ -275,7 +275,7 @@ export function EdgeCloudNetwork({
         85
       );
     },
-    { scope: containerRef, dependencies: [reducedMotion, ambientCap] }
+    { scope: containerRef, dependencies: [reducedMotion, mode, ambientCap] }
   );
 
   return (
@@ -443,3 +443,4 @@ export function EdgeCloudNetwork({
 }
 
 export default EdgeCloudNetwork;
+
