@@ -58,6 +58,8 @@ export function Biyoo({
   });
 
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
+  const [overrideCostume, setOverrideCostume] = useState<BiyooCostume>(null);
+  const activeCostume = overrideCostume ?? costume;
   const [activeEyeVariant, setActiveEyeVariant] = useState<"awake" | "sleepy" | "wide">("sleepy");
   const [activeMouthVariant, setActiveMouthVariant] = useState<"smile" | "yawn" | "droop">("smile");
 
@@ -596,6 +598,25 @@ export function Biyoo({
     };
   }, [transitionToState, setSpeech]);
 
+  // =========================================================
+  // COSTUME HOOK: Listen to dynamic "biyoo:costume" event
+  // =========================================================
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleCostume = (e: Event) => {
+      const customEvent = e as CustomEvent<{ costume: BiyooCostume }>;
+      if (customEvent.detail && customEvent.detail.costume !== undefined) {
+        setOverrideCostume(customEvent.detail.costume);
+      }
+    };
+
+    window.addEventListener("biyoo:costume", handleCostume);
+    return () => {
+      window.removeEventListener("biyoo:costume", handleCostume);
+    };
+  }, []);
+
   // React to hover target changes
   useEffect(() => {
     if (hoverTarget && currentState === "sleeping") {
@@ -827,27 +848,30 @@ export function Biyoo({
 
             {/* LAYER: costume slot (swappable prop group) */}
             <g id="biyoo_costume_slot" data-layer="costume">
-              {costume === "star goggles" && (
+              {activeCostume === "star goggles" && (
                 <g id="costume_star_goggles">
-                  {/* Wire frame */}
+                  {/* Wire frame across bridge */}
                   <line x1="86" y1="82" x2="114" y2="82" stroke="#5EE1E6" strokeWidth="1.5" />
-                  {/* Left star lens */}
+                  {/* Two circular lens rims (placeholder prop group per /docs/09) */}
+                  <circle cx="86" cy="82" r="10" fill="none" stroke="#5EE1E6" strokeWidth="1.5" />
+                  <circle cx="114" cy="82" r="10" fill="none" stroke="#5EE1E6" strokeWidth="1.5" />
+                  {/* Left star lens overlay */}
                   <polygon
                     points="86,74 88,79 93,80 89,84 90,89 86,86 82,89 83,84 79,80 84,79"
                     fill="none"
                     stroke="#5EE1E6"
-                    strokeWidth="1.5"
+                    strokeWidth="1.2"
                   />
-                  {/* Right star lens */}
+                  {/* Right star lens overlay */}
                   <polygon
                     points="114,74 116,79 121,80 117,84 118,89 114,86 110,89 111,84 107,80 112,79"
                     fill="none"
                     stroke="#5EE1E6"
-                    strokeWidth="1.5"
+                    strokeWidth="1.2"
                   />
                 </g>
               )}
-              {costume === "headband" && (
+              {activeCostume === "headband" && (
                 <g id="costume_headband">
                   {/* Leaf green band */}
                   <path
@@ -861,7 +885,7 @@ export function Biyoo({
                   <circle cx="100" cy="58" r="4" fill="#F1E4C3" stroke="#3E8E41" strokeWidth="1" />
                 </g>
               )}
-              {costume === "chain bracelet" && (
+              {activeCostume === "chain bracelet" && (
                 <g id="costume_chain_bracelet">
                   {/* Dark chain loop on arm */}
                   <ellipse
@@ -876,7 +900,7 @@ export function Biyoo({
                   />
                 </g>
               )}
-              {costume === "magnifier" && (
+              {activeCostume === "magnifier" && (
                 <g id="costume_magnifier">
                   {/* Brass rim magnifier held by right arm */}
                   <circle cx="158" cy="112" r="10" fill="none" stroke="#D4B15F" strokeWidth="2" />

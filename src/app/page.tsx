@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HeroScene, HeroProvider } from "@/components/dokja";
 import { ScenarioSelect } from "@/components/scenario-select";
+import { EdgeCloudWorld } from "@/components/worlds";
 
 export default function Home() {
   return (
@@ -11,6 +12,9 @@ export default function Home() {
 
         {/* Act 2 Scenario Select Section */}
         <ScenarioSelect />
+
+        {/* Act 3 Flagship World: Edge-Cloud Orchestrator */}
+        <EdgeCloudWorld />
 
         {/* Story Intro / Scenario Header & Navigation */}
         <section className="relative z-10 w-full max-w-4xl mx-auto px-4 py-16 flex flex-col items-center text-center space-y-8">
