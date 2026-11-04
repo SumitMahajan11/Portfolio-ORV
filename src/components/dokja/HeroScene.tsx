@@ -3,7 +3,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useMode } from "@/lib/flags";
 import { useScene, gsap, ScrollTrigger, DEFAULT_SCRUB } from "@/lib/motion";
-import { BiyooPlaceholder } from "@/components/biyoo";
+import { Biyoo } from "@/components/biyoo";
+import { useReaderTracker, useConstellationEngine, ConstellationOverlay } from "@/lib/reader";
 import { SystemWindow } from "@/components/system-window";
 import { useHeroContext, HeroProvider, HeroContext, HeroStage } from "./hero-context";
 
@@ -83,6 +84,20 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
 
   const { reducedMotion, particleCap, signals } = useMode();
   const { heroState, setHeroState } = useHeroContext();
+
+  // Local-only reader tracker: idle seconds, scroll speed, pointer pos, hover, local hour
+  const readerSignals = useReaderTracker();
+  const [isBiyooSpeaking, setIsBiyooSpeaking] = useState(false);
+
+  // Constellation lines engine: max 1 per 20s, no repeats in context, suppressed during intro
+  const { activeLine, dismissLine } = useConstellationEngine({
+    introDone: heroState.introDone,
+    isBiyooSpeaking,
+    scrollSpeed: readerSignals.scrollSpeed,
+    idleSeconds: readerSignals.idleSeconds,
+    localHour: readerSignals.localHour,
+    isTouch: signals.isTouch,
+  });
 
   // Active particle set capped per mode according to /docs/02 performance budget
   const activeParticles = PARTICLES_DATA.slice(
@@ -698,10 +713,13 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
               <rect x="153" y="233" width="14" height="24" rx="1.5" fill="#5EE1E6" />
             </svg>
           </div>
-          <div className="max-w-sm">
-            <SystemWindow title="SYSTEM NOTIFICATION">
-              <p className="text-xs text-star">A Reader has been detected.</p>
-            </SystemWindow>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <div className="max-w-sm">
+              <SystemWindow title="SYSTEM NOTIFICATION">
+                <p className="text-xs text-star">A Reader has been detected.</p>
+              </SystemWindow>
+            </div>
+            <Biyoo size={110} />
           </div>
         </section>
 
@@ -1287,14 +1305,26 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
       </div>
 
       {/* ========================================================= */}
-      {/* BIYOO LAYER: sleeps near bottom-left with breathing bob   */}
+      {/* BIYOO LAYER: autonomous companion with state machine      */}
       {/* ========================================================= */}
       <div
         data-layer="biyoo"
         className="absolute bottom-6 left-4 sm:bottom-10 sm:left-10 z-25 pointer-events-auto"
       >
-        <BiyooPlaceholder size={signals.isTouch ? 130 : 170} />
+        <Biyoo
+          size={signals.isTouch ? 130 : 170}
+          introDone={heroState.introDone}
+          idleSeconds={readerSignals.idleSeconds}
+          scrollSpeed={readerSignals.scrollSpeed}
+          pointerPosition={readerSignals.pointerPosition}
+          localHour={readerSignals.localHour}
+          hoverTarget={readerSignals.hoverTarget}
+          onSpeakingChange={setIsBiyooSpeaking}
+        />
       </div>
+
+      {/* Floating Constellation Comment Overlay */}
+      <ConstellationOverlay line={activeLine} onDismiss={dismissLine} />
 
       {/* ========================================================= */}
       {/* SYSTEM NOTIFICATION: Stage 2 "A Reader has been detected."*/}
