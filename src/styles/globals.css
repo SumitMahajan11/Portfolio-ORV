@@ -1,1 +1,121 @@
 @import "tailwindcss";
+
+:root {
+  /* Hub Color Tokens (02-DESIGN-SYSTEM.md) */
+  --void: #07080B;
+  --ink: #0E1118;
+  --ink-2: #161B26;
+  --line: #243044;
+  --feather: #F4F6FA;
+  --mist: #9AA7BD;
+  --rim: #9FB4D6;
+  --star: #5EE1E6;
+  --horn: #B3122B;
+  --horn-dark: #2A0A10;
+
+  /* Typography variables */
+  --font-display: var(--font-cinzel), serif;
+  --font-ui: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-narration: var(--font-cormorant-garamond), serif;
+}
+
+@theme {
+  --color-void: var(--void);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-feather: var(--feather);
+  --color-mist: var(--mist);
+  --color-rim: var(--rim);
+  --color-star: var(--star);
+  --color-horn: var(--horn);
+  --color-horn-dark: var(--horn-dark);
+
+  --font-display: var(--font-cinzel), serif;
+  --font-ui: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-narration: var(--font-cormorant-garamond), serif;
+}
+
+/* Base Body Defaults */
+body {
+  background-color: var(--void);
+  color: var(--feather);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Visible focus ring using --star for all focusable elements */
+*:focus-visible {
+  outline: 2px solid var(--star);
+  outline-offset: 2px;
+}
+
+/* World Palettes (scoped via data-world attribute - do not leak to hub) */
+[data-world="edge-cloud"] {
+  --world-deep-navy: #0A1128;
+  --world-star-teal: #5EE1E6;
+  --world-soft-green: #6EE7A8;
+  --world-primary: var(--star);
+  --world-accent: #6EE7A8;
+  --world-bg: #0A1128;
+}
+
+[data-world="raft"] {
+  --world-warm-orange: #F28C28;
+  --world-leaf-green: #3E8E41;
+  --world-parchment: #F1E4C3;
+  --world-primary: #F28C28;
+  --world-accent: #3E8E41;
+  --world-bg: #1A120B;
+}
+
+[data-world="z3"] {
+  --world-emerald: #1FA37A;
+  --world-violet: #6B4EFF;
+  --world-black-chain: #000000;
+  --world-primary: #1FA37A;
+  --world-accent: #6B4EFF;
+  --world-bg: #091310;
+}
+
+[data-world="backtrace"] {
+  --world-midnight-blue: #0F1B3D;
+  --world-corkboard: #B88A55;
+  --world-brass: #D4B15F;
+  --world-primary: #D4B15F;
+  --world-accent: #B88A55;
+  --world-bg: #0F1B3D;
+}
+
+[data-world="sidequest"] {
+  --world-brass: #D4B15F;
+  --world-primary: #D4B15F;
+  --world-accent: #D4B15F;
+  --world-bg: #141720;
+}
+
+/* ORV System Window Scanlines */
+.system-window-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(94, 225, 230, 0.03) 2px,
+    rgba(94, 225, 230, 0.03) 4px
+  );
+}
+
+/* Accessibility: prefers-reduced-motion base CSS */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
