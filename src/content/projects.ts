@@ -15,6 +15,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "star goggles",
+    worldReady: true,
   },
   {
     id: "ratify",
@@ -68,6 +69,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "leaf headband",
+    worldReady: false,
   },
   {
     id: "iac-verifier",
@@ -102,10 +104,11 @@ export const projects: Project[] = [
     ],
     links: {
       repo: null, // [FILL]
-      demo: null,
+      demo: null, // [FILL]
       benchmark: null,
     },
     costume: "chain bracelet",
+    worldReady: false,
   },
   {
     id: "backtrace",
@@ -123,6 +126,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "magnifier",
+    worldReady: false,
   },
   {
     id: "echo",
@@ -140,6 +144,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "headset",
+    worldReady: false,
   },
   {
     id: "lumina-clinical",
@@ -157,6 +162,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "medical kit",
+    worldReady: false,
   },
   {
     id: "reelclaim",
@@ -174,5 +180,6 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "magnifier",
+    worldReady: false,
   },
 ];

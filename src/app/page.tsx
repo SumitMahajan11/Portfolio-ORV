@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HeroScene, HeroProvider } from "@/components/dokja";
+import { ScenarioSelect } from "@/components/scenario-select";
 
 export default function Home() {
   return (
@@ -7,6 +8,9 @@ export default function Home() {
       <main className="relative bg-void text-feather overflow-x-hidden">
         {/* Act 1 Hero Scene (100svh intro container) */}
         <HeroScene />
+
+        {/* Act 2 Scenario Select Section */}
+        <ScenarioSelect />
 
         {/* Story Intro / Scenario Header & Navigation */}
         <section className="relative z-10 w-full max-w-4xl mx-auto px-4 py-16 flex flex-col items-center text-center space-y-8">

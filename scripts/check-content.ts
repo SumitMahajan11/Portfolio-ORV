@@ -28,6 +28,7 @@ interface Project {
   limits: string[];
   links: ProjectLinks;
   costume: string;
+  worldReady?: boolean;
 }
 
 interface Skill {

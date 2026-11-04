@@ -26,6 +26,7 @@ export interface Project {
   limits: string[];
   links: ProjectLinks;
   costume: string;
+  worldReady?: boolean;
 }
 
 export interface Skill {

@@ -574,6 +574,28 @@ export function Biyoo({
     };
   }, [transitionToState]);
 
+  // =========================================================
+  // SCENARIO & INTERACTIVE ACTIONS: Listen to "biyoo:action"
+  // =========================================================
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleAction = (e: Event) => {
+      const customEvent = e as CustomEvent<{ state: BiyooState; line?: string | null }>;
+      if (customEvent.detail?.state) {
+        transitionToState(customEvent.detail.state);
+        if (customEvent.detail.line !== undefined) {
+          setSpeech(customEvent.detail.line, 4000);
+        }
+      }
+    };
+
+    window.addEventListener("biyoo:action", handleAction);
+    return () => {
+      window.removeEventListener("biyoo:action", handleAction);
+    };
+  }, [transitionToState, setSpeech]);
+
   // React to hover target changes
   useEffect(() => {
     if (hoverTarget && currentState === "sleeping") {
