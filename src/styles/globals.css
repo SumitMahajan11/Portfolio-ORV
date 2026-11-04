@@ -108,6 +108,46 @@ body {
   );
 }
 
+/* CSS-only Glitch Animation for Stage 7 (transforms and opacity only, 750ms) */
+@keyframes glitch-anim {
+  0% {
+    opacity: 0.85;
+    transform: translate(0, 0);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-3px, 1px) skewX(-2deg);
+  }
+  30% {
+    opacity: 0.75;
+    transform: translate(3px, -2px) skewX(2deg);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-2px, 0);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translate(2px, 1px);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-1px, -1px);
+  }
+  90% {
+    opacity: 0.95;
+    transform: translate(1px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+.glitch-text-active {
+  animation: glitch-anim 750ms ease-in-out forwards;
+}
+
 /* Accessibility: prefers-reduced-motion base CSS */
 @media (prefers-reduced-motion: reduce) {
   *,
