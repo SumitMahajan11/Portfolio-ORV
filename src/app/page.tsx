@@ -49,21 +49,23 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="flex items-center justify-center gap-6 text-xs font-mono text-mist">
-            <Link
-              href="/style-test"
-              className="hover:text-star underline underline-offset-4 decoration-mist/40 hover:decoration-star"
-            >
-              Style Test
-            </Link>
-            <span>&bull;</span>
-            <Link
-              href="/dev/mode"
-              className="hover:text-star underline underline-offset-4 decoration-mist/40 hover:decoration-star"
-            >
-              Device Inspector
-            </Link>
-          </div>
+          {process.env.NODE_ENV !== "production" && (
+            <div className="flex items-center justify-center gap-6 text-xs font-mono text-mist">
+              <Link
+                href="/style-test"
+                className="hover:text-star underline underline-offset-4 decoration-mist/40 hover:decoration-star"
+              >
+                Style Test
+              </Link>
+              <span>&bull;</span>
+              <Link
+                href="/dev/mode"
+                className="hover:text-star underline underline-offset-4 decoration-mist/40 hover:decoration-star"
+              >
+                Device Inspector
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </main>

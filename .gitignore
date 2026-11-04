@@ -56,3 +56,14 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+# privacy & resume binaries
+*.pdf
+*.docx
+docs/*.pdf
+docs/*.docx
+Docs/*.pdf
+Docs/*.docx
+public/resume/*
+!public/resume/.gitkeep
+

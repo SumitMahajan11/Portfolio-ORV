@@ -1,4 +1,5 @@
 import React from "react";
+import { notFound } from "next/navigation";
 import { SystemWindow } from "@/components/system-window";
 
 const HUB_COLORS = [
@@ -83,6 +84,9 @@ const FONTS = [
 ];
 
 export default function StyleTestPage() {
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
   return (
     <div className="min-h-screen bg-void text-feather px-4 py-12 sm:px-8 max-w-7xl mx-auto space-y-16">
       {/* Header */}
