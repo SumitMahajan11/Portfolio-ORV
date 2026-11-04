@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Cinzel, Space_Grotesk, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
+import { ModeProvider } from "@/lib/flags";
 import "@/styles/globals.css";
 
 const cinzel = Cinzel({
@@ -45,27 +46,29 @@ export default function RootLayout({
       className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${cormorantGaramond.variable}`}
     >
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col">
-        {/* Persistent Accessible Header */}
-        <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
-            <Link
-              href="/"
-              className="font-display text-sm sm:text-base font-bold tracking-wider text-feather hover:text-star transition-colors"
-            >
-              SUMIT MAHAJAN
-            </Link>
+        <ModeProvider>
+          {/* Persistent Accessible Header */}
+          <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
+              <Link
+                href="/"
+                className="font-display text-sm sm:text-base font-bold tracking-wider text-feather hover:text-star transition-colors"
+              >
+                SUMIT MAHAJAN
+              </Link>
 
-            {/* Skip to plain version link - visible on first paint, keyboard focusable */}
-            <Link
-              href="/skip"
-              className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-            >
-              Skip to plain version &rarr;
-            </Link>
-          </div>
-        </header>
+              {/* Skip to plain version link - visible on first paint, keyboard focusable */}
+              <Link
+                href="/skip"
+                className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+              >
+                Skip to plain version &rarr;
+              </Link>
+            </div>
+          </header>
 
-        <div className="flex-1">{children}</div>
+          <div className="flex-1">{children}</div>
+        </ModeProvider>
       </body>
     </html>
   );

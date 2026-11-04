@@ -1,0 +1,5 @@
+# Phase 0 Proofs and Decisions
+
+## Scroll Smoothing Architecture Decision
+
+For the portfolio's story animation architecture, we implement native browser scrolling paired exclusively with GSAP ScrollTrigger's built-in scrub (`scrub: 0.6`). This decision preserves standard browser momentum scrolling across platforms, retains full accessibility for keyboard and assistive technologies (Page Up/Down, Spacebar, arrow keys, touch swipe), eliminates input lag, and strictly respects our initial JavaScript budget of under 200KB gzipped by avoiding external runtime weight. Third-party smooth-scrolling engines (specifically Lenis) are rejected for Phase 0 to avoid synthetic scroll hijacking, touch-event conflicts on mobile devices, and unnecessary performance overhead; Lenis will only be reconsidered if a future proof gate (such as Phase 1 or Phase 4 real-device mobile audits) conclusively demonstrates that native browser scrolling with ScrollTrigger scrub causes measurable visual stutter that Lenis eliminates.
