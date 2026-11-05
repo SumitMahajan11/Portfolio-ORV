@@ -1,11 +1,45 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { HeroScene, HeroProvider } from "@/components/dokja";
-import { ScenarioSelect } from "@/components/scenario-select";
-import { EdgeCloudWorld, RaftWorld, Z3World } from "@/components/worlds";
-import { SideQuestsSection } from "@/components/side-quests";
-import { ReadersRecord } from "@/components/readers-record";
-import { FinaleSection } from "@/components/finale";
-import { ConstellationGlobalLayer } from "@/lib/reader";
+
+const ScenarioSelect = dynamic(
+  () => import("@/components/scenario-select").then((m) => m.ScenarioSelect),
+  { ssr: true }
+);
+
+const EdgeCloudWorld = dynamic(
+  () => import("@/components/worlds/edge-cloud").then((m) => m.EdgeCloudWorld),
+  { ssr: true }
+);
+
+const RaftWorld = dynamic(
+  () => import("@/components/worlds/raft").then((m) => m.RaftWorld),
+  { ssr: true }
+);
+
+const Z3World = dynamic(
+  () => import("@/components/worlds/z3").then((m) => m.Z3World),
+  { ssr: true }
+);
+
+const SideQuestsSection = dynamic(
+  () => import("@/components/side-quests").then((m) => m.SideQuestsSection),
+  { ssr: true }
+);
+
+const ReadersRecord = dynamic(
+  () => import("@/components/readers-record").then((m) => m.ReadersRecord),
+  { ssr: true }
+);
+
+const FinaleSection = dynamic(
+  () => import("@/components/finale").then((m) => m.FinaleSection),
+  { ssr: true }
+);
+
+const ConstellationGlobalLayer = dynamic(
+  () => import("@/lib/reader").then((m) => m.ConstellationGlobalLayer)
+);
 
 export default function Home() {
   return (

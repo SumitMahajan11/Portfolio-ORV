@@ -18,20 +18,7 @@ export interface MotionToggleProps {
  * - Switching modes does not reload the page and leaves zero orphaned ScrollTriggers.
  */
 export function MotionToggle({ className = "" }: MotionToggleProps) {
-  const { mode, reducedMotion, forceMode, isHydrated } = useMode();
-
-  // Safe placeholder before hydration to avoid mismatches
-  if (!isHydrated) {
-    return (
-      <div
-        className={`inline-flex items-center gap-1 font-mono text-xs border border-line/40 bg-ink/40 rounded px-2 py-1 select-none opacity-60 ${className}`}
-        aria-hidden="true"
-      >
-        <span className="text-mist text-[11px] sm:text-xs">Motion:</span>
-        <span className="text-mist text-[11px] sm:text-xs px-1">Full / Light</span>
-      </div>
-    );
-  }
+  const { mode, reducedMotion, forceMode } = useMode();
 
   // If system requests reduced-motion, user cannot force full/light
   if (reducedMotion) {

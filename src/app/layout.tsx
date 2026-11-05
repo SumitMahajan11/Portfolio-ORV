@@ -5,32 +5,35 @@ import { ModeProvider } from "@/lib/flags";
 import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
 import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
-import { CornerBountyButton } from "@/components/biyoo";
+import { CornerBountyButton } from "@/components/biyoo/corner-bounty-button";
 import "@/styles/globals.css";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
+  weight: ["600", "700"],
   variable: "--font-cinzel",
   display: "swap",
 });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
+  weight: ["400", "600"],
   variable: "--font-space-grotesk",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  weight: ["400", "500"],
   variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
+  style: ["italic"],
+  weight: ["400"],
   variable: "--font-cormorant-garamond",
-  style: ["italic", "normal"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
