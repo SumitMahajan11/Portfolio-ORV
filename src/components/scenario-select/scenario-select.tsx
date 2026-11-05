@@ -282,7 +282,7 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
     <section
       ref={containerRef}
       id="scenario-select"
-      className={`relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 bg-void ${className}`}
+      className={`relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 bg-transparent ${className}`}
       aria-labelledby="scenario-select-heading"
     >
       {/* Section Heading: ORV SystemWindow notification */}

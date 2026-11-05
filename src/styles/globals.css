@@ -13,6 +13,15 @@
   --horn: #B3122B;
   --horn-dark: #2A0A10;
 
+  /* Layer Z-Index Tokens (PRE-4) */
+  --z-wall: 0;
+  --z-content: 10;
+  --z-biyoo: 35;
+  --z-overlay: 50;
+
+  /* Global Wall Dim Value (WCAG AA verified >= 0.55 by scripts/check-wall-contrast.mjs) */
+  --wall-dim: 0.55;
+
   /* Typography variables */
   --font-display: var(--font-cinzel), serif;
   --font-ui: var(--font-space-grotesk), sans-serif;
@@ -31,6 +40,11 @@
   --color-star: var(--star);
   --color-horn: var(--horn);
   --color-horn-dark: var(--horn-dark);
+
+  --z-index-wall: var(--z-wall);
+  --z-index-content: var(--z-content);
+  --z-index-biyoo: var(--z-biyoo);
+  --z-index-overlay: var(--z-overlay);
 
   --font-display: var(--font-cinzel), serif;
   --font-ui: var(--font-space-grotesk), sans-serif;

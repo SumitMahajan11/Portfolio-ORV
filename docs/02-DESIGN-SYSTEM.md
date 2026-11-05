@@ -17,6 +17,19 @@ Cold, vast, starlit, quiet, with sudden electric moments. Lit figure on a near-b
 | --horn | #B3122B | RED. Horns only (+ one finale pulse). Never UI buttons |
 | --horn-dark | #2A0A10 | horn body |
 
+## Layer Hierarchy (Z-Index Tokens)
+| Layer | Token / Variable | Value | Components & Roles |
+|---|---|---|---|
+| Wall Background | `--z-wall` | `0` | `<SiteWall />` fixed global background layer (`z-0`) |
+| Page Content | `--z-content` | `10` | Story sections (hero, scenarios, worlds, side quests, skills, finale), static fallbacks (`z-10` to `z-20`) |
+| Global Companion | `--z-biyoo` | `35` | Global floating Biyoo companion (`z-35`), corner bounty button (`z-40`) |
+| Overlays & Chrome | `--z-overlay` | `50` | Sticky header (`z-50`), Constellation overlay (`z-50`), Sound permission prompt (`z-50`), modal dialogues (`z-50`), Skip link (`z-[100]`) |
+
+*Audit & Conflict Notes*:
+- `corner-bounty-button.tsx` uses `z-40`, safely positioned between content and overlays.
+- `layout.tsx` skip link uses `z-[100]` to ensure keyboard focus visibility above all chrome.
+- All story content panels sit at `--z-content` (`z-10` to `z-20`) above `--z-wall` (`0`).
+
 ## World palettes (scoped via `data-world` attribute)
 - edge-cloud: deep navy, --star teal, soft green "greener path" #6EE7A8
 - raft (Naruto): warm orange #F28C28, leaf green #3E8E41, parchment #F1E4C3

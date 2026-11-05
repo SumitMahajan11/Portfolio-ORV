@@ -69,7 +69,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     <section
       id="ratify"
       data-world="raft"
-      className={`relative z-20 w-full min-h-screen py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_top,_rgba(26,18,11,0.95)_0%,_rgba(7,8,11,1)_80%)] text-feather ${className}`}
+      className={`relative z-20 w-full min-h-screen py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_top,_rgba(26,18,11,0.65)_0%,_rgba(7,8,11,0.55)_80%)] text-feather ${className}`}
       aria-labelledby="raft-world-title"
     >
       <div className="max-w-5xl mx-auto space-y-16 sm:space-y-24">

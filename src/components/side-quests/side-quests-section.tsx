@@ -26,7 +26,7 @@ export function SideQuestsSection({ className = "" }: SideQuestsSectionProps) {
     <section
       id="side-quests"
       data-world="sidequest"
-      className={`relative z-20 w-full py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_bottom,_rgba(14,17,24,0.9)_0%,_rgba(7,8,11,1)_85%)] text-feather ${className}`}
+      className={`relative z-20 w-full py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_bottom,_rgba(14,17,24,0.65)_0%,_rgba(7,8,11,0.55)_85%)] text-feather ${className}`}
       aria-labelledby="side-quests-title"
     >
       <div className="max-w-5xl mx-auto space-y-12 sm:space-y-16">
