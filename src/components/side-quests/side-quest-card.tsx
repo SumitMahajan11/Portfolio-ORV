@@ -222,7 +222,7 @@ export function SideQuestCard({ project, className = "" }: SideQuestCardProps) {
             {/* Biyoo Costume Hook Badge */}
             {project.costume && (
               <span
-                className="font-mono text-[10px] text-mist/70 border border-line bg-ink-2 px-1.5 py-0.5 rounded"
+                className="font-mono text-[10px] text-mist border border-line bg-ink-2 px-1.5 py-0.5 rounded"
                 title={`Biyoo prop: ${project.costume}`}
               >
                 prop: {project.costume}
@@ -236,7 +236,7 @@ export function SideQuestCard({ project, className = "" }: SideQuestCardProps) {
           <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-feather">
             Quest: {project.title}
           </h3>
-          <p className="font-mono text-[11px] text-mist/70 mt-0.5 italic">
+          <p className="font-mono text-[11px] text-mist mt-0.5 italic">
             Theme: {theme.badge}
           </p>
         </div>
@@ -291,7 +291,7 @@ export function SideQuestCard({ project, className = "" }: SideQuestCardProps) {
               Repository &rarr;
             </a>
           ) : (
-            <span className="text-mist/60 italic">[No Public Repo]</span>
+            <span className="text-mist italic">[No Public Repo]</span>
           )}
 
           {project.links.demo && (
@@ -307,7 +307,7 @@ export function SideQuestCard({ project, className = "" }: SideQuestCardProps) {
         </div>
 
         {/* Honesty limit */}
-        <span className="text-[10px] text-mist/60 italic">
+        <span className="text-[10px] text-mist italic">
           {isExplicitlyInDesign
             ? "Concept in design &bull; not yet implemented"
             : hasLinks

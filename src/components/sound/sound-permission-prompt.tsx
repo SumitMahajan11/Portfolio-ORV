@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useSound } from "@/lib/sound";
 
 export interface SoundPermissionPromptProps {
@@ -15,11 +15,24 @@ export interface SoundPermissionPromptProps {
  * - Exact text: "Biyoo wants to say hi. Turn sound on?"
  * - Buttons: "Turn sound on" (primary) and "Not now" (secondary)
  * - Shown once after intro, non-modal / never blocks content
+ * - Escape key closes/dismisses prompt
  * - Remembers choice in localStorage 'sound_pref'
  * - Touch-friendly 44px+ targets
  */
 export function SoundPermissionPrompt({ className = "" }: SoundPermissionPromptProps) {
   const { promptVisible, dismissPrompt } = useSound();
+
+  // Escape closes prompt
+  useEffect(() => {
+    if (!promptVisible) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        dismissPrompt(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [promptVisible, dismissPrompt]);
 
   if (!promptVisible) {
     return null;

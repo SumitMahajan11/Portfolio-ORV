@@ -76,117 +76,115 @@ export function CornerBountyButton({ className = "" }: CornerBountyButtonProps) 
         right: "calc(1rem + env(safe-area-inset-right, 0px))",
       }}
     >
-      <Link
-        href="/wanted"
-        aria-label="Looking for the bounty board?"
-        className={`group relative flex items-center gap-2 p-1.5 sm:p-2 rounded-full border border-line/80 bg-ink/95 text-feather hover:border-star hover:text-star shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-star select-none ${
-          wiggling ? "animate-bounty-wiggle" : ""
-        }`}
-      >
-        {/* Mini Biyoo head holding a tiny WANTED sign */}
-        <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center">
-          <svg
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full drop-shadow-md overflow-visible"
-            aria-hidden="true"
-          >
-            {/* Fluffy cotton head */}
-            <circle
-              cx="24"
-              cy="22"
-              r="15"
-              fill="#F4F6FA"
-              stroke="#9FB4D6"
-              strokeWidth="1.2"
-            />
-
-            {/* Horns in #2A0A10 */}
-            <path
-              d="M 16 11 C 12 5 9 1 7 -1 C 11 3 15 8 18 11 Z"
-              fill="#2A0A10"
-            />
-            <path
-              d="M 32 11 C 36 5 39 1 41 -1 C 37 3 33 8 30 11 Z"
-              fill="#2A0A10"
-            />
-
-            {/* Eyes */}
-            <circle cx="19.5" cy="19.5" r="1.6" fill="#0E1118" />
-            <circle cx="28.5" cy="19.5" r="1.6" fill="#0E1118" />
-
-            {/* Cheerful smile */}
-            <path
-              d="M 21.5 24 Q 24 26.5 26.5 24"
-              stroke="#0E1118"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-            />
-
-            {/* Tiny parchment sign: WANTED */}
-            <g id="biyoo_tiny_sign">
-              {/* Sign background */}
-              <rect
-                x="8"
-                y="26"
-                width="32"
-                height="15"
-                rx="2"
-                fill="#E8D5B5"
-                stroke="#8C6D46"
-                strokeWidth="1"
+      <div className="relative group">
+        <Link
+          href="/wanted"
+          aria-label="Bounty board"
+          className={`relative flex items-center gap-2 p-1.5 sm:p-2 rounded-full border border-line/80 bg-ink/95 text-feather hover:border-star hover:text-star shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-star select-none ${
+            wiggling ? "animate-bounty-wiggle" : ""
+          }`}
+        >
+          {/* Mini Biyoo head holding a tiny WANTED sign */}
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center">
+            <svg
+              viewBox="0 0 48 48"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-full drop-shadow-md overflow-visible"
+              aria-hidden="true"
+            >
+              {/* Fluffy cotton head */}
+              <circle
+                cx="24"
+                cy="22"
+                r="15"
+                fill="#F4F6FA"
+                stroke="#9FB4D6"
+                strokeWidth="1.2"
               />
-              {/* Sign text */}
-              <text
-                x="24"
-                y="37"
-                textAnchor="middle"
+
+              {/* Horns in #2A0A10 */}
+              <path
+                d="M 16 11 C 12 5 9 1 7 -1 C 11 3 15 8 18 11 Z"
                 fill="#2A0A10"
-                fontSize="6.8"
-                fontWeight="bold"
-                letterSpacing="0.8"
-                fontFamily="var(--font-cinzel), serif"
-              >
-                WANTED
-              </text>
-
-              {/* Two fluffy white paws holding the sign */}
-              <ellipse
-                cx="11"
-                cy="27"
-                rx="2.6"
-                ry="2.2"
-                fill="#FFFFFF"
-                stroke="#9FB4D6"
-                strokeWidth="0.8"
               />
-              <ellipse
-                cx="37"
-                cy="27"
-                rx="2.6"
-                ry="2.2"
-                fill="#FFFFFF"
-                stroke="#9FB4D6"
-                strokeWidth="0.8"
+              <path
+                d="M 32 11 C 36 5 39 1 41 -1 C 37 3 33 8 30 11 Z"
+                fill="#2A0A10"
               />
-            </g>
-          </svg>
-        </div>
 
-        {/* Short label always visible on touch / mobile */}
-        <span className="sm:hidden font-mono text-[11px] font-semibold text-star tracking-wide pr-2 whitespace-nowrap">
-          Bounty board
-        </span>
+              {/* Eyes */}
+              <circle cx="19.5" cy="19.5" r="1.6" fill="#0E1118" />
+              <circle cx="28.5" cy="19.5" r="1.6" fill="#0E1118" />
 
-        {/* Hover/focus tooltip on desktop (pointer devices) */}
+              {/* Cheerful smile */}
+              <path
+                d="M 21.5 24 Q 24 26.5 26.5 24"
+                stroke="#0E1118"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+
+              {/* Tiny parchment sign: WANTED */}
+              <g id="biyoo_tiny_sign">
+                {/* Sign background */}
+                <rect
+                  x="8"
+                  y="26"
+                  width="32"
+                  height="15"
+                  rx="2"
+                  fill="#E8D5B5"
+                  stroke="#8C6D46"
+                  strokeWidth="1"
+                />
+                {/* Sign lettering representation */}
+                <path
+                  d="M 12 32 H 36 M 15 36 H 33"
+                  stroke="#2A0A10"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeDasharray="2 1.5"
+                />
+
+                {/* Two fluffy white paws holding the sign */}
+                <ellipse
+                  cx="11"
+                  cy="27"
+                  rx="2.6"
+                  ry="2.2"
+                  fill="#FFFFFF"
+                  stroke="#9FB4D6"
+                  strokeWidth="0.8"
+                />
+                <ellipse
+                  cx="37"
+                  cy="27"
+                  rx="2.6"
+                  ry="2.2"
+                  fill="#FFFFFF"
+                  stroke="#9FB4D6"
+                  strokeWidth="0.8"
+                />
+              </g>
+            </svg>
+          </div>
+
+          {/* Label visible across breakpoints */}
+          <span className="font-mono text-[11px] sm:text-xs font-semibold text-star tracking-wide pr-2 whitespace-nowrap">
+            Bounty board
+          </span>
+        </Link>
+
+        {/* Hover/focus tooltip on desktop (outside Link to prevent accessible name mismatch) */}
         <span
           role="tooltip"
-          className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 rounded-lg border border-star/40 bg-ink/95 text-star font-mono text-xs shadow-2xl opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 hidden sm:block"
+          aria-hidden="true"
+          className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 rounded-lg border border-star/40 bg-ink/95 text-star font-mono text-xs shadow-2xl opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 hidden sm:block"
         >
           Looking for the bounty board? &rarr;
         </span>
-      </Link>
+      </div>
     </aside>
   );
 }

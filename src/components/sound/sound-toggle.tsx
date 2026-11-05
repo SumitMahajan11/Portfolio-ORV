@@ -19,7 +19,8 @@ export function SoundToggle({ className = "" }: SoundToggleProps) {
     <button
       type="button"
       onClick={toggleSound}
-      aria-label={soundEnabled ? "Mute sound" : "Turn sound on"}
+      aria-label={soundEnabled ? "Sound On (Click to turn off)" : "Sound Off (Click to turn on)"}
+      aria-pressed={soundEnabled}
       title={soundEnabled ? "Sound: On (Click to mute)" : "Sound: Off (Click to turn on)"}
       className={`inline-flex items-center gap-1.5 min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-lg border border-line bg-ink/70 hover:border-star/50 text-feather hover:text-star font-mono text-xs transition-colors focus:ring-2 focus:ring-star focus:outline-none select-none ${className}`}
     >

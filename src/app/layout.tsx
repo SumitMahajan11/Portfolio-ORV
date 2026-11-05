@@ -98,6 +98,16 @@ export default function RootLayout({
       className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${cormorantGaramond.variable}`}
     >
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">
+        {/* Skip to Main Content Link (Keyboard accessible, first focusable item) */}
+        <nav aria-label="Skip navigation">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:bg-ink focus:border-2 focus:border-star focus:text-star focus:font-mono focus:text-sm focus:rounded focus:shadow-2xl focus:outline-none"
+          >
+            Skip to main content &rarr;
+          </a>
+        </nav>
+
         {/* JSON-LD Person schema (Strictly no email, phone, or address per Rule 3) */}
         <script
           type="application/ld+json"

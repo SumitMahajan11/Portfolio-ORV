@@ -53,7 +53,7 @@ function StaticGraphNode({
       <span className="font-mono text-[9px] sm:text-[10px] font-bold truncate w-full" style={{ color: textColor }}>
         {label}
       </span>
-      <span className="font-mono text-[7px] sm:text-[8px] text-mist/60 truncate w-full">
+      <span className="font-mono text-[7px] sm:text-[8px] text-mist truncate w-full">
         {sublabel}
       </span>
     </div>
@@ -106,7 +106,7 @@ export function Z3StaticDiagram() {
             <tbody className="divide-y divide-line/40 text-feather">
               {Z3_VOW_RULES.map((vow) => (
                 <tr key={vow.id} className="hover:bg-ink/50 transition-colors">
-                  <td className="p-2 sm:p-2.5 font-bold text-[#1FA37A]">{vow.name}</td>
+                  <td className="p-2 sm:p-2.5 font-bold text-[#34D399]">{vow.name}</td>
                   <td className="p-2 sm:p-2.5 text-mist text-[10px]">{vow.terraformResource}</td>
                   <td className="p-2 sm:p-2.5 text-feather font-mono text-[10px]">{vow.condition}</td>
                   <td className="p-2 sm:p-2.5 text-mist text-[10px]">{vow.impact}</td>
@@ -129,7 +129,7 @@ export function Z3StaticDiagram() {
               {/* Frame Header */}
               <div className="space-y-1.5 border-b border-line/40 pb-2">
                 <div className="flex items-center justify-between text-[10px] font-mono">
-                  <span className="text-[#1FA37A] font-semibold">
+                  <span className="text-[#34D399] font-semibold">
                     FRAME {idx + 1}/4
                   </span>
                   <span
@@ -199,7 +199,7 @@ export function Z3StaticDiagram() {
               {/* Caption & Explanations */}
               <div className="pt-2 border-t border-line/40 space-y-1 font-mono text-[11px] leading-relaxed text-mist">
                 <p className="text-feather/90">{step.caption}</p>
-                <p className="text-[10px] text-mist/70 italic">{step.details}</p>
+                <p className="text-[10px] text-mist italic">{step.details}</p>
               </div>
             </article>
           );
@@ -214,7 +214,7 @@ export function Z3StaticDiagram() {
             <span>Public Ingress</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#1FA37A]" />
+            <span className="h-2 w-2 rounded-full bg-[#34D399]" />
             <span>IAM Transitive Chain</span>
           </span>
           <span className="flex items-center gap-1.5">
@@ -222,7 +222,7 @@ export function Z3StaticDiagram() {
             <span>Privileged Admin</span>
           </span>
         </div>
-        <div className="text-[#1FA37A] font-semibold">
+        <div className="text-[#34D399] font-semibold">
           FINDINGS: PRIVILEGE ESCALATION DISCOVERED &bull; ZERO CHECKS MISSED
         </div>
       </div>

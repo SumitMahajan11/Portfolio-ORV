@@ -44,7 +44,10 @@ const ConstellationGlobalLayer = dynamic(
 export default function Home() {
   return (
     <HeroProvider>
-      <main className="relative bg-void text-feather overflow-x-hidden">
+      <main id="main-content" className="relative bg-void text-feather overflow-x-hidden">
+        {/* Top level Heading for Screen Readers and Landmark Navigation */}
+        <h1 className="sr-only">Sumit Mahajan — Distributed Systems &amp; Correctness</h1>
+
         {/* Act 1 Hero Scene (100svh intro container) */}
         <HeroScene />
 

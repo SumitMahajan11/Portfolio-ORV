@@ -116,7 +116,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
               onClick={() => setActiveTab("graph")}
               className={`px-2.5 py-1 rounded transition-colors ${
                 activeTab === "graph"
-                  ? "bg-[#1FA37A]/20 text-[#1FA37A] font-bold"
+                  ? "bg-[#1FA37A]/20 text-[#34D399] font-bold"
                   : "text-mist hover:text-feather"
               }`}
             >
@@ -127,7 +127,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
               onClick={() => setActiveTab("vows")}
               className={`px-2.5 py-1 rounded transition-colors ${
                 activeTab === "vows"
-                  ? "bg-[#1FA37A]/20 text-[#1FA37A] font-bold"
+                  ? "bg-[#1FA37A]/20 text-[#34D399] font-bold"
                   : "text-mist hover:text-feather"
               }`}
             >
@@ -138,7 +138,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-3 py-1.5 rounded border border-[#1FA37A]/40 bg-[#1FA37A]/10 hover:bg-[#1FA37A]/20 text-[#1FA37A] font-mono text-xs font-semibold tracking-wider uppercase transition-colors"
+            className="px-3 py-1.5 rounded border border-[#1FA37A]/40 bg-[#1FA37A]/10 hover:bg-[#1FA37A]/20 text-[#34D399] font-mono text-xs font-semibold tracking-wider uppercase transition-colors"
           >
             {isPlaying ? "❚❚ Pause" : "▶ Play Sequence"}
           </button>
@@ -359,7 +359,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                 <span className="font-mono text-[9px] sm:text-[10px] font-bold truncate w-full" style={{ color: labelColor }}>
                   {node.label}
                 </span>
-                <span className="font-mono text-[7px] sm:text-[8px] text-mist/70 truncate w-full">
+                <span className="font-mono text-[7px] sm:text-[8px] text-mist truncate w-full">
                   {node.sublabel}
                 </span>
 
@@ -380,12 +380,12 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
           {/* Beat 4: Proof Certificate Stamp Overlay (Beat E) */}
           {activeStep.proofCertified && (
             <div className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-void/60 backdrop-blur-xs animate-in fade-in duration-500">
-              <div className="p-5 sm:p-6 rounded-lg border-2 border-[#1FA37A] bg-ink/95 text-center space-y-3 shadow-[0_0_32px_rgba(31,163,122,0.4)] max-w-md w-full">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full border border-[#1FA37A] bg-[#1FA37A]/20 text-[#1FA37A] text-2xl font-bold">
+              <div className="p-5 sm:p-6 rounded-lg border-2 border-[#34D399] bg-ink/95 text-center space-y-3 shadow-[0_0_32px_rgba(52,211,153,0.4)] max-w-md w-full">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full border border-[#34D399] bg-[#1FA37A]/20 text-[#34D399] text-2xl font-bold">
                   ✓
                 </div>
                 <div className="space-y-1">
-                  <div className="font-mono text-[10px] tracking-widest text-[#1FA37A] uppercase font-bold">
+                  <div className="font-mono text-[10px] tracking-widest text-[#34D399] uppercase font-bold">
                     [SMT_PROOF_CERTIFICATE &bull; SHA256_VERIFIED]
                   </div>
                   <h4 className="font-display text-base sm:text-lg font-bold text-feather">

@@ -36,8 +36,7 @@ export function ConstellationOverlay({
       className={`fixed top-24 right-4 sm:top-28 sm:right-8 z-50 max-w-[300px] sm:max-w-sm pointer-events-auto transition-all duration-300 ${
         reducedMotion ? "" : "animate-pulse"
       } ${className}`}
-      role="status"
-      aria-live="polite"
+      aria-hidden="true"
     >
       <div className="relative border border-star/50 bg-[rgba(14,17,24,0.92)] backdrop-blur-md shadow-[0_4px_24px_rgba(94,225,230,0.15)] p-3 sm:p-4 font-mono">
         {/* Decorative corner brackets in --star teal */}

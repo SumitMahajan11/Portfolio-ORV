@@ -816,8 +816,6 @@ export function Biyoo({
     <div
       ref={containerRef}
       className={`relative inline-flex flex-col items-center justify-center select-none ${className}`}
-      role="img"
-      aria-label="Biyoo: companion fluff creature"
     >
       {/* Mini SystemWindow Speech Bubble */}
       {speechBubble && (

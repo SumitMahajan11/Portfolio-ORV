@@ -5,6 +5,7 @@ export interface SystemWindowProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
+  asLandmark?: boolean;
 }
 
 export function SystemWindow({
@@ -12,12 +13,12 @@ export function SystemWindow({
   children,
   footer,
   className = "",
+  asLandmark = false,
 }: SystemWindowProps) {
   return (
     <div
       className={`relative border border-line bg-[rgba(14,17,24,0.85)] font-mono shadow-2xl backdrop-blur-sm overflow-hidden ${className}`}
-      role="region"
-      aria-label={title}
+      {...(asLandmark ? { role: "region", "aria-label": title } : {})}
     >
       {/* Corner Ticks (decorative ORV system window HUD brackets) */}
       <span
@@ -47,9 +48,9 @@ export function SystemWindow({
       <div className="relative z-10 flex items-center justify-between border-b border-line bg-[rgba(94,225,230,0.12)] px-4 py-2.5">
         <div className="flex items-center gap-2">
           <span className="h-3 w-1.5 bg-star animate-pulse" aria-hidden="true" />
-          <h2 className="font-display text-xs sm:text-sm font-semibold tracking-wider text-star uppercase">
+          <span className="font-display text-xs sm:text-sm font-semibold tracking-wider text-star uppercase">
             {title}
-          </h2>
+          </span>
         </div>
         <div className="flex items-center gap-1.5" aria-hidden="true">
           <span className="h-1.5 w-1.5 rounded-full bg-star/40" />
@@ -72,5 +73,3 @@ export function SystemWindow({
     </div>
   );
 }
-
-export default SystemWindow;

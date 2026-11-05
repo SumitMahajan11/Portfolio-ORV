@@ -37,14 +37,6 @@ export default function SkipPage() {
 
   return (
     <div className="min-h-screen bg-void text-feather selection:bg-star selection:text-void">
-      {/* Skip to Content Link (Keyboard accessible) */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-ink focus:text-star focus:border focus:border-star focus:rounded focus:outline-none focus:ring-2 focus:ring-star font-mono text-sm shadow-xl"
-      >
-        Skip to main content
-      </a>
-
       {/* Top Navigation */}
       <nav
         aria-label="Story navigation"

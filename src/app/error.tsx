@@ -16,7 +16,7 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <main className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center select-none">
+    <main id="main-content" className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center select-none">
       <div className="relative w-full max-w-md border border-line bg-ink/90 p-6 sm:p-8 rounded-lg shadow-2xl backdrop-blur-md space-y-6">
         {/* Status Tag */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-horn/10 border border-horn/40 text-horn font-mono text-xs tracking-widest uppercase">

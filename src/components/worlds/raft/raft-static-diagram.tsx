@@ -235,7 +235,7 @@ export function RaftStaticDiagram() {
                       </span>
                     ))
                   ) : (
-                    <span className="font-mono text-[9px] text-mist/60 italic">
+                    <span className="font-mono text-[9px] text-mist italic">
                       [Silence / Heartbeat Timed Out]
                     </span>
                   )}
@@ -245,7 +245,7 @@ export function RaftStaticDiagram() {
               {/* Caption & Rule Details */}
               <div className="pt-2 border-t border-line/40 space-y-1.5 font-mono text-[11px] leading-relaxed text-mist">
                 <p className="text-feather/90">{step.caption}</p>
-                <p className="text-[10px] text-mist/70 italic">{step.details}</p>
+                <p className="text-[10px] text-mist italic">{step.details}</p>
               </div>
             </article>
           );

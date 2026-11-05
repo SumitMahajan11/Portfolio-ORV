@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center select-none">
+    <main id="main-content" className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center select-none">
       <div className="relative w-full max-w-md border border-line bg-ink/90 p-6 sm:p-8 rounded-lg shadow-2xl backdrop-blur-md space-y-6">
         {/* Corner HUD ticks */}
         <span

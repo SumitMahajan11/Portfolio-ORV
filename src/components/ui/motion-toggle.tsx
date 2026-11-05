@@ -41,7 +41,7 @@ export function MotionToggle({ className = "" }: MotionToggleProps) {
 
   return (
     <div
-      className={`inline-flex items-center gap-1 font-mono text-xs border border-line/70 bg-ink/80 rounded px-2 py-1 shadow-sm backdrop-blur-xs select-none ${className}`}
+      className={`inline-flex items-center gap-1.5 font-mono text-xs border border-line/70 bg-ink/80 rounded-lg px-2.5 py-1 min-h-[36px] shadow-sm backdrop-blur-xs select-none ${className}`}
       role="group"
       aria-label="Motion Mode Selection"
     >
@@ -49,7 +49,7 @@ export function MotionToggle({ className = "" }: MotionToggleProps) {
       <button
         type="button"
         onClick={() => forceMode("full")}
-        className={`px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono transition-all duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-star ${
+        className={`px-2 py-1 min-h-[28px] rounded text-[11px] sm:text-xs font-mono transition-all duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-star ${
           mode === "full"
             ? "bg-star/15 text-star font-bold border border-star/40"
             : "text-mist hover:text-feather border border-transparent"
@@ -63,7 +63,7 @@ export function MotionToggle({ className = "" }: MotionToggleProps) {
       <button
         type="button"
         onClick={() => forceMode("light")}
-        className={`px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono transition-all duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-star ${
+        className={`px-2 py-1 min-h-[28px] rounded text-[11px] sm:text-xs font-mono transition-all duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-star ${
           mode === "light"
             ? "bg-star/15 text-star font-bold border border-star/40"
             : "text-mist hover:text-feather border border-transparent"
