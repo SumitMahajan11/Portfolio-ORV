@@ -111,3 +111,4 @@ All architectural specifications, design system tokens, and proof reports live i
 - [`phase4.md`](./docs/proofs/phase4.md) — Phase 4 performance post-fix benchmarks and FPS trace
 - [`matrix.md`](./docs/proofs/matrix.md) — Cross-browser and responsive device test matrix
 - [`truth-audit.md`](./docs/proofs/truth-audit.md) — Evidence-only truth audit cross-referencing all production claims
+- [`launch-checklist.md`](./docs/launch-checklist.md) — Production deployment, custom domain DNS, and launch checklist
