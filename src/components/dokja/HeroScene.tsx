@@ -40,6 +40,21 @@ const STARS_LAYER_3 = [
   { top: "88%", left: "72%", size: 2.5, opacity: 0.8 },
 ];
 
+const STAR_RING_NODES = [
+  { deg: 0, cx: 400, cy: 220 },
+  { deg: 30, cx: 375.9, cy: 310 },
+  { deg: 60, cx: 310, cy: 375.9 },
+  { deg: 90, cx: 220, cy: 400 },
+  { deg: 120, cx: 130, cy: 375.9 },
+  { deg: 150, cx: 64.1, cy: 310 },
+  { deg: 180, cx: 40, cy: 220 },
+  { deg: 210, cx: 64.1, cy: 130 },
+  { deg: 240, cx: 130, cy: 64.1 },
+  { deg: 270, cx: 220, cy: 40 },
+  { deg: 300, cx: 310, cy: 64.1 },
+  { deg: 330, cx: 375.9, cy: 130 },
+];
+
 // Deterministic particle set capped per mode: desktop <= 120, mobile <= 40, light <= 15, reduced = 0
 // Sourced from ./particles-data (120 deterministic particles)
 
@@ -63,9 +78,11 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
   const readerSignals = useReaderTracker();
   const [isBiyooSpeaking, setIsBiyooSpeaking] = useState(false);
 
-  // Constellation lines engine: max 1 per 20s, no repeats in context, suppressed during intro
+  // Constellation lines engine: gated strictly on introComplete, cleared when intro starts
+  const introComplete = heroState.introDone;
   const { activeLine, dismissLine } = useConstellationEngine({
-    introDone: heroState.introDone,
+    introComplete,
+    introDone: introComplete,
     isBiyooSpeaking,
     scrollSpeed: readerSignals.scrollSpeed,
     idleSeconds: readerSignals.idleSeconds,
@@ -263,7 +280,8 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
 
       // STAGE 1: Reading (0.0s - 2.5s)
       introTl.call(() => {
-        setHeroState((prev) => ({ ...prev, stage: 1 }));
+        setHeroState((prev) => ({ ...prev, stage: 1, introDone: false }));
+        dismissLine();
       }, [], 0);
 
       introTl.to(
@@ -420,6 +438,12 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
               scrollProgress: p,
             }));
 
+            // Immediately hide scroll hint once scrolling begins
+            if (p > 0.005 && scrollHint) {
+              (scrollHint as HTMLElement).style.opacity = "0";
+              (scrollHint as HTMLElement).style.pointerEvents = "none";
+            }
+
             // Glitch text trigger: plays each time progress crosses 85% going forward
             if (p >= 0.85 && self.direction === 1) {
               if (!crossed85Ref.current) {
@@ -452,12 +476,22 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
         },
       });
 
-      // Clear intro hints as soon as scroll commences
+      // Clear scroll hint instantly on initial scroll input, fade system window quickly
       masterTl.to(
-        [scrollHint, systemWindow],
+        scrollHint,
         {
           opacity: 0,
-          duration: 6,
+          duration: 1,
+          ease: "power2.out",
+        },
+        0
+      );
+
+      masterTl.to(
+        systemWindow,
+        {
+          opacity: 0,
+          duration: 3,
           ease: "power2.out",
         },
         0
@@ -681,10 +715,32 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
           scale: 1.0,
           rotation: 0,
           stagger: 0.02,
-          duration: 15,
+          duration: 10,
           ease: "power2.out",
         },
         85
+      );
+
+      // Fade out Dokja figure and star-ring fully before Scenario Select grid enters
+      masterTl.to(
+        [dokjaFigure, starRing],
+        {
+          opacity: 0,
+          duration: 7,
+          ease: "power2.inOut",
+        },
+        93
+      );
+
+      // Fade out the entire hero pinned layer by 100% so no ghost layers overlap the grid
+      masterTl.to(
+        containerRef.current,
+        {
+          opacity: 0,
+          duration: 4,
+          ease: "power2.out",
+        },
+        96
       );
     },
     {
@@ -694,7 +750,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
   );
 
   return (
-    <div id="hero-scene-container" className="w-full relative overflow-x-clip">
+    <div id="hero-scene-container" className="w-full relative z-10 overflow-x-clip">
       {/* STATIC FALLBACK FOR REDUCED MOTION (Requirement 2) */}
       {/* Both containers always in DOM to prevent GSAP pin-spacer reconciliation mismatch */}
       <div
@@ -824,569 +880,562 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
 
       {/* FULL / LIGHT MOTION MODE: 100svh pinned container */}
       <section
-      ref={containerRef}
-      id="hero-scene"
-      style={{ display: reducedMotion ? "none" : undefined }}
-      className={`relative w-full h-[100svh] min-h-[100svh] max-h-[100svh] overflow-hidden bg-void select-none flex items-center justify-center ${className}`}
-      aria-label="Omniscient Reader's Viewpoint Hero Prologue"
-    >
-      {/* ========================================================= */}
-      {/* LAYER 1: background (deep void radial gradient)           */}
-      {/* ========================================================= */}
-      <div
-        data-layer="background"
-        className="hero-layer hero-layer-background pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_rgba(94,225,230,0.06)_0%,_rgba(7,8,11,1)_72%)]"
-        aria-hidden="true"
-      />
-
-      {/* ========================================================= */}
-      {/* LAYER 2: stars (3 parallax layers)                        */}
-      {/* ========================================================= */}
-      <div
-        data-layer="stars"
-        className="hero-layer hero-layer-stars pointer-events-none absolute inset-0 z-0"
-        aria-hidden="true"
+        ref={containerRef}
+        id="hero-scene"
+        style={{ display: reducedMotion ? "none" : undefined }}
+        className={`relative w-full h-[100svh] min-h-[100svh] max-h-[100svh] overflow-hidden bg-void select-none flex items-center justify-center ${className}`}
+        aria-label="Omniscient Reader's Viewpoint Hero Prologue"
       >
-        <div data-layer="stars-1" className="absolute inset-0">
-          {STARS_LAYER_1.map((star, idx) => (
+        {/* ========================================================= */}
+        {/* LAYER 1: background (deep void radial gradient)           */}
+        {/* ========================================================= */}
+        <div
+          data-layer="background"
+          className="hero-layer hero-layer-background pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_rgba(94,225,230,0.06)_0%,_rgba(7,8,11,1)_72%)]"
+          aria-hidden="true"
+        />
+
+        {/* ========================================================= */}
+        {/* LAYER 2: stars (3 parallax layers)                        */}
+        {/* ========================================================= */}
+        <div
+          data-layer="stars"
+          className="hero-layer hero-layer-stars pointer-events-none absolute inset-0 z-0"
+          aria-hidden="true"
+        >
+          <div data-layer="stars-1" className="absolute inset-0">
+            {STARS_LAYER_1.map((star, idx) => (
+              <span
+                key={`star1-${idx}`}
+                className="absolute rounded-full bg-feather"
+                style={{
+                  top: star.top,
+                  left: star.left,
+                  width: `${star.size}px`,
+                  height: `${star.size}px`,
+                  opacity: star.opacity,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Parallax star layer 2: suppressed in light mode per P1-7 */}
+          {mode !== "light" && (
+            <div data-layer="stars-2" className="absolute inset-0">
+              {STARS_LAYER_2.map((star, idx) => (
+                <span
+                  key={`star2-${idx}`}
+                  className="absolute rounded-full bg-rim"
+                  style={{
+                    top: star.top,
+                    left: star.left,
+                    width: `${star.size}px`,
+                    height: `${star.size}px`,
+                    opacity: star.opacity,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Parallax star layer 3: desktop full mode only */}
+          {mode === "full" && !signals.isTouch && (
+            <div data-layer="stars-3" className="absolute inset-0">
+              {STARS_LAYER_3.map((star, idx) => (
+                <span
+                  key={`star3-${idx}`}
+                  className="absolute rounded-full bg-star shadow-[0_0_4px_rgba(94,225,230,0.8)]"
+                  style={{
+                    top: star.top,
+                    left: star.left,
+                    width: `${star.size}px`,
+                    height: `${star.size}px`,
+                    opacity: star.opacity,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ========================================================= */}
+        {/* CONSTELLATION STAR RING: Orbits in Stage 6 (single wrapper) */}
+        {/* ========================================================= */}
+        <div
+          data-layer="star-ring"
+          className="hero-star-ring pointer-events-none absolute inset-0 flex items-center justify-center z-15"
+          style={{ opacity: 0 }}
+        >
+          <svg
+            viewBox="0 0 440 440"
+            className="w-[300px] h-[300px] xs:w-[340px] xs:h-[340px] sm:w-[460px] sm:h-[460px] max-w-full overflow-hidden"
+          >
+            <circle
+              cx="220"
+              cy="220"
+              r="180"
+              fill="none"
+              stroke="#5EE1E6"
+              strokeWidth="1"
+              strokeDasharray="4 8"
+              opacity="0.35"
+            />
+            {STAR_RING_NODES.map(({ deg, cx, cy }) => (
+              <g key={`star-node-${deg}`}>
+                <circle cx={cx} cy={cy} r="2.5" fill="#5EE1E6" />
+                <circle cx={cx} cy={cy} r="6" fill="#5EE1E6" opacity="0.25" />
+              </g>
+            ))}
+          </svg>
+        </div>
+
+        {/* ========================================================= */}
+        {/* DOKJA STAGE FIGURE: Layers 3 to 9 in exact /docs/06 order */}
+        {/* ========================================================= */}
+        <div className="hero-dokja-figure relative z-10 w-[270px] h-[350px] xs:w-[300px] xs:h-[380px] sm:w-[360px] sm:h-[440px] flex items-center justify-center">
+          <svg
+            viewBox="0 0 320 400"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full drop-shadow-2xl overflow-visible"
+          >
+            <defs>
+              {/* Phone screen glow: cold teal cyan (--star: #5EE1E6) */}
+              <radialGradient
+                id="hero_phone_screen_glow"
+                cx="160"
+                cy="245"
+                r="75"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stopColor="#5EE1E6" stopOpacity="0.5" />
+                <stop offset="60%" stopColor="#5EE1E6" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#5EE1E6" stopOpacity="0" />
+              </radialGradient>
+
+              {/* White coat gradient with cold rim lighting (--feather #F4F6FA to --rim #9FB4D6) */}
+              <linearGradient
+                id="hero_white_coat_grad"
+                x1="160"
+                y1="130"
+                x2="160"
+                y2="340"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="60%" stopColor="#F4F6FA" />
+                <stop offset="100%" stopColor="#D5DEEB" />
+              </linearGradient>
+
+              {/* White wing gradient */}
+              <linearGradient id="hero_wing_grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="80%" stopColor="#E2EAF4" />
+                <stop offset="100%" stopColor="#9FB4D6" />
+              </linearGradient>
+
+              {/* Horns strictly in --horn-dark (#2A0A10) with dark shading */}
+              <linearGradient id="hero_horn_dark_grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3D0F17" />
+                <stop offset="100%" stopColor="#2A0A10" />
+              </linearGradient>
+            </defs>
+
+            {/* ===================================================== */}
+            {/* LAYER 3: wings-back (rear wings unfolding)           */}
+            {/* ===================================================== */}
+            <g
+              id="dokja_wings_back"
+              data-layer="wings-back"
+              className="dokja-layer-wings-back"
+            >
+              {/* Left back wing with shoulder pivot */}
+              <g
+                id="dokja_wings_back_l"
+                data-layer="wings_back_l"
+                className="dokja-wing-back-l"
+              >
+                <path
+                  d="M 140 160 C 100 110, 40 80, 20 120 C 15 145, 35 175, 60 200 C 85 225, 120 230, 140 210 Z"
+                  fill="url(#hero_wing_grad)"
+                  stroke="#9FB4D6"
+                  strokeWidth="1.5"
+                  opacity="0.85"
+                />
+                <path
+                  d="M 60 140 C 35 140, 20 160, 30 185 C 45 195, 80 200, 105 185 Z"
+                  fill="#D5DEEB"
+                  opacity="0.6"
+                />
+              </g>
+              {/* Right back wing with shoulder pivot */}
+              <g
+                id="dokja_wings_back_r"
+                data-layer="wings_back_r"
+                className="dokja-wing-back-r"
+              >
+                <path
+                  d="M 180 160 C 220 110, 280 80, 300 120 C 305 145, 285 175, 260 200 C 235 225, 200 230, 180 210 Z"
+                  fill="url(#hero_wing_grad)"
+                  stroke="#9FB4D6"
+                  strokeWidth="1.5"
+                  opacity="0.85"
+                />
+                <path
+                  d="M 260 140 C 285 140, 300 160, 290 185 C 275 195, 240 200, 215 185 Z"
+                  fill="#D5DEEB"
+                  opacity="0.6"
+                />
+              </g>
+            </g>
+
+            {/* ===================================================== */}
+            {/* LAYER 4: body (undersuit, legs, boots, neck, head)   */}
+            {/* ===================================================== */}
+            <g id="dokja_body" data-layer="body" className="dokja-layer-body">
+              {/* Trousers and undersuit */}
+              <path
+                d="M 135 280 L 130 365 L 148 365 L 155 300 L 165 300 L 172 365 L 190 365 L 185 280 Z"
+                fill="#0E1118"
+                stroke="#243044"
+                strokeWidth="1"
+              />
+              {/* Shoes */}
+              <rect x="126" y="362" width="24" height="8" rx="2" fill="#07080B" />
+              <rect x="170" y="362" width="24" height="8" rx="2" fill="#07080B" />
+
+              {/* Neck */}
+              <rect x="153" y="132" width="14" height="15" fill="#E2D6CB" />
+
+              {/* Head container */}
+              <g id="dokja_head" data-layer="head" className="dokja-layer-head">
+                {/* Face contour */}
+                <polygon
+                  points="148,110 172,110 168,135 160,142 152,135"
+                  fill="#F0E3D7"
+                />
+
+                {/* Hair silhouette with micro-motion hook */}
+                <g className="dokja-layer-hair">
+                  <path
+                    d="M 144 110 C 142 90, 150 82, 160 82 C 170 82, 178 90, 176 110 C 172 104, 166 102, 160 106 C 154 102, 148 104, 144 110 Z"
+                    fill="#0E1118"
+                  />
+                  <path d="M 145 106 L 149 122 L 152 110 Z" fill="#0E1118" />
+                  <path d="M 175 106 L 171 122 L 168 110 Z" fill="#0E1118" />
+                </g>
+
+                {/* Eye State 1: Reading (downcast toward the phone) */}
+                <g className="dokja-eyes-reading">
+                  <path
+                    d="M 152 118 Q 155 120 158 118"
+                    stroke="#0E1118"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M 162 118 Q 165 120 168 118"
+                    stroke="#0E1118"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </g>
+
+                {/* Eye State 2: Notices You (looking straight at viewer) */}
+                <g className="dokja-eyes-notice">
+                  <circle cx="155" cy="116" r="2.2" fill="#0E1118" />
+                  <circle cx="155.6" cy="115.4" r="0.8" fill="#5EE1E6" />
+                  <circle cx="165" cy="116" r="2.2" fill="#0E1118" />
+                  <circle cx="165.6" cy="115.4" r="0.8" fill="#5EE1E6" />
+                </g>
+
+                {/* Eye State 3: Irritated brow */}
+                <g className="dokja-brow-irritated">
+                  <line
+                    x1="151"
+                    y1="112"
+                    x2="158"
+                    y2="114"
+                    stroke="#243044"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="169"
+                    y1="112"
+                    x2="162"
+                    y2="114"
+                    stroke="#243044"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </g>
+              </g>
+            </g>
+
+            {/* ===================================================== */}
+            {/* LAYER 5: coat (white trench coat with sway loop)      */}
+            {/* ===================================================== */}
+            <g id="dokja_coat" data-layer="coat" className="dokja-layer-coat">
+              <path
+                d="M 130 150 L 115 220 L 110 330 L 145 335 L 160 270 L 175 335 L 210 330 L 205 220 L 190 150 Z"
+                fill="url(#hero_white_coat_grad)"
+                stroke="#9FB4D6"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M 140 150 L 160 200 L 152 235 L 138 180 Z"
+                fill="#CCD5E4"
+                stroke="#9FB4D6"
+                strokeWidth="1"
+              />
+              <path
+                d="M 180 150 L 160 200 L 168 235 L 182 180 Z"
+                fill="#CCD5E4"
+                stroke="#9FB4D6"
+                strokeWidth="1"
+              />
+              <path
+                d="M 135 140 L 145 155 L 175 155 L 185 140 Z"
+                fill="#FFFFFF"
+                stroke="#9FB4D6"
+                strokeWidth="1.5"
+              />
+            </g>
+
+            {/* ===================================================== */}
+            {/* LAYER 6: horns (Horns in #2A0A10 + red rim light)     */}
+            {/* ===================================================== */}
+            <g id="dokja_horns" data-layer="horns" className="dokja-layer-horns">
+              {/* Horn base bodies */}
+              <path
+                d="M 148 94 C 140 82, 134 68, 128 58 C 135 68, 146 78, 152 86 Z"
+                fill="url(#hero_horn_dark_grad)"
+                stroke="#243044"
+                strokeWidth="1.2"
+              />
+              <path
+                d="M 172 94 C 180 82, 186 68, 192 58 C 185 68, 174 78, 168 86 Z"
+                fill="url(#hero_horn_dark_grad)"
+                stroke="#243044"
+                strokeWidth="1.2"
+              />
+
+              {/* Stage 4 Red Rim Light: dedicated opacity-animated layer, NO filter */}
+              <g
+                data-layer="horns-rim"
+                className="dokja-horns-red-rim"
+                style={{ opacity: 0 }}
+              >
+                <path
+                  d="M 148 94 C 140 82, 134 68, 128 58"
+                  stroke="#B3122B"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M 172 94 C 180 82, 186 68, 192 58"
+                  stroke="#B3122B"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </g>
+            </g>
+
+            {/* ===================================================== */}
+            {/* LAYER 7: wings-front (forward primary wings)          */}
+            {/* In light mode: suppressed so wings act as ONE layer  */}
+            {/* ===================================================== */}
+            <g
+              id="dokja_wings_front"
+              data-layer="wings-front"
+              className="dokja-layer-wings-front"
+              style={{ display: mode === "light" ? "none" : undefined }}
+            >
+              <g
+                id="dokja_wings_front_l"
+                data-layer="wings_front_l"
+                className="dokja-wing-front-l"
+              >
+                <path
+                  d="M 130 165 C 90 140, 55 145, 40 180 C 35 195, 55 220, 85 225 C 110 230, 130 200, 132 175 Z"
+                  fill="url(#hero_wing_grad)"
+                  stroke="#FFFFFF"
+                  strokeWidth="1.5"
+                />
+              </g>
+              <g
+                id="dokja_wings_front_r"
+                data-layer="wings_front_r"
+                className="dokja-wing-front-r"
+              >
+                <path
+                  d="M 190 165 C 230 140, 265 145, 280 180 C 285 195, 265 220, 235 225 C 210 230, 190 200, 188 175 Z"
+                  fill="url(#hero_wing_grad)"
+                  stroke="#FFFFFF"
+                  strokeWidth="1.5"
+                />
+              </g>
+            </g>
+
+            {/* ===================================================== */}
+            {/* LAYER 8: phone (hands and illuminated device)         */}
+            {/* ===================================================== */}
+            <g id="dokja_phone" data-layer="phone" className="dokja-layer-phone">
+              <ellipse cx="148" cy="246" rx="6" ry="5" fill="#E2D6CB" />
+              <ellipse cx="172" cy="246" rx="6" ry="5" fill="#E2D6CB" />
+              <rect
+                x="151"
+                y="230"
+                width="18"
+                height="30"
+                rx="2.5"
+                fill="#0E1118"
+                stroke="#243044"
+                strokeWidth="1.5"
+              />
+              <rect
+                x="153"
+                y="233"
+                width="14"
+                height="24"
+                rx="1.5"
+                fill="#5EE1E6"
+              />
+              <line x1="155" y1="237" x2="165" y2="237" stroke="#07080B" strokeWidth="1" />
+              <line x1="155" y1="240" x2="163" y2="240" stroke="#07080B" strokeWidth="1" />
+              <line x1="155" y1="243" x2="165" y2="243" stroke="#07080B" strokeWidth="1" />
+              <line x1="155" y1="246" x2="161" y2="246" stroke="#07080B" strokeWidth="1" />
+              <line x1="155" y1="249" x2="164" y2="249" stroke="#07080B" strokeWidth="1" />
+            </g>
+
+            {/* ===================================================== */}
+            {/* LAYER 9: glow (cold cyan ambient phone glow)          */}
+            {/* ===================================================== */}
+            <g id="dokja_glow" data-layer="glow" className="dokja-layer-glow">
+              <circle cx="160" cy="245" r="75" fill="url(#hero_phone_screen_glow)" />
+            </g>
+          </svg>
+        </div>
+
+        {/* ========================================================= */}
+        {/* LAYER 10: particles (floating stardust motes)             */}
+        {/* ========================================================= */}
+        <div
+          data-layer="particles"
+          className="hero-layer hero-layer-particles pointer-events-none absolute inset-0 z-10"
+          aria-hidden="true"
+        >
+          {activeParticles.map((pt, idx) => (
             <span
-              key={`star1-${idx}`}
-              className="absolute rounded-full bg-feather"
+              key={`pt-${idx}`}
+              className="absolute rounded-full bg-star/70 animate-pulse"
               style={{
-                top: star.top,
-                left: star.left,
-                width: `${star.size}px`,
-                height: `${star.size}px`,
-                opacity: star.opacity,
+                top: pt.top,
+                left: pt.left,
+                width: `${pt.size}px`,
+                height: `${pt.size}px`,
+                animationDelay: `${pt.delay}s`,
               }}
             />
           ))}
         </div>
 
-        {/* Parallax star layer 2: suppressed in light mode per P1-7 */}
-        {mode !== "light" && (
-          <div data-layer="stars-2" className="absolute inset-0">
-            {STARS_LAYER_2.map((star, idx) => (
-              <span
-                key={`star2-${idx}`}
-                className="absolute rounded-full bg-rim"
-                style={{
-                  top: star.top,
-                  left: star.left,
-                  width: `${star.size}px`,
-                  height: `${star.size}px`,
-                  opacity: star.opacity,
-                }}
-              />
+        {/* ========================================================= */}
+        {/* STAGE 7 FEATHER DRIFT / SHATTER GRID (3-column handoff)   */}
+        {/* ========================================================= */}
+        <div
+          data-layer="shatter-grid"
+          className="hero-shatter-grid pointer-events-none absolute bottom-6 sm:bottom-10 inset-x-0 mx-auto w-full max-w-xl px-4 z-20"
+        >
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full">
+            {[1, 2, 3, 4, 5, 6].map((num) => (
+              <div
+                key={`shatter-${num}`}
+                className="shatter-tile aspect-[4/3] rounded border border-line/60 bg-ink/40 backdrop-blur-xs flex items-center justify-center font-mono text-[10px] text-mist/60 tracking-wider shadow-sm"
+                style={{ opacity: 0 }}
+              >
+                <span>SCENARIO_{num}</span>
+              </div>
             ))}
           </div>
-        )}
-
-        {/* Parallax star layer 3: desktop full mode only */}
-        {mode === "full" && !signals.isTouch && (
-          <div data-layer="stars-3" className="absolute inset-0">
-            {STARS_LAYER_3.map((star, idx) => (
-              <span
-                key={`star3-${idx}`}
-                className="absolute rounded-full bg-star shadow-[0_0_4px_rgba(94,225,230,0.8)]"
-                style={{
-                  top: star.top,
-                  left: star.left,
-                  width: `${star.size}px`,
-                  height: `${star.size}px`,
-                  opacity: star.opacity,
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ========================================================= */}
-      {/* CONSTELLATION STAR RING: Orbits in Stage 6 (single wrapper) */}
-      {/* ========================================================= */}
-      <div
-        data-layer="star-ring"
-        className="hero-star-ring pointer-events-none absolute inset-0 flex items-center justify-center z-15"
-        style={{ opacity: 0 }}
-      >
-        <svg
-          viewBox="0 0 440 440"
-          className="w-[300px] h-[300px] xs:w-[340px] xs:h-[340px] sm:w-[460px] sm:h-[460px] max-w-full overflow-hidden"
-        >
-          <circle
-            cx="220"
-            cy="220"
-            r="180"
-            fill="none"
-            stroke="#5EE1E6"
-            strokeWidth="1"
-            strokeDasharray="4 8"
-            opacity="0.35"
-          />
-          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => {
-            const rad = (deg * Math.PI) / 180;
-            const cx = 220 + 180 * Math.cos(rad);
-            const cy = 220 + 180 * Math.sin(rad);
-            return (
-              <g key={`star-node-${deg}`}>
-                <circle cx={cx} cy={cy} r="2.5" fill="#5EE1E6" />
-                <circle cx={cx} cy={cy} r="6" fill="#5EE1E6" opacity="0.25" />
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* ========================================================= */}
-      {/* DOKJA STAGE FIGURE: Layers 3 to 9 in exact /docs/06 order */}
-      {/* ========================================================= */}
-      <div className="hero-dokja-figure relative z-10 w-[270px] h-[350px] xs:w-[300px] xs:h-[380px] sm:w-[360px] sm:h-[440px] flex items-center justify-center">
-        <svg
-          viewBox="0 0 320 400"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full drop-shadow-2xl overflow-visible"
-        >
-          <defs>
-            {/* Phone screen glow: cold teal cyan (--star: #5EE1E6) */}
-            <radialGradient
-              id="hero_phone_screen_glow"
-              cx="160"
-              cy="245"
-              r="75"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0%" stopColor="#5EE1E6" stopOpacity="0.5" />
-              <stop offset="60%" stopColor="#5EE1E6" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#5EE1E6" stopOpacity="0" />
-            </radialGradient>
-
-            {/* White coat gradient with cold rim lighting (--feather #F4F6FA to --rim #9FB4D6) */}
-            <linearGradient
-              id="hero_white_coat_grad"
-              x1="160"
-              y1="130"
-              x2="160"
-              y2="340"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="60%" stopColor="#F4F6FA" />
-              <stop offset="100%" stopColor="#D5DEEB" />
-            </linearGradient>
-
-            {/* White wing gradient */}
-            <linearGradient id="hero_wing_grad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="80%" stopColor="#E2EAF4" />
-              <stop offset="100%" stopColor="#9FB4D6" />
-            </linearGradient>
-
-            {/* Horns strictly in --horn-dark (#2A0A10) with dark shading */}
-            <linearGradient id="hero_horn_dark_grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3D0F17" />
-              <stop offset="100%" stopColor="#2A0A10" />
-            </linearGradient>
-          </defs>
-
-          {/* ===================================================== */}
-          {/* LAYER 3: wings-back (rear wings unfolding)           */}
-          {/* ===================================================== */}
-          <g
-            id="dokja_wings_back"
-            data-layer="wings-back"
-            className="dokja-layer-wings-back"
-          >
-            {/* Left back wing with shoulder pivot */}
-            <g
-              id="dokja_wings_back_l"
-              data-layer="wings_back_l"
-              className="dokja-wing-back-l"
-            >
-              <path
-                d="M 140 160 C 100 110, 40 80, 20 120 C 15 145, 35 175, 60 200 C 85 225, 120 230, 140 210 Z"
-                fill="url(#hero_wing_grad)"
-                stroke="#9FB4D6"
-                strokeWidth="1.5"
-                opacity="0.85"
-              />
-              <path
-                d="M 60 140 C 35 140, 20 160, 30 185 C 45 195, 80 200, 105 185 Z"
-                fill="#D5DEEB"
-                opacity="0.6"
-              />
-            </g>
-            {/* Right back wing with shoulder pivot */}
-            <g
-              id="dokja_wings_back_r"
-              data-layer="wings_back_r"
-              className="dokja-wing-back-r"
-            >
-              <path
-                d="M 180 160 C 220 110, 280 80, 300 120 C 305 145, 285 175, 260 200 C 235 225, 200 230, 180 210 Z"
-                fill="url(#hero_wing_grad)"
-                stroke="#9FB4D6"
-                strokeWidth="1.5"
-                opacity="0.85"
-              />
-              <path
-                d="M 260 140 C 285 140, 300 160, 290 185 C 275 195, 240 200, 215 185 Z"
-                fill="#D5DEEB"
-                opacity="0.6"
-              />
-            </g>
-          </g>
-
-          {/* ===================================================== */}
-          {/* LAYER 4: body (undersuit, legs, boots, neck, head)   */}
-          {/* ===================================================== */}
-          <g id="dokja_body" data-layer="body" className="dokja-layer-body">
-            {/* Trousers and undersuit */}
-            <path
-              d="M 135 280 L 130 365 L 148 365 L 155 300 L 165 300 L 172 365 L 190 365 L 185 280 Z"
-              fill="#0E1118"
-              stroke="#243044"
-              strokeWidth="1"
-            />
-            {/* Shoes */}
-            <rect x="126" y="362" width="24" height="8" rx="2" fill="#07080B" />
-            <rect x="170" y="362" width="24" height="8" rx="2" fill="#07080B" />
-
-            {/* Neck */}
-            <rect x="153" y="132" width="14" height="15" fill="#E2D6CB" />
-
-            {/* Head container */}
-            <g id="dokja_head" data-layer="head" className="dokja-layer-head">
-              {/* Face contour */}
-              <polygon
-                points="148,110 172,110 168,135 160,142 152,135"
-                fill="#F0E3D7"
-              />
-
-              {/* Hair silhouette with micro-motion hook */}
-              <g className="dokja-layer-hair">
-                <path
-                  d="M 144 110 C 142 90, 150 82, 160 82 C 170 82, 178 90, 176 110 C 172 104, 166 102, 160 106 C 154 102, 148 104, 144 110 Z"
-                  fill="#0E1118"
-                />
-                <path d="M 145 106 L 149 122 L 152 110 Z" fill="#0E1118" />
-                <path d="M 175 106 L 171 122 L 168 110 Z" fill="#0E1118" />
-              </g>
-
-              {/* Eye State 1: Reading (downcast toward the phone) */}
-              <g className="dokja-eyes-reading">
-                <path
-                  d="M 152 118 Q 155 120 158 118"
-                  stroke="#0E1118"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                <path
-                  d="M 162 118 Q 165 120 168 118"
-                  stroke="#0E1118"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </g>
-
-              {/* Eye State 2: Notices You (looking straight at viewer) */}
-              <g className="dokja-eyes-notice">
-                <circle cx="155" cy="116" r="2.2" fill="#0E1118" />
-                <circle cx="155.6" cy="115.4" r="0.8" fill="#5EE1E6" />
-                <circle cx="165" cy="116" r="2.2" fill="#0E1118" />
-                <circle cx="165.6" cy="115.4" r="0.8" fill="#5EE1E6" />
-              </g>
-
-              {/* Eye State 3: Irritated brow */}
-              <g className="dokja-brow-irritated">
-                <line
-                  x1="151"
-                  y1="112"
-                  x2="158"
-                  y2="114"
-                  stroke="#243044"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="169"
-                  y1="112"
-                  x2="162"
-                  y2="114"
-                  stroke="#243044"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </g>
-            </g>
-          </g>
-
-          {/* ===================================================== */}
-          {/* LAYER 5: coat (white trench coat with sway loop)      */}
-          {/* ===================================================== */}
-          <g id="dokja_coat" data-layer="coat" className="dokja-layer-coat">
-            <path
-              d="M 130 150 L 115 220 L 110 330 L 145 335 L 160 270 L 175 335 L 210 330 L 205 220 L 190 150 Z"
-              fill="url(#hero_white_coat_grad)"
-              stroke="#9FB4D6"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M 140 150 L 160 200 L 152 235 L 138 180 Z"
-              fill="#CCD5E4"
-              stroke="#9FB4D6"
-              strokeWidth="1"
-            />
-            <path
-              d="M 180 150 L 160 200 L 168 235 L 182 180 Z"
-              fill="#CCD5E4"
-              stroke="#9FB4D6"
-              strokeWidth="1"
-            />
-            <path
-              d="M 135 140 L 145 155 L 175 155 L 185 140 Z"
-              fill="#FFFFFF"
-              stroke="#9FB4D6"
-              strokeWidth="1.5"
-            />
-          </g>
-
-          {/* ===================================================== */}
-          {/* LAYER 6: horns (Horns in #2A0A10 + red rim light)     */}
-          {/* ===================================================== */}
-          <g id="dokja_horns" data-layer="horns" className="dokja-layer-horns">
-            {/* Horn base bodies */}
-            <path
-              d="M 148 94 C 140 82, 134 68, 128 58 C 135 68, 146 78, 152 86 Z"
-              fill="url(#hero_horn_dark_grad)"
-              stroke="#243044"
-              strokeWidth="1.2"
-            />
-            <path
-              d="M 172 94 C 180 82, 186 68, 192 58 C 185 68, 174 78, 168 86 Z"
-              fill="url(#hero_horn_dark_grad)"
-              stroke="#243044"
-              strokeWidth="1.2"
-            />
-
-            {/* Stage 4 Red Rim Light: dedicated opacity-animated layer, NO filter */}
-            <g
-              data-layer="horns-rim"
-              className="dokja-horns-red-rim"
-              style={{ opacity: 0 }}
-            >
-              <path
-                d="M 148 94 C 140 82, 134 68, 128 58"
-                stroke="#B3122B"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M 172 94 C 180 82, 186 68, 192 58"
-                stroke="#B3122B"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                fill="none"
-              />
-            </g>
-          </g>
-
-          {/* ===================================================== */}
-          {/* LAYER 7: wings-front (forward primary wings)          */}
-          {/* In light mode: suppressed so wings act as ONE layer  */}
-          {/* ===================================================== */}
-          <g
-            id="dokja_wings_front"
-            data-layer="wings-front"
-            className="dokja-layer-wings-front"
-            style={{ display: mode === "light" ? "none" : undefined }}
-          >
-            <g
-              id="dokja_wings_front_l"
-              data-layer="wings_front_l"
-              className="dokja-wing-front-l"
-            >
-              <path
-                d="M 130 165 C 90 140, 55 145, 40 180 C 35 195, 55 220, 85 225 C 110 230, 130 200, 132 175 Z"
-                fill="url(#hero_wing_grad)"
-                stroke="#FFFFFF"
-                strokeWidth="1.5"
-              />
-            </g>
-            <g
-              id="dokja_wings_front_r"
-              data-layer="wings_front_r"
-              className="dokja-wing-front-r"
-            >
-              <path
-                d="M 190 165 C 230 140, 265 145, 280 180 C 285 195, 265 220, 235 225 C 210 230, 190 200, 188 175 Z"
-                fill="url(#hero_wing_grad)"
-                stroke="#FFFFFF"
-                strokeWidth="1.5"
-              />
-            </g>
-          </g>
-
-          {/* ===================================================== */}
-          {/* LAYER 8: phone (hands and illuminated device)         */}
-          {/* ===================================================== */}
-          <g id="dokja_phone" data-layer="phone" className="dokja-layer-phone">
-            <ellipse cx="148" cy="246" rx="6" ry="5" fill="#E2D6CB" />
-            <ellipse cx="172" cy="246" rx="6" ry="5" fill="#E2D6CB" />
-            <rect
-              x="151"
-              y="230"
-              width="18"
-              height="30"
-              rx="2.5"
-              fill="#0E1118"
-              stroke="#243044"
-              strokeWidth="1.5"
-            />
-            <rect
-              x="153"
-              y="233"
-              width="14"
-              height="24"
-              rx="1.5"
-              fill="#5EE1E6"
-            />
-            <line x1="155" y1="237" x2="165" y2="237" stroke="#07080B" strokeWidth="1" />
-            <line x1="155" y1="240" x2="163" y2="240" stroke="#07080B" strokeWidth="1" />
-            <line x1="155" y1="243" x2="165" y2="243" stroke="#07080B" strokeWidth="1" />
-            <line x1="155" y1="246" x2="161" y2="246" stroke="#07080B" strokeWidth="1" />
-            <line x1="155" y1="249" x2="164" y2="249" stroke="#07080B" strokeWidth="1" />
-          </g>
-
-          {/* ===================================================== */}
-          {/* LAYER 9: glow (cold cyan ambient phone glow)          */}
-          {/* ===================================================== */}
-          <g id="dokja_glow" data-layer="glow" className="dokja-layer-glow">
-            <circle cx="160" cy="245" r="75" fill="url(#hero_phone_screen_glow)" />
-          </g>
-        </svg>
-      </div>
-
-      {/* ========================================================= */}
-      {/* LAYER 10: particles (floating stardust motes)             */}
-      {/* ========================================================= */}
-      <div
-        data-layer="particles"
-        className="hero-layer hero-layer-particles pointer-events-none absolute inset-0 z-10"
-        aria-hidden="true"
-      >
-        {activeParticles.map((pt, idx) => (
-          <span
-            key={`pt-${idx}`}
-            className="absolute rounded-full bg-star/70 animate-pulse"
-            style={{
-              top: pt.top,
-              left: pt.left,
-              width: `${pt.size}px`,
-              height: `${pt.size}px`,
-              animationDelay: `${pt.delay}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ========================================================= */}
-      {/* STAGE 7 FEATHER DRIFT / SHATTER GRID (3-column handoff)   */}
-      {/* ========================================================= */}
-      <div
-        data-layer="shatter-grid"
-        className="hero-shatter-grid pointer-events-none absolute bottom-6 sm:bottom-10 inset-x-0 mx-auto w-full max-w-xl px-4 z-20"
-      >
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full">
-          {[1, 2, 3, 4, 5, 6].map((num) => (
-            <div
-              key={`shatter-${num}`}
-              className="shatter-tile aspect-[4/3] rounded border border-line/60 bg-ink/40 backdrop-blur-xs flex items-center justify-center font-mono text-[10px] text-mist/60 tracking-wider shadow-sm"
-              style={{ opacity: 0 }}
-            >
-              <span>SCENARIO_{num}</span>
-            </div>
-          ))}
         </div>
-      </div>
 
-      {/* ========================================================= */}
-      {/* STAGE 7 GLITCH NOTIFICATION: "A Scenario has arrived."    */}
-      {/* ========================================================= */}
-      <div
-        data-layer="glitch-notification"
-        className={`hero-glitch-container pointer-events-none absolute top-24 sm:top-28 inset-x-0 mx-auto w-fit z-30 transition-opacity duration-300 ${
-          glitchVisible ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div className="px-4 py-2 sm:px-6 sm:py-2.5 bg-ink/90 border border-star/60 text-star font-mono text-xs sm:text-sm tracking-widest uppercase shadow-2xl backdrop-blur-md">
-          <span
-            className={`inline-block font-bold ${
-              glitchActive ? "glitch-text-active" : ""
+        {/* ========================================================= */}
+        {/* STAGE 7 GLITCH NOTIFICATION: "A Scenario has arrived."    */}
+        {/* ========================================================= */}
+        <div
+          data-layer="glitch-notification"
+          className={`hero-glitch-container pointer-events-none absolute top-24 sm:top-28 inset-x-0 mx-auto w-fit z-30 transition-opacity duration-300 ${glitchVisible ? "opacity-100" : "opacity-0"
             }`}
-          >
-            A Scenario has arrived.
+        >
+          <div className="px-4 py-2 sm:px-6 sm:py-2.5 bg-ink/90 border border-star/60 text-star font-mono text-xs sm:text-sm tracking-widest uppercase shadow-2xl backdrop-blur-md">
+            <span
+              className={`inline-block font-bold ${glitchActive ? "glitch-text-active" : ""
+                }`}
+            >
+              A Scenario has arrived.
+            </span>
+          </div>
+        </div>
+
+        {/* ========================================================= */}
+        {/* BIYOO LAYER: autonomous companion with state machine      */}
+        {/* ========================================================= */}
+        <div
+          data-layer="biyoo"
+          className="absolute bottom-4 left-3 sm:bottom-10 sm:left-10 z-25 pointer-events-auto"
+        >
+          <Biyoo
+            size={signals.isTouch ? 115 : 170}
+            introDone={heroState.introDone}
+            idleSeconds={readerSignals.idleSeconds}
+            scrollSpeed={readerSignals.scrollSpeed}
+            pointerPosition={readerSignals.pointerPosition}
+            localHour={readerSignals.localHour}
+            hoverTarget={readerSignals.hoverTarget}
+            onSpeakingChange={setIsBiyooSpeaking}
+          />
+        </div>
+
+        {/* Floating Constellation Comment Overlay */}
+        <ConstellationOverlay line={activeLine} onDismiss={dismissLine} introComplete={introComplete} />
+
+        {/* ========================================================= */}
+        {/* SYSTEM NOTIFICATION: Stage 2 "A Reader has been detected."*/}
+        {/* ========================================================= */}
+        <div
+          data-layer="system-window"
+          className="hero-system-window absolute top-20 sm:top-24 right-4 sm:right-10 z-30 max-w-[280px] sm:max-w-sm pointer-events-auto transition-opacity"
+          style={{ opacity: 0 }}
+        >
+          <SystemWindow title="SYSTEM NOTIFICATION">
+            <p className="text-xs sm:text-sm text-star font-mono">
+              A Reader has been detected.
+            </p>
+          </SystemWindow>
+        </div>
+
+        {/* ========================================================= */}
+        {/* SCROLL HINT: Pulses at bottom only after Stage 3 finishes */}
+        {/* ========================================================= */}
+        <div
+          data-layer="scroll-hint"
+          className="hero-scroll-hint absolute bottom-4 sm:bottom-6 inset-x-0 mx-auto w-fit z-20 flex flex-col items-center gap-1 pointer-events-none transition-opacity duration-150"
+          style={{ opacity: 0 }}
+        >
+          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-widest text-star">
+            scroll
+          </span>
+          <span className="text-star font-mono text-sm sm:text-base animate-bounce">
+            &darr;
           </span>
         </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* BIYOO LAYER: autonomous companion with state machine      */}
-      {/* ========================================================= */}
-      <div
-        data-layer="biyoo"
-        className="absolute bottom-4 left-3 sm:bottom-10 sm:left-10 z-25 pointer-events-auto"
-      >
-        <Biyoo
-          size={signals.isTouch ? 115 : 170}
-          introDone={heroState.introDone}
-          idleSeconds={readerSignals.idleSeconds}
-          scrollSpeed={readerSignals.scrollSpeed}
-          pointerPosition={readerSignals.pointerPosition}
-          localHour={readerSignals.localHour}
-          hoverTarget={readerSignals.hoverTarget}
-          onSpeakingChange={setIsBiyooSpeaking}
-        />
-      </div>
-
-      {/* Floating Constellation Comment Overlay */}
-      <ConstellationOverlay line={activeLine} onDismiss={dismissLine} />
-
-      {/* ========================================================= */}
-      {/* SYSTEM NOTIFICATION: Stage 2 "A Reader has been detected."*/}
-      {/* ========================================================= */}
-      <div
-        data-layer="system-window"
-        className="hero-system-window absolute top-20 sm:top-24 right-4 sm:right-10 z-30 max-w-[280px] sm:max-w-sm pointer-events-auto transition-opacity"
-        style={{ opacity: 0 }}
-      >
-        <SystemWindow title="SYSTEM NOTIFICATION">
-          <p className="text-xs sm:text-sm text-star font-mono">
-            A Reader has been detected.
-          </p>
-        </SystemWindow>
-      </div>
-
-      {/* ========================================================= */}
-      {/* SCROLL HINT: Pulses at bottom only after Stage 3 finishes */}
-      {/* ========================================================= */}
-      <div
-        data-layer="scroll-hint"
-        className="hero-scroll-hint absolute bottom-6 inset-x-0 mx-auto w-fit z-20 flex flex-col items-center gap-1 pointer-events-none"
-        style={{ opacity: 0 }}
-      >
-        <span className="font-mono text-[11px] sm:text-xs uppercase tracking-widest text-star">
-          scroll
-        </span>
-        <span className="text-star font-mono text-sm sm:text-base animate-bounce">
-          &darr;
-        </span>
-      </div>
-    </section>
+      </section>
     </div>
   );
 }

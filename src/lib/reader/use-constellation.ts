@@ -9,7 +9,8 @@ import {
 } from "./types";
 
 export interface UseConstellationProps {
-  introDone: boolean;
+  introComplete?: boolean;
+  introDone?: boolean;
   isBiyooSpeaking: boolean;
   scrollSpeed: number;
   idleSeconds: number;
@@ -30,11 +31,13 @@ export interface UseConstellationReturn {
  * Rules:
  * - Max 1 line per 20 seconds (CONSTELLATION_COOLDOWN_SECONDS)
  * - Never repeat the same line within a session until all lines in that context are used
- * - Never show during the intro (introDone must be true)
+ * - Never show while the intro is active (gated strictly on introComplete flag)
+ * - Clear any queued line when the intro starts
  * - Never overlap Biyoo's own speech bubble
  * - Zero network calls, zero persistent storage
  */
 export function useConstellationEngine({
+  introComplete,
   introDone,
   isBiyooSpeaking,
   scrollSpeed,
@@ -42,6 +45,7 @@ export function useConstellationEngine({
   localHour,
   isTouch = false,
 }: UseConstellationProps): UseConstellationReturn {
+  const isIntroComplete = Boolean(introComplete ?? introDone);
   const [activeLine, setActiveLine] = useState<ConstellationLine | null>(null);
 
   // In-memory set of used line IDs per context
@@ -60,11 +64,22 @@ export function useConstellationEngine({
     }
   }, []);
 
+  // Clear any queued timer when intro is active
+  useEffect(() => {
+    if (!isIntroComplete) {
+      if (dismissTimeoutRef.current) {
+        clearTimeout(dismissTimeoutRef.current);
+        dismissTimeoutRef.current = null;
+      }
+      lastShownTimeRef.current = Date.now();
+    }
+  }, [isIntroComplete]);
+
   // Pick an unused line for the given context
   const triggerLineByContext = useCallback(
     (context: ConstellationContext) => {
-      // Must not show during intro or while Biyoo is speaking
-      if (!introDone || isBiyooSpeaking) {
+      // Must never show while intro is active or while Biyoo is speaking
+      if (!isIntroComplete || isBiyooSpeaking) {
         return;
       }
 
@@ -110,12 +125,12 @@ export function useConstellationEngine({
         }, 4500);
       }
     },
-    [introDone, isBiyooSpeaking]
+    [isIntroComplete, isBiyooSpeaking]
   );
 
   // Periodic evaluator for dynamic contexts (fast-scroll, idle, time-of-day)
   useEffect(() => {
-    if (!introDone || isBiyooSpeaking) {
+    if (!isIntroComplete || isBiyooSpeaking) {
       return;
     }
 
@@ -146,7 +161,7 @@ export function useConstellationEngine({
       }
     }
   }, [
-    introDone,
+    isIntroComplete,
     isBiyooSpeaking,
     scrollSpeed,
     idleSeconds,
@@ -166,7 +181,7 @@ export function useConstellationEngine({
   }, []);
 
   return {
-    activeLine,
+    activeLine: isIntroComplete ? activeLine : null,
     dismissLine,
     triggerLineByContext,
   };

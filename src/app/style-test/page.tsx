@@ -276,7 +276,7 @@ export default function StyleTestPage() {
                 <span className="text-star font-bold">Difficulty: F &rarr; SSS</span>
               </div>
               <p className="text-sm">
-                The Constellations form a living network. Prove your value by verifying design system tokens, world palettes, and pure CSS HUD components.
+                The Constellations form a living network. Prove your value by inspecting design system tokens, world palettes, and Tailwind HUD components.
               </p>
               <div className="rounded border border-line bg-ink-2/60 p-2.5 space-y-1 text-xs">
                 <div className="text-star font-bold">Clear Conditions:</div>

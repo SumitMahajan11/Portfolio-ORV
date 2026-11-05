@@ -206,11 +206,11 @@ function SideQuestCard({ project, onHover, onClick }: SideQuestCardProps) {
  *
  * Rules:
  * - Dynamic content resolution from src/content/projects.ts
- * - In production: hide flagship cards until worldReady === true
- * - In development: show all flagship cards; unready ones show disabled "Opens in Phase 2"
+ * - Render all 3 flagship cards (Edge-Cloud, Ratify, iac-verifier) in both Full and Light modes
+ * - Light mode: no animation, final state shown immediately
+ * - Full mode: staggered entrance via ScrollTrigger
  * - Card lifts on hover/focus (max 8px translateY)
  * - Biyoo reactions: "curious" on hover/focus, "happy" on click with "Good choice."
- * - Staggered ScrollTrigger entrance (disabled in reduced motion)
  * - Section heading in SystemWindow notification style
  * - Mobile responsive: 1 column on small screens, min 44px touch targets
  */
@@ -218,17 +218,11 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
   const containerRef = useRef<HTMLElement>(null);
   const { mode, reducedMotion } = useMode();
 
-  // Dynamic separation of projects
   const isProduction = process.env.NODE_ENV === "production";
 
-  // Flagship projects: in production, hide until worldReady is true
-  const flagshipProjects = projects.filter((p) => {
-    if (p.status !== "flagship") return false;
-    if (isProduction) {
-      return Boolean(p.worldReady);
-    }
-    return true;
-  });
+  // Flagship projects: show all 3 flagship scenarios in both modes
+  // Ready worlds show "Begin ->"; unready ones show disabled "Opens in Phase 2"
+  const flagshipProjects = projects.filter((p) => p.status === "flagship");
 
   // Side quests: in production render only if published === true; in dev show all
   const sideQuestProjects = projects.filter((p) => {
@@ -251,15 +245,22 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
   // Entrance animation using useScene + ScrollTrigger
   useScene(
     () => {
-      if (reducedMotion || !containerRef.current) return;
+      if (!containerRef.current) return;
 
       const cardElements = containerRef.current.querySelectorAll(".scenario-card-item");
       if (cardElements.length === 0) return;
 
+      // In Light mode or Reduced Motion: strictly no animation, final state shown immediately
+      if (mode === "light" || reducedMotion) {
+        gsap.set(cardElements, { opacity: 1, y: 0, clearProps: "transform,opacity" });
+        return;
+      }
+
+      // In Full mode: staggered entrance via ScrollTrigger
       gsap.from(cardElements, {
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top 75%",
+          start: "top 80%",
           once: true,
         },
         y: 28,
@@ -276,7 +277,7 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
     <section
       ref={containerRef}
       id="scenario-select"
-      className={`relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 ${className}`}
+      className={`relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 bg-void ${className}`}
       aria-labelledby="scenario-select-heading"
     >
       {/* Section Heading: ORV SystemWindow notification */}

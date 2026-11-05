@@ -8,6 +8,7 @@ export interface ConstellationOverlayProps {
   line: ConstellationLine | null;
   onDismiss?: () => void;
   className?: string;
+  introComplete?: boolean;
 }
 
 /**
@@ -17,16 +18,18 @@ export interface ConstellationOverlayProps {
  * Rules:
  * - Floating teal system comment style
  * - In reduced motion mode: appears statically without float animation or ping effects
+ * - Never renders while intro is active (gate on introComplete)
  * - Auto-hidden by engine or dismissible
  */
 export function ConstellationOverlay({
   line,
   onDismiss,
   className = "",
+  introComplete = true,
 }: ConstellationOverlayProps) {
   const { reducedMotion } = useMode();
 
-  if (!line) return null;
+  if (!line || !introComplete) return null;
 
   return (
     <div

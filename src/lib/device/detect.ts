@@ -25,11 +25,10 @@ export function getParticleCap(
  * 1. reduced-motion preference => 'reduced' always (even ?full=1 cannot override)
  * 2. ?light=1 forces 'light'
  * 3. ?full=1 forces 'full'
- * 4. low memory (< 4 GiB), low cores (< 4), or slow frame probe => 'light'
- * 5. default => 'full'
+ * 4. Default => 'full' (Full must be the default unless the OS asks for reduced motion)
  */
 export function resolveDeviceMode(signals: DeviceSignals): DeviceMode {
-  // Rule 1: Reduced motion always wins
+  // Rule 1: Reduced motion always wins if requested by OS
   if (signals.reducedMotion) {
     return "reduced";
   }
@@ -42,21 +41,8 @@ export function resolveDeviceMode(signals: DeviceSignals): DeviceMode {
     return "full";
   }
 
-  // Rule 4: Low-end hardware detection or frame-time probe jitter
-  const isLowCores =
-    typeof signals.hardwareConcurrency === "number" &&
-    signals.hardwareConcurrency < 4;
-
-  const isLowMemory =
-    typeof signals.deviceMemory === "number" && signals.deviceMemory < 4;
-
-  const isSlowProbe = signals.probe.isSlow;
-
-  if (isLowCores || isLowMemory || isSlowProbe) {
-    return "light";
-  }
-
-  // Default: full mode
+  // Rule 4: Full must be the default unless the OS asks for reduced motion.
+  // Device/performance heuristics must not silently demote the default to light.
   return "full";
 }
 
