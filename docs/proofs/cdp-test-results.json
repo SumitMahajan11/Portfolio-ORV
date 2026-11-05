@@ -1,0 +1,10 @@
+{
+  "soundOff": true,
+  "soundOnSilentMissing": true,
+  "cameraDenied": true,
+  "localStorageDisabledSafe": true,
+  "reducedModeSafe": true,
+  "lightModeSafe": true,
+  "viewportMobile360x740": true,
+  "viewportDesktop1440x900": true
+}

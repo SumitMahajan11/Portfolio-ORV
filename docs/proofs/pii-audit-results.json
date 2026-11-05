@@ -1,0 +1,252 @@
+{
+  "summary": {
+    "totalEmails": 7,
+    "personalEmailsFound": 5,
+    "totalApiKeys": 16,
+    "totalPhonesPotential": 0
+  },
+  "hits": {
+    "emails": [
+      {
+        "file": ".next/static/chunks/291t9thqpnpa1.js",
+        "match": "reader@domain.com",
+        "classification": "POTENTIAL_PII"
+      },
+      {
+        "file": ".next/server/app/index.html",
+        "match": "reader@domain.com",
+        "classification": "POTENTIAL_PII"
+      },
+      {
+        "file": ".next/server/chunks/ssr/_1slf-ivapgz0t._.js",
+        "match": "reader@domain.com",
+        "classification": "POTENTIAL_PII"
+      },
+      {
+        "file": ".next/server/chunks/[root-of-the-server]__0rb928qoneiq1._.js",
+        "match": "onboarding@resend.dev",
+        "classification": "BENIGN_PLACEHOLDER"
+      },
+      {
+        "file": ".next/server/route-cache/APP_PAGE/c6377dd9ce6a1c2cd100eb4344e843eb4639b9ed26f84643f77680e9eb454c4b/$/index.html",
+        "match": "reader@domain.com",
+        "classification": "POTENTIAL_PII"
+      },
+      {
+        "file": "src/app/api/contact/route.ts",
+        "match": "onboarding@resend.dev",
+        "classification": "BENIGN_PLACEHOLDER"
+      },
+      {
+        "file": "src/components/finale/ContactForm.tsx",
+        "match": "reader@domain.com",
+        "classification": "POTENTIAL_PII"
+      }
+    ],
+    "phones": [
+      {
+        "file": ".next/static/chunks/0cz1d0mv5g_q7.js",
+        "match": "2014-2024",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/2-3bcc782c_pu.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/2-3bcc782c_pu.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/2-3bcc782c_pu.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/2-3bcc782c_pu.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/2-3bcc782c_pu.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/2fuxlcqleg9x-.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/310vm2bl3xxpt.js",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/static/chunks/3mwm0pfu8c8me.js",
+        "match": "7-2026100",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/app/_global-error.html",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/app/_global-error.html",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/app/_global-error.rsc",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/app/_global-error.segments/_full.segment.rsc",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/app/_global-error.segments/__PAGE__.segment.rsc",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/chunks/ssr/node_modules_0gxlxpuufujz9._.js",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/chunks/ssr/node_modules_next_dist_client_components_0bew68i643j53._.js",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/pages/500.html",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": ".next/server/pages/500.html",
+        "match": "0.0001167",
+        "classification": "BUILD_ARTIFACT_OR_HASH"
+      },
+      {
+        "file": "docs/proofs/phase1.md",
+        "match": "379-5563",
+        "classification": "DOC_OR_SCRIPT_REFERENCE"
+      },
+      {
+        "file": "docs/proofs/phase1.md",
+        "match": "363-9607",
+        "classification": "DOC_OR_SCRIPT_REFERENCE"
+      },
+      {
+        "file": "docs/proofs/phase1.md",
+        "match": "379-5563",
+        "classification": "DOC_OR_SCRIPT_REFERENCE"
+      }
+    ],
+    "apiKeys": [
+      {
+        "file": ".next/server/app/dev/mode/page.js.nft.json",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/dev/mode/page_client-reference-manifest.js",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/page.js.nft.json",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/page_client-reference-manifest.js",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/skip/page.js.nft.json",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/skip/page_client-reference-manifest.js",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/style-test/page.js.nft.json",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/style-test/page_client-reference-manifest.js",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/_not-found/page.js.nft.json",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/app/_not-found/page_client-reference-manifest.js",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/chunks/ssr/node_modules_@swc_helpers_cjs__interop_require_default_cjs_1ztp13a5szri_._.js",
+        "type": "Resend API Key",
+        "match": "re_default_cjs_1ztp13a5szri_",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/chunks/ssr/src_app_style-test_page_tsx_190hibx6dm4uw._.js",
+        "type": "Generic Secret Assignment",
+        "match": "token:\"--feather\"",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/chunks/ssr/src_app_style-test_page_tsx_190hibx6dm4uw._.js",
+        "type": "Generic Secret Assignment",
+        "match": "token:\"--horn-dark\"",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": ".next/server/chunks/ssr/src_app_style-test_page_tsx_190hibx6dm4uw._.js",
+        "type": "Generic Secret Assignment",
+        "match": "Token: \",(0,b.jsx)(\"",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": "src/app/style-test/page.tsx",
+        "type": "Generic Secret Assignment",
+        "match": "token: \"--feather\"",
+        "classification": "SUSPECTED_SECRET"
+      },
+      {
+        "file": "src/app/style-test/page.tsx",
+        "type": "Generic Secret Assignment",
+        "match": "token: \"--horn-dark\"",
+        "classification": "SUSPECTED_SECRET"
+      }
+    ]
+  }
+}
