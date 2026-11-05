@@ -110,7 +110,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "chain bracelet",
-    worldReady: false,
+    worldReady: true,
     published: true,
   },
   {
