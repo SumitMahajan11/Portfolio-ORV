@@ -1,11 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { WALL_PLACEHOLDERS } from '@/content/wall-placeholders';
+import { useMode } from '@/lib/flags';
+import { WALL_DEFINITIONS, DEFAULT_WALL_ID, getWallIdForSection } from '@/content/walls';
+import type { WallId } from '@/content/wall-placeholders';
 
 export function SiteWall() {
   const pathname = usePathname();
+  const { lightMode, reducedMotion } = useMode();
+  const isInstant = lightMode || reducedMotion;
+
+  // Active wall currently displayed; incoming wall being crossfaded in
+  const [activeWallId, setActiveWallId] = useState<WallId>(DEFAULT_WALL_ID);
+  const [incomingWallId, setIncomingWallId] = useState<WallId | null>(null);
+  const [incomingVisible, setIncomingVisible] = useState(false);
+
+  const activeWallRef = useRef<WallId>(activeWallId);
+  const incomingWallRef = useRef<WallId | null>(incomingWallId);
+
+  useEffect(() => {
+    activeWallRef.current = activeWallId;
+  }, [activeWallId]);
+
+  useEffect(() => {
+    incomingWallRef.current = incomingWallId;
+  }, [incomingWallId]);
 
   // Route-aware: Plain dark background for /skip, /wanted, and /dev routes
   const isExcludedRoute =
@@ -14,11 +34,107 @@ export function SiteWall() {
     pathname?.startsWith('/dev') ||
     pathname?.startsWith('/style-test');
 
+  // IntersectionObserver to observe sections and trigger wall switches
+  useEffect(() => {
+    if (isExcludedRoute || typeof window === 'undefined') return;
+
+    // List of section IDs to observe
+    const sectionIds = [
+      'hero-scene-container',
+      'scenario-select',
+      'edge-cloud',
+      'ratify',
+      'iac-verifier',
+      'side-quests',
+      'readers-record',
+      'contact',
+    ];
+
+    const elements: HTMLElement[] = [];
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el) elements.push(el);
+    }
+
+    if (elements.length === 0) return;
+
+    // Trigger switch when section is within 1 screen height (rootMargin: '100% 0px 100% 0px')
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find visible or nearing sections
+        const intersecting = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (intersecting.length > 0) {
+          const topEntry = intersecting[0];
+          const targetWallId = getWallIdForSection(topEntry.target.id);
+
+          if (targetWallId !== activeWallRef.current && targetWallId !== incomingWallRef.current) {
+            if (isInstant) {
+              setActiveWallId(targetWallId);
+              setIncomingWallId(null);
+              setIncomingVisible(false);
+            } else {
+              setIncomingWallId(targetWallId);
+              setIncomingVisible(false);
+
+              // Allow DOM to mount incoming layer at opacity 0, then fade in
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  setIncomingVisible(true);
+                });
+              });
+            }
+          }
+        }
+      },
+      {
+        rootMargin: '100% 0px 100% 0px',
+        threshold: [0, 0.1, 0.5],
+      }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isExcludedRoute, isInstant]);
+
+  // Clean up incoming layer after crossfade transition completes (750ms)
+  useEffect(() => {
+    if (!incomingWallId || !incomingVisible) return;
+
+    const timer = setTimeout(() => {
+      setActiveWallId(incomingWallId);
+      setIncomingWallId(null);
+      setIncomingVisible(false);
+    }, 750);
+
+    return () => clearTimeout(timer);
+  }, [incomingWallId, incomingVisible]);
+
   if (isExcludedRoute) {
     return null;
   }
 
-  const placeholder = WALL_PLACEHOLDERS['wall-01'];
+  // Render at most two layers: active and incoming
+  const layers: { id: WallId; opacityClass: string; isIncoming: boolean }[] = [
+    {
+      id: activeWallId,
+      opacityClass: incomingWallId && incomingVisible ? 'opacity-0' : 'opacity-100',
+      isIncoming: false,
+    },
+  ];
+
+  if (incomingWallId && incomingWallId !== activeWallId) {
+    layers.push({
+      id: incomingWallId,
+      opacityClass: incomingVisible ? 'opacity-100' : 'opacity-0',
+      isIncoming: true,
+    });
+  }
 
   return (
     <div
@@ -28,43 +144,60 @@ export function SiteWall() {
       style={{
         zIndex: 'var(--z-wall, 0)',
         backgroundColor: 'var(--void, #07080B)',
-        backgroundImage: placeholder ? `url(${placeholder})` : undefined,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
       }}
     >
-      <picture className="absolute inset-0 w-full h-full">
-        {/* Mobile portrait sources */}
-        <source
-          media="(max-width: 768px)"
-          srcSet="/art/wall/wall-01-portrait.avif"
-          type="image/avif"
-        />
-        <source
-          media="(max-width: 768px)"
-          srcSet="/art/wall/wall-01-portrait.webp"
-          type="image/webp"
-        />
+      {layers.map((layer) => {
+        const wall = WALL_DEFINITIONS[layer.id];
+        const isFirstWall = wall.id === 'wall-01';
 
-        {/* Desktop landscape sources */}
-        <source
-          srcSet="/art/wall/wall-01-desktop.avif"
-          type="image/avif"
-        />
-        <source
-          srcSet="/art/wall/wall-01-desktop.webp"
-          type="image/webp"
-        />
+        return (
+          <div
+            key={layer.id}
+            className={`absolute inset-0 w-full h-full ${
+              isInstant ? '' : 'transition-opacity duration-700 ease-in-out'
+            } ${layer.opacityClass}`}
+            style={{
+              backgroundImage: wall.placeholder ? `url(${wall.placeholder})` : undefined,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <picture className="absolute inset-0 w-full h-full">
+              {/* Mobile portrait sources */}
+              <source
+                media="(max-width: 768px)"
+                srcSet={wall.portrait.avif}
+                type="image/avif"
+              />
+              <source
+                media="(max-width: 768px)"
+                srcSet={wall.portrait.webp}
+                type="image/webp"
+              />
 
-        {/* Fallback image */}
-        <img
-          src="/art/wall/wall-01-desktop.webp"
-          alt=""
-          decoding="async"
-          fetchPriority="high"
-          className="w-full h-full object-cover object-center"
-        />
-      </picture>
+              {/* Desktop landscape sources */}
+              <source
+                srcSet={wall.desktop.avif}
+                type="image/avif"
+              />
+              <source
+                srcSet={wall.desktop.webp}
+                type="image/webp"
+              />
+
+              {/* Fallback image */}
+              <img
+                src={wall.desktop.webp}
+                alt=""
+                decoding="async"
+                loading={isFirstWall ? 'eager' : 'lazy'}
+                fetchPriority={isFirstWall ? 'high' : 'low'}
+                className="w-full h-full object-cover object-center"
+              />
+            </picture>
+          </div>
+        );
+      })}
 
       {/* Dim and vignette with CSS gradients only (no blur filters, no backdrop-filter) */}
       <div
