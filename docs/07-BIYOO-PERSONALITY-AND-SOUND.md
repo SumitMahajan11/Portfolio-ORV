@@ -1,7 +1,11 @@
 # 07 Biyoo: Personality and Sound Sheet
 
-## Look
-Small fluffy cotton-textured creature, two horns, expressive limbs. Final art is layered illustration (head, body, 2 horns, 2 arms, 2 legs, eyes, mouth states). **Placeholder for Phase 0-1: code-drawn blob** with the same layer names so art swaps in without code change.
+## Look (SOURCE: docs/reference/biyoo/biyoo-01.png)
+- **Body shape**: Spherical, fluffy cotton-textured ball-shaped creature with soft tufted edges, tiny rounded nubs for arms, and two small stubby feet.
+- **Colors**: Creamy soft-white fur with gentle warm rim lighting along the contours, soft pink cheek blush marks, and amber-gold horns with darker spiraling horizontal stripes.
+- **Horns**: Two small curved cone horns protruding from the top of the head with distinct spiral/striped ridges.
+- **Face**: Stylized joyful anime expression—happy upward-curved closed eyes (`^^` arcs), an open laughing mouth showing pink inner tongue, and rosy blush lines beneath the eyes.
+- **Size relation to the page**: Compact global floating companion scaled dynamically via `clamp(72px, 10vw, 120px)`. Positioned fixed in the bottom-left viewport with safe-area insets.
 
 ## Personality
 Sleepy, curious, easily startled, loyal, a little dramatic. Never mean. Speaks in short lines, sometimes only sounds. Reacts to the reader, never nags more than once per minute.

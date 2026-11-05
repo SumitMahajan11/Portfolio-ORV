@@ -13,11 +13,38 @@ Naming: `<subject>_<layer>_<state>.<ext>`. Export AVIF + WebP + PNG fallback. Tr
 - feathers_particles (3 feather sprites), white_squares (shatter tiles)
 Minimum viable set for Phase 1: body_reading, head x3, coat, horns, wings x4, phone.
 
-## Biyoo (master 1600x1600)
-body, head, horns L/R, arms L/R, legs L/R, eyes (open, half, closed, startled, happy), mouth (neutral, yawn, smile, squeak), cotton texture overlay, costume props x4, sign (bounty board).
+## Wall Backgrounds (Approved Art Frozen)
+Approved wall files and their section roles:
+- `wall-01` (`docs/reference/walls/wall-01.png`): Story Wall (hero through Scenario Select).
+  - Landscape: 1920x1080 cover crop (AVIF <= 120 KB, WebP <= 180 KB) [Status: Source Present]
+  - Portrait: 1080x1920 cover crop for mobile (AVIF <= 100 KB, WebP <= 150 KB) [Status: Crop Needed]
+- `wall-02` (`docs/reference/walls/wall-02.png`): Worlds Wall (worlds, side quests, skills).
+  - Landscape: 1920x1080 cover crop (AVIF <= 120 KB, WebP <= 180 KB) [Status: Source Present]
+  - Portrait: 1080x1920 cover crop for mobile (AVIF <= 100 KB, WebP <= 150 KB) [Status: Crop Needed]
+- `wall-03` (`docs/reference/walls/wall-03.png`): Finale Wall (finale and contact section).
+  - Landscape: 1920x1080 cover crop (AVIF <= 120 KB, WebP <= 180 KB) [Status: Source Present]
+  - Portrait: 1080x1920 cover crop for mobile (AVIF <= 100 KB, WebP <= 150 KB) [Status: Crop Needed]
+- Background FX: void_stars (3 parallax layers), constellation_ring (SVG), glitch_noise, scanline overlay (CSS), per-world backgrounds (4 x 3 layers).
 
-## Backgrounds and fx
-void_stars (3 parallax layers), constellation_ring (SVG), glitch_noise, scanline overlay (CSS), per-world backgrounds (4 x 3 layers).
+## Biyoo Layers & States (Approved Art Frozen)
+Source reference: `docs/reference/biyoo/biyoo-01.png` (happy) and `biyoo-02.png` (joyful).
+- **Body & Base**:
+  - Transparent body / base pose: [Status: Missing - references have baked dark blue background; requires background extraction or transparent generation]
+- **Expressions (docs/07 states)**:
+  - Base / Happy: [Status: Present in reference art `biyoo-01.png`]
+  - Joyful / Cheerful: [Status: Present in reference art `biyoo-02.png`]
+  - Sleepy: [Status: Missing - fallback to base + CSS squash/dim]
+  - Startled: [Status: Missing - fallback to base + CSS jump/scale]
+  - Curious: [Status: Missing - fallback to base + CSS head-tilt]
+  - Proud: [Status: Missing - fallback to base + CSS chest-puff]
+  - Waving: [Status: Missing - fallback to base + CSS wobble]
+  - Poked: [Status: Missing - fallback to base + CSS squash]
+  - Thinking: [Status: Missing - fallback to base + CSS tilt]
+- **Costume Overlays (world accessories)**:
+  - Edge-Cloud (star goggles): [Status: Missing - code hook exists]
+  - Raft (leaf-village style headband): [Status: Missing - code hook exists]
+  - Z3 (chain bracelet): [Status: Missing - code hook exists]
+  - Backtrace (magnifier): [Status: Missing - code hook exists]
 
 ## Wanted page
 wanted_poster_frame (original design, parchment), portrait of Sumit or Dokja-as-Sumit (your choice), "WANTED" lettering style (original).

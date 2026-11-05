@@ -18,3 +18,4 @@ Project: ORV story-portfolio for Sumit Mahajan. Single source of truth lives in 
 13. Final report format (always): (a) what you did, (b) files created/changed, (c) commands run with results, (d) deviations from the prompt and why, (e) known issues, (f) the exact proof I must capture.
 14. Commit once at the end of the task: `phaseN-task: short description`. Do not push.
 15. Do not edit /docs except /docs/proofs/*. If a doc needs a change, tell me.
+16. Biyoo's look and the wall art are approved and frozen. Never redraw, recolor, restyle or replace them. Only crop, resize, compress and position them.
