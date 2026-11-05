@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Cinzel, Space_Grotesk, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
 import { MotionToggle } from "@/components/ui/motion-toggle";
+import { CornerBountyButton } from "@/components/biyoo";
 import "@/styles/globals.css";
 
 const cinzel = Cinzel({
@@ -70,6 +71,14 @@ export default function RootLayout({
                 {/* Motion mode toggle: Full / Light */}
                 <MotionToggle />
 
+                {/* Bounty board link */}
+                <Link
+                  href="/wanted"
+                  className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                >
+                  Bounty board
+                </Link>
+
                 {/* Skip to contact link */}
                 <Link
                   href="/#contact"
@@ -90,6 +99,9 @@ export default function RootLayout({
           </header>
 
           <div className="flex-1">{children}</div>
+
+          {/* Persistent Corner Bounty Button */}
+          <CornerBountyButton />
         </ModeProvider>
       </body>
     </html>

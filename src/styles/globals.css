@@ -173,6 +173,29 @@ button,
   animation: glitch-anim 750ms ease-in-out forwards;
 }
 
+/* Gentle one-time wiggle for Corner Bounty Button (transforms only, 750ms) */
+@keyframes bounty-wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-10deg) scale(1.06);
+  }
+  40% {
+    transform: rotate(8deg) scale(1.06);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+
+.animate-bounty-wiggle {
+  animation: bounty-wiggle 750ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
 /* Accessibility: prefers-reduced-motion base CSS */
 @media (prefers-reduced-motion: reduce) {
   *,

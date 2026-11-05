@@ -48,3 +48,7 @@ export function useHeroContext(): HeroContextValue {
   }
   return context;
 }
+
+export function useOptionalHeroContext(): HeroContextValue | null {
+  return useContext(HeroContext);
+}
