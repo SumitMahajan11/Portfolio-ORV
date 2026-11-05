@@ -5,6 +5,11 @@ import { useMode } from "@/lib/flags";
 import { useScene, gsap, ScrollTrigger } from "@/lib/motion";
 import { DokjaFinaleFigure } from "./dokja-finale-figure";
 import { ContactForm } from "./ContactForm";
+import {
+  useCameraReflection,
+  CameraReflectionOverlay,
+  CameraReflectionControls,
+} from "./camera-reflection";
 
 export interface FinaleSectionProps {
   className?: string;
@@ -32,6 +37,15 @@ export function FinaleSection({ className = "" }: FinaleSectionProps) {
   const formWrapperRef = useRef<HTMLDivElement>(null);
 
   const { reducedMotion } = useMode();
+
+  const {
+    isActive: isCameraActive,
+    isRequesting: isCameraRequesting,
+    biyooLine: cameraBiyooLine,
+    videoRefCallback,
+    startCamera,
+    stopCamera,
+  } = useCameraReflection({ sectionRef });
 
   useScene(
     () => {
@@ -151,6 +165,13 @@ export function FinaleSection({ className = "" }: FinaleSectionProps) {
             aria-hidden="true"
           />
 
+          {/* FAINT CAMERA REFLECTION (Behind Dokja's gaze layer) */}
+          <CameraReflectionOverlay
+            videoRefCallback={videoRefCallback}
+            isActive={isCameraActive}
+            isReduced={reducedMotion}
+          />
+
           {/* Section Header & Narration Line */}
           <div className="relative z-10 text-center space-y-4 mb-10 sm:mb-14">
             <span className="font-mono text-xs uppercase tracking-widest text-star">
@@ -170,7 +191,7 @@ export function FinaleSection({ className = "" }: FinaleSectionProps) {
           {/* Grid Layout: Dokja Figure on left/top, Contact Form on right/bottom */}
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             {/* Dokja Final Form Stage */}
-            <div className="lg:col-span-5 flex flex-col items-center justify-center">
+            <div className="lg:col-span-5 flex flex-col items-center justify-center space-y-3">
               <DokjaFinaleFigure
                 ref={dokjaRef}
                 isReduced={reducedMotion}
@@ -178,9 +199,18 @@ export function FinaleSection({ className = "" }: FinaleSectionProps) {
                 height={380}
                 className="max-w-full"
               />
-              <span className="mt-4 font-mono text-[11px] text-mist/70 tracking-wider uppercase">
+              <span className="mt-1 font-mono text-[11px] text-mist/70 tracking-wider uppercase">
                 Status: Standing Before The Reader
               </span>
+
+              {/* Optional Camera Reflection Trigger */}
+              <CameraReflectionControls
+                isActive={isCameraActive}
+                isRequesting={isCameraRequesting}
+                biyooLine={cameraBiyooLine}
+                onStart={startCamera}
+                onStop={stopCamera}
+              />
             </div>
 
             {/* Form Container */}
