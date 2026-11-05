@@ -78,11 +78,11 @@ function saveSessionShownWorlds(set: Set<string>) {
   }
 }
 
-// Skipped line IDs per P2-7 Requirement 3:
+// Skipped line IDs:
 // - #18: Backtrace (no verified evidence / no flagship world built)
-// - #36-#38: contact/end (feature not yet built)
+// - #36: Used directly as the narration header in the finale scene
 // - #39-#40: hidden fragments (feature not yet built)
-export const SKIPPED_LINE_IDS = new Set<number>([18, 36, 37, 38, 39, 40]);
+export const SKIPPED_LINE_IDS = new Set<number>([18, 36, 39, 40]);
 
 // Section-aware world mappings
 export const WORLD_CANDIDATE_LINE_IDS: Record<string, number[]> = {
@@ -91,6 +91,7 @@ export const WORLD_CANDIDATE_LINE_IDS: Record<string, number[]> = {
   "z3": [16, 17],
   "proof-panel": [19, 20],
   "skills": [21, 22, 23],
+  "contact": [37, 38],
 };
 
 // General context pools
@@ -317,6 +318,8 @@ export function useConstellationEngine({
             key = "proof-panel";
           } else if (el.id === "readers-record") {
             key = "skills";
+          } else if (el.id === "contact") {
+            key = "contact";
           }
 
           if (!key) continue;
@@ -338,6 +341,7 @@ export function useConstellationEngine({
       "#ratify",
       "#iac-verifier",
       "#readers-record",
+      "#contact",
       '[data-proof-panel="true"]',
     ];
 

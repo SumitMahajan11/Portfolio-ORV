@@ -4,6 +4,7 @@ import { ScenarioSelect } from "@/components/scenario-select";
 import { EdgeCloudWorld, RaftWorld, Z3World } from "@/components/worlds";
 import { SideQuestsSection } from "@/components/side-quests";
 import { ReadersRecord } from "@/components/readers-record";
+import { FinaleSection } from "@/components/finale";
 import { ConstellationGlobalLayer } from "@/lib/reader";
 
 export default function Home() {
@@ -30,6 +31,9 @@ export default function Home() {
 
         {/* Act 3 Reader's Record (Skills as ORV Item Info Boxes) */}
         <ReadersRecord />
+
+        {/* Act 6 Finale & Contact Form Scene */}
+        <FinaleSection />
 
         {/* Global Floating Constellation Overlay */}
         <ConstellationGlobalLayer />

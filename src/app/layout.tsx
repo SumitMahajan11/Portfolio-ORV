@@ -70,6 +70,14 @@ export default function RootLayout({
                 {/* Motion mode toggle: Full / Light */}
                 <MotionToggle />
 
+                {/* Skip to contact link */}
+                <Link
+                  href="/#contact"
+                  className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                >
+                  Skip to contact &rarr;
+                </Link>
+
                 {/* Skip to plain version link - visible on first paint, keyboard focusable */}
                 <Link
                   href="/skip"

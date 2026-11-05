@@ -10,7 +10,7 @@ export const identity: Identity = {
   cgpa: null, // [VERIFY against resume before showing]
   targeting: "GSoC 2027 (CNCF / Kubeflow / KubeVirt)", // [VERIFIED as goal]
   contact: {
-    formAvailable: false, // Contact form arrives in Phase 3
+    formAvailable: true, // Contact form active in Phase 3
     github: "https://github.com/SumitMahajan11",
     linkedin: null, // [FILL]
     resumePdf: null, // [FILL, from the longer resume]
