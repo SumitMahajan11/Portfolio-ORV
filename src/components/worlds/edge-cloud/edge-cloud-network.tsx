@@ -434,8 +434,7 @@ export function EdgeCloudNetwork({
       </div>
 
       {/* Footer Navigation Notice */}
-      <div className="mt-4 pt-3 border-t border-line/40 flex items-center justify-between text-[11px] font-mono text-mist">
-        <span>STARS: {activeAmbientNodes.length + 6} NODES</span>
+      <div className="mt-4 pt-3 border-t border-line/40 flex items-center justify-end text-[11px] font-mono text-mist">
         <span className="text-[#6EE7A8]">PATH: GREENER ROUTE SELECTED</span>
       </div>
     </div>
