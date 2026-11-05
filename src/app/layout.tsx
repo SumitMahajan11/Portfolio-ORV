@@ -6,6 +6,7 @@ import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
 import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
 import { CornerBountyButton } from "@/components/biyoo/corner-bounty-button";
+import { identity } from "@/content";
 import "@/styles/globals.css";
 
 const cinzel = Cinzel({
@@ -37,9 +38,38 @@ const cormorantGaramond = Cormorant_Garamond({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Sumit Mahajan | Portfolio",
-  description: "ORV Story Portfolio - Distributed Systems & Correctness",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Sumit Mahajan — Distributed Systems & Correctness",
+    template: "%s | Sumit Mahajan",
+  },
+  description:
+    "Sumit Mahajan — 3rd-year CSE undergrad at Pimpri Chinchwad University, Pune. From-scratch Rust Raft implementation, Z3 reachability proofs on Terraform, and carbon-aware edge-cloud orchestration.",
+  alternates: {
+    canonical: "/",
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/apple-icon",
+  },
+  openGraph: {
+    title: "Sumit Mahajan — Distributed Systems & Correctness",
+    description:
+      "From-scratch Rust Raft implementation & Z3 reachability proofs on cloud infrastructure.",
+    url: "/",
+    siteName: "Sumit Mahajan Portfolio",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sumit Mahajan — Distributed Systems & Correctness",
+    description:
+      "From-scratch Rust Raft implementation & Z3 reachability proofs on cloud infrastructure.",
+  },
 };
 
 export const viewport: Viewport = {
@@ -54,12 +84,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: identity.name,
+    url: siteUrl,
+    sameAs: [identity.contact.github, identity.contact.linkedin].filter(Boolean),
+  };
+
   return (
     <html
       lang="en"
       className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${cormorantGaramond.variable}`}
     >
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">
+        {/* JSON-LD Person schema (Strictly no email, phone, or address per Rule 3) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <ModeProvider>
           <SoundProvider>
             {/* Persistent Accessible Header */}

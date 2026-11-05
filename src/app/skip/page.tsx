@@ -4,9 +4,12 @@ import { identity, projects, skills, about } from "@/content";
 import { renderField } from "@/components/ui/fill-badge";
 
 export const metadata: Metadata = {
-  title: "Sumit Mahajan | Plain Version",
+  title: "Plain Version",
   description:
     "Accessible, plain-text story-portfolio for Sumit Mahajan — Distributed Systems & Correctness.",
+  alternates: {
+    canonical: "/skip",
+  },
 };
 
 export default function SkipPage() {
