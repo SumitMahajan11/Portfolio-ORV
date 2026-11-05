@@ -16,6 +16,12 @@ export interface ProjectLinks {
   benchmark: string | null;
 }
 
+export interface SideQuestBullets {
+  problem: string | null;
+  built: string | null;
+  learned: string | null;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -26,6 +32,8 @@ export interface Project {
   limits: string[];
   links: ProjectLinks;
   costume: string;
+  bullets?: SideQuestBullets;
+  inDesign?: boolean;
   worldReady?: boolean;
   published: boolean;
 }

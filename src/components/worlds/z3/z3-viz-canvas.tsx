@@ -423,3 +423,4 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
 }
 
 export default Z3VizCanvas;
+

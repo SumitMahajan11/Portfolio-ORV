@@ -129,6 +129,12 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "magnifier",
+    bullets: {
+      problem: null, // [FILL]
+      built: null, // [FILL]
+      learned: null, // [FILL]
+    },
+    inDesign: false,
     worldReady: false,
     published: false,
   },
@@ -148,6 +154,12 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "headset",
+    bullets: {
+      problem: null, // [FILL]
+      built: null, // [FILL]
+      learned: null, // [FILL]
+    },
+    inDesign: false,
     worldReady: false,
     published: false,
   },
@@ -167,6 +179,12 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "medical kit",
+    bullets: {
+      problem: null, // [FILL]
+      built: null, // [FILL]
+      learned: null, // [FILL]
+    },
+    inDesign: false,
     worldReady: false,
     published: false,
   },
@@ -186,6 +204,12 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "magnifier",
+    bullets: {
+      problem: null, // [FILL]
+      built: null, // [FILL]
+      learned: null, // [FILL]
+    },
+    inDesign: true, // docs/03 explicitly states: 'Status: in design'
     worldReady: false,
     published: false,
   },

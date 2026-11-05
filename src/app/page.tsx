@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroScene, HeroProvider } from "@/components/dokja";
 import { ScenarioSelect } from "@/components/scenario-select";
 import { EdgeCloudWorld, RaftWorld, Z3World } from "@/components/worlds";
+import { SideQuestsSection } from "@/components/side-quests";
 
 export default function Home() {
   return (
@@ -21,6 +22,9 @@ export default function Home() {
 
         {/* Act 3 Flagship World: iac-verifier (Z3) */}
         <Z3World />
+
+        {/* Act 3 Side Quests Section */}
+        <SideQuestsSection />
 
         {/* Footer Navigation & Dev-Only Links */}
         <section className="relative z-10 w-full max-w-4xl mx-auto px-4 py-16 flex flex-col items-center text-center space-y-6">
