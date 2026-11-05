@@ -404,6 +404,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
           end: pinDistance,
           pin: true,
           pinSpacing: true,
+          anticipatePin: 1, // iOS Safari pin jitter stabilization against address bar resize
           scrub: DEFAULT_SCRUB, // 0.6 per /docs/02
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -872,7 +873,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
         ref={containerRef}
         id="hero-scene"
         style={{ display: reducedMotion ? "none" : undefined }}
-        className={`relative w-full h-[100svh] min-h-[100svh] max-h-[100svh] overflow-hidden bg-void select-none flex items-center justify-center ${className}`}
+        className={`relative w-full h-screen h-[100dvh] h-[100svh] min-h-screen min-h-[100dvh] min-h-[100svh] max-h-screen max-h-[100dvh] max-h-[100svh] overflow-hidden bg-void select-none flex items-center justify-center ${className}`}
         aria-label="Omniscient Reader's Viewpoint Hero Prologue"
       >
         {/* ========================================================= */}

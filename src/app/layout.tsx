@@ -59,39 +59,39 @@ export default function RootLayout({
       lang="en"
       className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${cormorantGaramond.variable}`}
     >
-      <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col">
+      <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">
         <ModeProvider>
           <SoundProvider>
             {/* Persistent Accessible Header */}
             <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">
-              <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
+              <div className="mx-auto flex max-w-7xl items-center justify-between px-2.5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
                 <Link
                   href="/"
                   prefetch={false}
-                  className="font-display text-sm sm:text-base font-bold tracking-wider text-feather hover:text-star transition-colors"
+                  className="font-display text-xs sm:text-base font-bold tracking-tight sm:tracking-wider text-feather hover:text-star transition-colors shrink-0"
                 >
                   SUMIT MAHAJAN
                 </Link>
 
-                <div className="flex items-center gap-3 sm:gap-6">
+                <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 shrink-0">
                   {/* Motion mode toggle: Full / Light */}
                   <MotionToggle />
 
                   {/* Sound toggle: On / Off */}
                   <SoundToggle />
 
-                  {/* Bounty board link */}
+                  {/* Bounty board link (desktop header; corner Biyoo covers mobile & tablet) */}
                   <Link
                     href="/wanted"
-                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                    className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
                   >
                     Bounty board
                   </Link>
 
-                  {/* Skip to contact link */}
+                  {/* Skip to contact link (desktop only to prevent tablet header overflow) */}
                   <Link
                     href="/#contact"
-                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                    className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
                   >
                     Skip to contact &rarr;
                   </Link>
@@ -99,9 +99,10 @@ export default function RootLayout({
                   {/* Skip to plain version link - visible on first paint, keyboard focusable */}
                   <Link
                     href="/skip"
-                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1 shrink-0"
                   >
-                    Skip to plain version &rarr;
+                    <span className="lg:hidden">Skip &rarr;</span>
+                    <span className="hidden lg:inline">Skip to plain version &rarr;</span>
                   </Link>
                 </div>
               </div>

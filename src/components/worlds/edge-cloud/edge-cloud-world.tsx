@@ -15,7 +15,7 @@ export function EdgeCloudStaticDiagram() {
       role="img"
       aria-label="Edge-Cloud Static Star-Network Routing Diagram"
     >
-      <div className="flex items-center justify-between border-b border-line/60 pb-3 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3 mb-4">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-star" />
           <span className="font-mono text-xs text-star tracking-widest uppercase font-semibold">

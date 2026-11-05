@@ -125,3 +125,4 @@ Phase Breakdown: **TTFB: 11% (455ms)**, **Load Time: 0%**, **Render Delay: ~89% 
    - *Current*: `HeroScene` imports `gsap` statically.
    - *Proposed Simplification*: Dynamically import `gsap` and `ScrollTrigger` in `src/lib/motion/setup.ts` when full motion is engaged, dropping `34gho8tncc8zy.js` (43.8 KB gzipped) from the initial bundle.
    - *Impact*: Brings Full Mode initial JS from 266 KB to ~222 KB gzipped.
+

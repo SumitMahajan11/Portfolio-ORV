@@ -207,3 +207,28 @@ button,
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   CROSS-BROWSER COMPATIBILITY: SAFARI & FIREFOX SVG TRANSFORM-BOX
+   ========================================================================== */
+/* Elements animated with absolute viewBox coordinates (e.g. 140px 160px) */
+.dokja-wing-back-l,
+.dokja-wing-back-r,
+.dokja-wing-front-l,
+.dokja-wing-front-r,
+.dokja-layer-horns {
+  transform-box: view-box;
+}
+
+/* Elements animated with keyword/percentage origins (e.g. bottom center) */
+#biyoo_body,
+#biyoo_head,
+#biyoo_arms_l,
+#biyoo_arms_r,
+#biyoo_legs_l,
+#biyoo_legs_r,
+#biyoo_horns_l,
+#biyoo_horns_r {
+  transform-box: fill-box;
+}
+

@@ -28,7 +28,7 @@ export function MotionToggle({ className = "" }: MotionToggleProps) {
         role="status"
         aria-label="Motion mode: Reduced (System preference)"
       >
-        <span className="text-mist text-[11px] sm:text-xs">Motion:</span>
+        <span className="hidden sm:inline text-mist text-[11px] sm:text-xs">Motion:</span>
         <span
           className="text-star/90 font-medium text-[11px] sm:text-xs px-1 rounded bg-star/10"
           title="System preferences requested reduced motion. Cannot be overridden."
@@ -45,7 +45,7 @@ export function MotionToggle({ className = "" }: MotionToggleProps) {
       role="group"
       aria-label="Motion Mode Selection"
     >
-      <span className="text-mist text-[11px] sm:text-xs">Motion:</span>
+      <span className="hidden sm:inline text-mist text-[11px] sm:text-xs">Motion:</span>
       <button
         type="button"
         onClick={() => forceMode("full")}
