@@ -981,7 +981,7 @@ export function Biyoo({
                   />
                 </g>
               )}
-              {activeCostume === "headband" && (
+              {(activeCostume === "headband" || activeCostume === "leaf headband") && (
                 <g id="costume_headband">
                   {/* Leaf green band */}
                   <path

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { HeroScene, HeroProvider } from "@/components/dokja";
 import { ScenarioSelect } from "@/components/scenario-select";
-import { EdgeCloudWorld } from "@/components/worlds";
+import { EdgeCloudWorld, RaftWorld } from "@/components/worlds";
 
 export default function Home() {
   return (
@@ -15,6 +15,9 @@ export default function Home() {
 
         {/* Act 3 Flagship World: Edge-Cloud Orchestrator */}
         <EdgeCloudWorld />
+
+        {/* Act 3 Flagship World: Ratify (Raft) */}
+        <RaftWorld />
 
         {/* Footer Navigation & Dev-Only Links */}
         <section className="relative z-10 w-full max-w-4xl mx-auto px-4 py-16 flex flex-col items-center text-center space-y-6">

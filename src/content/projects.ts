@@ -70,7 +70,7 @@ export const projects: Project[] = [
       benchmark: null,
     },
     costume: "leaf headband",
-    worldReady: false,
+    worldReady: true,
     published: true,
   },
   {

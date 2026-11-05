@@ -19,6 +19,7 @@ export type BiyooState =
 export type BiyooCostume =
   | "star goggles"
   | "headband"
+  | "leaf headband"
   | "chain bracelet"
   | "magnifier"
   | null;
