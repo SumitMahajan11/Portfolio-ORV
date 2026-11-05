@@ -98,3 +98,4 @@ export function SkillItemCard({
 }
 
 export default SkillItemCard;
+

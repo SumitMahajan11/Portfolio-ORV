@@ -218,7 +218,7 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
         </div>
 
         {/* Beat 4: Proof Panel (Verification) */}
-        <div className="max-w-2xl mx-auto w-full">
+        <div data-proof-panel="true" className="max-w-2xl mx-auto w-full">
           <SystemWindow title="[READER'S RECORD &bull; VERIFICATION]">
             <div className="space-y-5 py-2">
               {/* Claims / Findings */}

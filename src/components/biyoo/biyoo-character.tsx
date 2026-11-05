@@ -77,11 +77,21 @@ export function Biyoo({
 
       setSpeechBubble(line);
       onSpeakingChange?.(Boolean(line));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("biyoo:speaking", { detail: { isSpeaking: Boolean(line) } })
+        );
+      }
 
       if (line && durationMs > 0) {
         speechTimerRef.current = setTimeout(() => {
           setSpeechBubble(null);
           onSpeakingChange?.(false);
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:speaking", { detail: { isSpeaking: false } })
+            );
+          }
           speechTimerRef.current = null;
         }, durationMs);
       }
@@ -735,6 +745,11 @@ export function Biyoo({
       transitionToState("happy");
     } else {
       transitionToState("curious");
+    }
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("constellation:trigger", { detail: { context: "hover" } })
+      );
     }
   };
 

@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { useMode } from "@/lib/flags";
 import { useScene, gsap, ScrollTrigger, DEFAULT_SCRUB } from "@/lib/motion";
 import { Biyoo } from "@/components/biyoo";
-import { useReaderTracker, useConstellationEngine, ConstellationOverlay } from "@/lib/reader";
+import { useReaderTracker } from "@/lib/reader";
 import { SystemWindow } from "@/components/system-window";
 import { useHeroContext, HeroProvider, HeroContext, HeroStage } from "./hero-context";
 import { PARTICLES_DATA } from "./particles-data";
@@ -76,19 +76,6 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
 
   // Local-only reader tracker: idle seconds, scroll speed, pointer pos, hover, local hour
   const readerSignals = useReaderTracker();
-  const [isBiyooSpeaking, setIsBiyooSpeaking] = useState(false);
-
-  // Constellation lines engine: gated strictly on introComplete, cleared when intro starts
-  const introComplete = heroState.introDone;
-  const { activeLine, dismissLine } = useConstellationEngine({
-    introComplete,
-    introDone: introComplete,
-    isBiyooSpeaking,
-    scrollSpeed: readerSignals.scrollSpeed,
-    idleSeconds: readerSignals.idleSeconds,
-    localHour: readerSignals.localHour,
-    isTouch: signals.isTouch,
-  });
 
   // Active particle set capped per mode according to /docs/02 performance budget
   const activeParticles = PARTICLES_DATA.slice(
@@ -281,7 +268,9 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
       // STAGE 1: Reading (0.0s - 2.5s)
       introTl.call(() => {
         setHeroState((prev) => ({ ...prev, stage: 1, introDone: false }));
-        dismissLine();
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("constellation:dismiss"));
+        }
       }, [], 0);
 
       introTl.to(
@@ -1398,12 +1387,8 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
             pointerPosition={readerSignals.pointerPosition}
             localHour={readerSignals.localHour}
             hoverTarget={readerSignals.hoverTarget}
-            onSpeakingChange={setIsBiyooSpeaking}
           />
         </div>
-
-        {/* Floating Constellation Comment Overlay */}
-        <ConstellationOverlay line={activeLine} onDismiss={dismissLine} introComplete={introComplete} />
 
         {/* ========================================================= */}
         {/* SYSTEM NOTIFICATION: Stage 2 "A Reader has been detected."*/}

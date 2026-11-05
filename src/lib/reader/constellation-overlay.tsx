@@ -33,7 +33,7 @@ export function ConstellationOverlay({
 
   return (
     <div
-      className={`fixed top-24 right-4 sm:top-28 sm:right-8 z-40 max-w-[300px] sm:max-w-sm pointer-events-auto transition-all duration-300 ${
+      className={`fixed top-24 right-4 sm:top-28 sm:right-8 z-50 max-w-[300px] sm:max-w-sm pointer-events-auto transition-all duration-300 ${
         reducedMotion ? "" : "animate-pulse"
       } ${className}`}
       role="status"

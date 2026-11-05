@@ -130,7 +130,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
         </div>
 
         {/* Beat 5: Proof Panel (Verification & Prominent Limit) */}
-        <div className="max-w-2xl mx-auto w-full">
+        <div data-proof-panel="true" className="max-w-2xl mx-auto w-full">
           <SystemWindow title="[READER'S RECORD &bull; VERIFICATION]">
             <div className="space-y-6 py-2">
               {/* REQUIRED PROMINENT LIMITATION CALLOUT (P2-1 Req 5) */}

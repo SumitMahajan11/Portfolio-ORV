@@ -4,6 +4,7 @@ import { ScenarioSelect } from "@/components/scenario-select";
 import { EdgeCloudWorld, RaftWorld, Z3World } from "@/components/worlds";
 import { SideQuestsSection } from "@/components/side-quests";
 import { ReadersRecord } from "@/components/readers-record";
+import { ConstellationGlobalLayer } from "@/lib/reader";
 
 export default function Home() {
   return (
@@ -29,6 +30,9 @@ export default function Home() {
 
         {/* Act 3 Reader's Record (Skills as ORV Item Info Boxes) */}
         <ReadersRecord />
+
+        {/* Global Floating Constellation Overlay */}
+        <ConstellationGlobalLayer />
 
         {/* Footer Navigation & Dev-Only Links */}
         <section className="relative z-10 w-full max-w-4xl mx-auto px-4 py-16 flex flex-col items-center text-center space-y-6">
