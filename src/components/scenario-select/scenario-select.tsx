@@ -240,6 +240,11 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
 
   const handleCardClick = useCallback(() => {
     triggerBiyooReaction("happy", "Good choice.");
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("biyoo:sound", { detail: { sound: "chirp" } })
+      );
+    }
   }, []);
 
   // Entrance animation using useScene + ScrollTrigger

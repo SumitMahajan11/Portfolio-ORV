@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Cinzel, Space_Grotesk, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
+import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
+import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
 import { CornerBountyButton } from "@/components/biyoo";
 import "@/styles/globals.css";
 
@@ -56,52 +58,60 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col">
         <ModeProvider>
-          {/* Persistent Accessible Header */}
-          <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
-              <Link
-                href="/"
-                prefetch={false}
-                className="font-display text-sm sm:text-base font-bold tracking-wider text-feather hover:text-star transition-colors"
-              >
-                SUMIT MAHAJAN
-              </Link>
-
-              <div className="flex items-center gap-3 sm:gap-6">
-                {/* Motion mode toggle: Full / Light */}
-                <MotionToggle />
-
-                {/* Bounty board link */}
+          <SoundProvider>
+            {/* Persistent Accessible Header */}
+            <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">
+              <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
                 <Link
-                  href="/wanted"
-                  className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                  href="/"
+                  prefetch={false}
+                  className="font-display text-sm sm:text-base font-bold tracking-wider text-feather hover:text-star transition-colors"
                 >
-                  Bounty board
+                  SUMIT MAHAJAN
                 </Link>
 
-                {/* Skip to contact link */}
-                <Link
-                  href="/#contact"
-                  className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-                >
-                  Skip to contact &rarr;
-                </Link>
+                <div className="flex items-center gap-3 sm:gap-6">
+                  {/* Motion mode toggle: Full / Light */}
+                  <MotionToggle />
 
-                {/* Skip to plain version link - visible on first paint, keyboard focusable */}
-                <Link
-                  href="/skip"
-                  className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-                >
-                  Skip to plain version &rarr;
-                </Link>
+                  {/* Sound toggle: On / Off */}
+                  <SoundToggle />
+
+                  {/* Bounty board link */}
+                  <Link
+                    href="/wanted"
+                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                  >
+                    Bounty board
+                  </Link>
+
+                  {/* Skip to contact link */}
+                  <Link
+                    href="/#contact"
+                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                  >
+                    Skip to contact &rarr;
+                  </Link>
+
+                  {/* Skip to plain version link - visible on first paint, keyboard focusable */}
+                  <Link
+                    href="/skip"
+                    className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                  >
+                    Skip to plain version &rarr;
+                  </Link>
+                </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          <div className="flex-1">{children}</div>
+            <div className="flex-1">{children}</div>
 
-          {/* Persistent Corner Bounty Button */}
-          <CornerBountyButton />
+            {/* Persistent Corner Bounty Button */}
+            <CornerBountyButton />
+
+            {/* Non-blocking Sound Permission Prompt ("Biyoo wants to say hi. Turn sound on?") */}
+            <SoundPermissionPrompt />
+          </SoundProvider>
         </ModeProvider>
       </body>
     </html>

@@ -99,7 +99,7 @@ export function Biyoo({
     [onSpeakingChange]
   );
 
-  // Switch state and trigger speech bubble
+  // Switch state and trigger speech bubble & audio mapping
   const transitionToState = useCallback(
     (nextState: BiyooState) => {
       setCurrentState(nextState);
@@ -107,8 +107,42 @@ export function Biyoo({
       if (meta.line) {
         setSpeech(meta.line, meta.autoHideMs);
       }
+
+      // Map sounds to Biyoo events per /docs/07 and P3-6
+      if (typeof window !== "undefined") {
+        if (nextState === "sleeping") {
+          if (!reducedMotion) {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:sound", { detail: { sound: "breath" } })
+            );
+          }
+        } else {
+          // Stop breath loop when Biyoo leaves sleeping state
+          window.dispatchEvent(
+            new CustomEvent("biyoo:sound-stop", { detail: { sound: "breath" } })
+          );
+
+          if (nextState === "startled") {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:sound", { detail: { sound: "squeak" } })
+            );
+          } else if (nextState === "yawn-wake") {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:sound", { detail: { sound: "yawn" } })
+            );
+          } else if (nextState === "happy") {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:sound", { detail: { sound: "boing" } })
+            );
+          } else if (nextState === "curious") {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:sound", { detail: { sound: "pat" } })
+            );
+          }
+        }
+      }
     },
-    [setSpeech]
+    [setSpeech, reducedMotion]
   );
 
   // =========================================================
@@ -739,8 +773,33 @@ export function Biyoo({
     }
   }, [hoverTarget, currentState, transitionToState]);
 
+  // Stop breath sound loop immediately when reduced motion is on or component unmounts
+  useEffect(() => {
+    if (reducedMotion && typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("biyoo:sound-stop", { detail: { sound: "breath" } })
+      );
+    }
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("biyoo:sound-stop", { detail: { sound: "breath" } })
+        );
+      }
+    };
+  }, []);
+
   // Manual interactive poke on click
   const handlePoke = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("biyoo:sound", { detail: { sound: "pat" } })
+      );
+    }
+
     if (currentState === "sleeping" || currentState === "sleepy-again") {
       transitionToState("happy");
     } else {
