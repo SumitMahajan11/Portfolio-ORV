@@ -1,0 +1,51 @@
+{
+  "worlds": {
+    "desktop": {
+      "hero": true,
+      "scenarioSelect": true,
+      "edgeCloud": true,
+      "raft": true,
+      "z3": true,
+      "sideQuests": true,
+      "readersRecord": true,
+      "constellationOverlay": false,
+      "raftLimitNotice": true,
+      "z3Claim": true,
+      "edgeCloudClaim": true
+    },
+    "mobile": {
+      "hero": true,
+      "scenarioSelect": true,
+      "edgeCloud": true,
+      "raft": true,
+      "z3": true,
+      "sideQuests": true,
+      "readersRecord": true,
+      "raftLimitVisible": true
+    },
+    "skip": {
+      "h1": "Sumit Mahajan",
+      "hasEdgeCloud": false,
+      "hasRaft": true,
+      "hasRaftLimit": true,
+      "hasZ3": true,
+      "hasSkills": true,
+      "hasPrivacyStatement": true
+    }
+  },
+  "modes": {
+    "reduced": {
+      "edgeCloudStaticDiagram": true,
+      "raftStaticDiagram": true,
+      "z3StaticDiagram": true
+    },
+    "light": {
+      "edgeCloudStaticDiagram": false,
+      "raftStaticDiagram": true,
+      "z3StaticDiagram": true
+    }
+  },
+  "scrollTriggers": {
+    "desktop": 0
+  }
+}
