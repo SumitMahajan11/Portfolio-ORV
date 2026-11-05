@@ -303,7 +303,7 @@ export function EdgeCloudNetwork({
           viewBox="0 0 600 320"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full overflow-visible"
+          className="w-full h-full overflow-hidden"
         >
           <defs>
             {/* Greener path gradient (teal to soft green) */}

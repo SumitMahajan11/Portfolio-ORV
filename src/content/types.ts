@@ -27,6 +27,7 @@ export interface Project {
   links: ProjectLinks;
   costume: string;
   worldReady?: boolean;
+  published: boolean;
 }
 
 export interface Skill {

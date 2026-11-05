@@ -17,7 +17,7 @@ export function getParticleCap(
   if (mode === "light") {
     return 15;
   }
-  return isMobileOrTouch ? 40 : 120;
+  return isMobileOrTouch ? 40 : 60;
 }
 
 /**
@@ -158,7 +158,7 @@ export function getInitialDeviceState(): DeviceState {
 
   return {
     mode: "full",
-    particleCap: 120,
+    particleCap: 60,
     signals: initialSignals,
     isHydrated: false,
   };

@@ -16,6 +16,7 @@ export const projects: Project[] = [
     },
     costume: "star goggles",
     worldReady: true,
+    published: true,
   },
   {
     id: "ratify",
@@ -70,6 +71,7 @@ export const projects: Project[] = [
     },
     costume: "leaf headband",
     worldReady: false,
+    published: true,
   },
   {
     id: "iac-verifier",
@@ -109,6 +111,7 @@ export const projects: Project[] = [
     },
     costume: "chain bracelet",
     worldReady: false,
+    published: true,
   },
   {
     id: "backtrace",
@@ -127,6 +130,7 @@ export const projects: Project[] = [
     },
     costume: "magnifier",
     worldReady: false,
+    published: false,
   },
   {
     id: "echo",
@@ -145,6 +149,7 @@ export const projects: Project[] = [
     },
     costume: "headset",
     worldReady: false,
+    published: false,
   },
   {
     id: "lumina-clinical",
@@ -163,6 +168,7 @@ export const projects: Project[] = [
     },
     costume: "medical kit",
     worldReady: false,
+    published: false,
   },
   {
     id: "reelclaim",
@@ -181,5 +187,6 @@ export const projects: Project[] = [
     },
     costume: "magnifier",
     worldReady: false,
+    published: false,
   },
 ];

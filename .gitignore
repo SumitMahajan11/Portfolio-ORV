@@ -67,3 +67,7 @@ Docs/*.docx
 public/resume/*
 !public/resume/.gitkeep
 
+# Screen proofs
+docs/proofs/screens/
+.lighthouse-results/
+

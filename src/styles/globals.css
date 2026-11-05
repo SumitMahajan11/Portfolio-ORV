@@ -39,8 +39,8 @@
 }
 
 html {
-  touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 /* Base Body Defaults */
@@ -51,12 +51,31 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+}
+
+/* Ensure pinned and animated sections never cause horizontal page overflow */
+html,
+body,
+main,
+#hero-scene,
+#hero-scene-container,
+.pin-spacer {
+  overflow-x: clip !important;
+  max-width: 100vw;
 }
 
 /* Visible focus ring using --star for all focusable elements */
 *:focus-visible {
   outline: 2px solid var(--star);
   outline-offset: 2px;
+}
+
+/* Fast tap response on interactive controls without blocking pinch-zoom on document */
+button,
+[role="button"],
+.scenario-card-item {
+  touch-action: manipulation;
 }
 
 /* World Palettes (scoped via data-world attribute - do not leak to hub) */

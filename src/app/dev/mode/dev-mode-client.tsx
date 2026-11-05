@@ -98,7 +98,7 @@ export default function DevModeClient() {
                     {particleCap}
                   </span>
                   <span className="text-xs text-mist">
-                    particles max ({mode === "light" ? "light cap: 15" : signals.isTouch || signals.isCoarsePointer ? "mobile cap: 40" : "desktop cap: 120"})
+                    particles max ({mode === "light" ? "light cap: 15" : signals.isTouch || signals.isCoarsePointer ? "mobile cap: 40" : "desktop cap: 60 (measured for 55fps)"})
                   </span>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function DevModeClient() {
                     <td className="py-2.5 px-3 text-mist">
                       {signals.isTouch || signals.isCoarsePointer
                         ? "Sets mobile particle cap (40)"
-                        : "Desktop particle cap (120)"}
+                        : "Desktop particle cap (60)"}
                     </td>
                   </tr>
 

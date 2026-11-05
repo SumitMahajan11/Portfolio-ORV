@@ -27,6 +27,7 @@ export default function SkipPage() {
       >
         <Link
           href="/"
+          prefetch={false}
           className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono text-star hover:text-feather underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-1.5 py-0.5"
         >
           &larr; Back to the story

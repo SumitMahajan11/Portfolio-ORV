@@ -7,6 +7,7 @@ import { Biyoo } from "@/components/biyoo";
 import { useReaderTracker, useConstellationEngine, ConstellationOverlay } from "@/lib/reader";
 import { SystemWindow } from "@/components/system-window";
 import { useHeroContext, HeroProvider, HeroContext, HeroStage } from "./hero-context";
+import { PARTICLES_DATA } from "./particles-data";
 
 // Deterministic star sets for 3 parallax layers (prevents hydration mismatches)
 const STARS_LAYER_1 = [
@@ -39,35 +40,8 @@ const STARS_LAYER_3 = [
   { top: "88%", left: "72%", size: 2.5, opacity: 0.8 },
 ];
 
-// Deterministic particle set capped per mode: desktop <= 120, mobile <= 40, light <= 15
-const PARTICLES_DATA = [
-  { top: "20%", left: "25%", size: 2, delay: 0 },
-  { top: "32%", left: "72%", size: 2.5, delay: 0.8 },
-  { top: "45%", left: "35%", size: 1.5, delay: 1.6 },
-  { top: "58%", left: "68%", size: 2, delay: 0.4 },
-  { top: "65%", left: "22%", size: 2.5, delay: 1.2 },
-  { top: "78%", left: "78%", size: 1.5, delay: 2.0 },
-  { top: "28%", left: "82%", size: 2, delay: 0.6 },
-  { top: "50%", left: "15%", size: 2.5, delay: 1.4 },
-  { top: "82%", left: "42%", size: 1.5, delay: 2.2 },
-  { top: "15%", left: "60%", size: 2, delay: 1.0 },
-  { top: "40%", left: "85%", size: 2.5, delay: 0.2 },
-  { top: "70%", left: "55%", size: 1.5, delay: 1.8 },
-  { top: "85%", left: "20%", size: 2, delay: 0.5 },
-  { top: "25%", left: "40%", size: 2.5, delay: 1.5 },
-  { top: "60%", left: "80%", size: 1.5, delay: 2.5 },
-  // Extended for desktop
-  { top: "18%", left: "18%", size: 2, delay: 0.3 },
-  { top: "35%", left: "48%", size: 1.5, delay: 1.1 },
-  { top: "52%", left: "28%", size: 2.5, delay: 1.9 },
-  { top: "68%", left: "88%", size: 2, delay: 0.7 },
-  { top: "75%", left: "38%", size: 1.5, delay: 2.3 },
-  { top: "88%", left: "65%", size: 2.5, delay: 1.3 },
-  { top: "22%", left: "88%", size: 2, delay: 0.9 },
-  { top: "48%", left: "62%", size: 1.5, delay: 1.7 },
-  { top: "62%", left: "32%", size: 2, delay: 2.1 },
-  { top: "80%", left: "12%", size: 2.5, delay: 0.1 },
-];
+// Deterministic particle set capped per mode: desktop <= 120, mobile <= 40, light <= 15, reduced = 0
+// Sourced from ./particles-data (120 deterministic particles)
 
 export interface HeroSceneProps {
   className?: string;
@@ -720,7 +694,7 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
   );
 
   return (
-    <div className="w-full relative">
+    <div id="hero-scene-container" className="w-full relative overflow-x-clip">
       {/* STATIC FALLBACK FOR REDUCED MOTION (Requirement 2) */}
       {/* Both containers always in DOM to prevent GSAP pin-spacer reconciliation mismatch */}
       <div
@@ -937,10 +911,8 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
         style={{ opacity: 0 }}
       >
         <svg
-          width="440"
-          height="440"
           viewBox="0 0 440 440"
-          className="w-[360px] h-[360px] sm:w-[460px] sm:h-[460px] overflow-visible"
+          className="w-[300px] h-[300px] xs:w-[340px] xs:h-[340px] sm:w-[460px] sm:h-[460px] max-w-full overflow-hidden"
         >
           <circle
             cx="220"

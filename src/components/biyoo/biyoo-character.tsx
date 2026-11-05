@@ -752,7 +752,7 @@ export function Biyoo({
           role="status"
           aria-live="polite"
         >
-          <div className="relative border border-star/60 bg-[rgba(14,17,24,0.95)] backdrop-blur-md px-3.5 py-1.5 rounded-sm shadow-[0_4px_16px_rgba(94,225,230,0.25)] text-center whitespace-nowrap">
+          <div className="relative border border-star/60 bg-[rgba(14,17,24,0.95)] backdrop-blur-md px-3.5 py-1.5 rounded-sm shadow-[0_4px_16px_rgba(94,225,230,0.25)] text-center max-w-[240px]">
             {/* Corner HUD ticks */}
             <span
               className="absolute -top-[1px] -left-[1px] w-1.5 h-1.5 border-t border-l border-star"

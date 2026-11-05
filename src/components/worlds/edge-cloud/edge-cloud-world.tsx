@@ -32,7 +32,7 @@ export function EdgeCloudStaticDiagram() {
           viewBox="0 0 600 320"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full overflow-visible"
+          className="w-full h-full overflow-hidden"
         >
           {/* Ambient constellation stars */}
           <g opacity="0.3">
@@ -194,10 +194,6 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
               <div className="font-ui text-sm sm:text-base text-mist leading-relaxed">
                 {renderField(project.oneLiner)}
               </div>
-
-              <p className="font-narration text-sm sm:text-base text-feather/80 italic border-l-2 border-[#6EE7A8]/60 pl-3">
-                &ldquo;The Constellations form a living network. Each star is a node. A workload is a Scenario that must be routed. Choosing carbon-aware routing is choosing the star path that burns cleaner.&rdquo;
-              </p>
             </div>
           </SystemWindow>
         </div>
@@ -221,49 +217,6 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
           )}
         </div>
 
-        {/* Narrative Architecture: How It Works & What Was Built */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
-          {/* How it works (3 steps) */}
-          <div className="border border-line/70 bg-ink/60 p-6 rounded-sm space-y-4 backdrop-blur-xs">
-            <div className="flex items-center gap-2 border-b border-line/60 pb-2">
-              <span className="font-mono text-xs text-star uppercase tracking-wider font-semibold">
-                [SYSTEM PROTOCOL: HOW IT WORKS]
-              </span>
-            </div>
-            <ol className="space-y-3 font-ui text-sm text-mist leading-relaxed list-decimal list-inside">
-              <li>
-                <strong className="text-feather">Telemetry Ingestion:</strong> Ingest real-time grid carbon intensity signals across edge points-of-presence and cloud regions.
-              </li>
-              <li>
-                <strong className="text-feather">Constraint Modeling:</strong> Evaluate physical transmission distance against regional renewable energy generation availability.
-              </li>
-              <li>
-                <strong className="text-feather">Dynamic Dispatch:</strong> Route compute tasks along the star path that minimizes carbon expenditure without violating deadlines.
-              </li>
-            </ol>
-          </div>
-
-          {/* What I built (3 bullets) */}
-          <div className="border border-line/70 bg-ink/60 p-6 rounded-sm space-y-4 backdrop-blur-xs">
-            <div className="flex items-center gap-2 border-b border-line/60 pb-2">
-              <span className="font-mono text-xs text-[#6EE7A8] uppercase tracking-wider font-semibold">
-                [CORE CONTRIBUTIONS: WHAT WAS BUILT]
-              </span>
-            </div>
-            <ul className="space-y-3 font-ui text-sm text-mist leading-relaxed list-disc list-inside">
-              <li>
-                <strong className="text-feather">Distributed Ingress Broker:</strong> Edge workload router designed for cross-cluster orchestration.
-              </li>
-              <li>
-                <strong className="text-feather">Grid Intensity Ingestion:</strong> Continuous carbon-aware data modeling pipeline for execution targets.
-              </li>
-              <li>
-                <strong className="text-feather">Policy Dispatch Engine:</strong> Automated selection matrix prioritizing cleaner energy grids.
-              </li>
-            </ul>
-          </div>
-        </div>
-
         {/* Beat 4: Proof Panel (Verification) */}
         <div className="max-w-2xl mx-auto w-full">
           <SystemWindow title="[READER'S RECORD &bull; VERIFICATION]">
@@ -283,9 +236,9 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="font-ui text-sm text-mist/90 italic">
-                    {project.oneLiner} (Quantitative metrics pending benchmark completion in repo).
-                  </p>
+                  <div className="font-ui text-sm text-mist/90">
+                    {renderField(project.oneLiner)}
+                  </div>
                 )}
               </div>
 
@@ -335,9 +288,6 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
               <span>Scenario cleared</span>
             </div>
           </div>
-          <p className="font-mono text-xs text-mist">
-            Workload successfully scheduled across carbon-optimal topology.
-          </p>
 
           <div className="pt-6">
             <a

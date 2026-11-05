@@ -170,9 +170,16 @@ function SideQuestCard({ project, onHover, onClick }: SideQuestCardProps) {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] tracking-wider uppercase text-[var(--world-primary,var(--mist))]">
-            [SIDE QUEST]
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-[10px] tracking-wider uppercase text-[var(--world-primary,var(--mist))]">
+              [SIDE QUEST]
+            </span>
+            {!project.published && (
+              <span className="font-mono text-[9px] uppercase px-1.5 py-0.2 border border-amber-500/60 bg-amber-500/10 text-amber-400 rounded">
+                DEV: UNPUBLISHED
+              </span>
+            )}
+          </div>
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--world-primary,var(--mist))]/60" />
         </div>
 
@@ -223,8 +230,14 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
     return true;
   });
 
-  // Side quests: all projects with status 'sidequest'
-  const sideQuestProjects = projects.filter((p) => p.status === "sidequest");
+  // Side quests: in production render only if published === true; in dev show all
+  const sideQuestProjects = projects.filter((p) => {
+    if (p.status !== "sidequest") return false;
+    if (isProduction) {
+      return Boolean(p.published);
+    }
+    return true;
+  });
 
   // Hover and click callbacks
   const handleCardHover = useCallback(() => {

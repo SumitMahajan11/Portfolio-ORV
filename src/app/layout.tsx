@@ -60,6 +60,7 @@ export default function RootLayout({
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
               <Link
                 href="/"
+                prefetch={false}
                 className="font-display text-sm sm:text-base font-bold tracking-wider text-feather hover:text-star transition-colors"
               >
                 SUMIT MAHAJAN

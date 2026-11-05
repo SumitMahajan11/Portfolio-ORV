@@ -21,9 +21,8 @@ import {
   getParticleCap,
 } from "./device/detect";
 import { runFrameProbe } from "./device/probe";
-import { ScrollTrigger } from "@/lib/motion";
 
-const SESSION_STORAGE_MOTION_KEY = "antigravity_motion_mode";
+const SESSION_STORAGE_MOTION_KEY = "motion_mode";
 
 /**
  * FeatureFlags interface per /docs/04 and task requirements:
@@ -59,10 +58,10 @@ const defaultContextValue: FeatureFlags = {
   particleCap: defaultInitialState.particleCap,
   signals: defaultInitialState.signals,
   isHydrated: false,
-  setSoundOn: () => {},
-  setCameraOn: () => {},
-  forceMode: () => {},
-  toggleMotionMode: () => {},
+  setSoundOn: () => { },
+  setCameraOn: () => { },
+  forceMode: () => { },
+  toggleMotionMode: () => { },
 };
 
 export const ModeContext = createContext<FeatureFlags>(defaultContextValue);
@@ -71,10 +70,10 @@ export interface ModeProviderProps {
   children: React.ReactNode;
 }
 
-const emptySubscribe = () => () => {};
+const emptySubscribe = () => () => { };
 
 function subscribeReducedMotion(callback: () => void) {
-  if (typeof window === "undefined") return () => {};
+  if (typeof window === "undefined") return () => { };
   const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (typeof mql.addEventListener === "function") {
     mql.addEventListener("change", callback);
@@ -180,13 +179,6 @@ export function ModeProvider({ children }: ModeProviderProps) {
   }, [systemReducedMotion]);
 
   const forceMode = useCallback((newMode: DeviceMode | null) => {
-    if (typeof window !== "undefined") {
-      const beforeCount = ScrollTrigger.getAll().length;
-      console.log(
-        `[ModeSwitch] ScrollTrigger.getAll().length BEFORE switch to '${newMode}': ${beforeCount}`
-      );
-    }
-
     setManualModeOverride(newMode);
 
     try {
@@ -197,18 +189,6 @@ export function ModeProvider({ children }: ModeProviderProps) {
       }
     } catch {
       // Ignore
-    }
-
-    if (typeof window !== "undefined") {
-      // Check count after React finishes re-rendering and useScene hooks update
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          const afterCount = ScrollTrigger.getAll().length;
-          console.log(
-            `[ModeSwitch] ScrollTrigger.getAll().length AFTER switch to '${newMode}': ${afterCount}`
-          );
-        }, 50);
-      });
     }
   }, []);
 

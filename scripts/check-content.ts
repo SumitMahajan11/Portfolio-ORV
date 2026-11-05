@@ -29,6 +29,7 @@ interface Project {
   links: ProjectLinks;
   costume: string;
   worldReady?: boolean;
+  published: boolean;
 }
 
 interface Skill {
@@ -221,6 +222,19 @@ console.log("=================================================");
 warnings.forEach((w) => console.log(`  ⚠ ${w}`));
 
 if (isStrict) {
+  console.log("\n=================================================");
+  console.log(" STRICT AUDIT: UNPUBLISHED PROJECTS");
+  console.log("=================================================");
+  const unpublished = projects.filter((p) => !p.published);
+  if (unpublished.length === 0) {
+    console.log("  (None: all projects published)");
+  } else {
+    console.log(`  Found ${unpublished.length} unpublished project(s):`);
+    unpublished.forEach((p) => {
+      console.log(`  - [UNPUBLISHED] id: "${p.id}", title: "${p.title}", status: "${p.status}"`);
+    });
+  }
+
   console.log("\n=================================================");
   console.log(` STRICT MODE VIOLATIONS: ${strictViolations.length}`);
   console.log("=================================================");
