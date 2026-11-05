@@ -311,8 +311,8 @@ export function SideQuestCard({ project, className = "" }: SideQuestCardProps) {
           {isExplicitlyInDesign
             ? "Concept in design &bull; not yet implemented"
             : hasLinks
-            ? "Verified proof attached"
-            : "Awaiting source proof"}
+              ? "Verified proof attached"
+              : "Awaiting source proof"}
         </span>
       </div>
     </article>

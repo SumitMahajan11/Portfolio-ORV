@@ -159,9 +159,28 @@ for (const project of projects) {
 
 // 4. Check Skills
 console.log("--- 3. Checking Skills (Reader's Record) ---");
+const BANNED_SKILL_PATTERNS = [
+  { pattern: /%/, name: "%" },
+  { pattern: /\blevel\b/i, name: "level" },
+  { pattern: /\bexpert\b/i, name: "expert" },
+  { pattern: /\badvanced\b/i, name: "advanced" },
+  { pattern: /\bbeginner\b/i, name: "beginner" },
+  { pattern: /\bmaster\b/i, name: "master" },
+];
+
 for (const skill of skills) {
   if (skill.story === null) {
     warnings.push(`[skill:${skill.name}] 'story' is null (needs confirmation)`);
+  }
+
+  // Check for prohibited skill rating terms
+  const fullSkillText = `${skill.name} ${skill.story ?? ""}`;
+  for (const { pattern, name } of BANNED_SKILL_PATTERNS) {
+    if (pattern.test(fullSkillText)) {
+      const err = `Skill '${skill.name}' violates strict rules by including prohibited grading term '${name}'.`;
+      warnings.push(`[skill:${skill.name}] Prohibited term '${name}'`);
+      strictViolations.push(err);
+    }
   }
 
   if (!skill.proofProjectIds || skill.proofProjectIds.length === 0) {
