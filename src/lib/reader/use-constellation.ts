@@ -148,6 +148,17 @@ export function useConstellationEngine({
     }
   }, []);
 
+  // Sync constellation display status to window for Biyoo shared queue
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("constellation:status", {
+          detail: { isShowing: Boolean(activeLine) },
+        })
+      );
+    }
+  }, [activeLine]);
+
   // Listen to global biyoo:speaking events
   useEffect(() => {
     if (typeof window === "undefined") return;
