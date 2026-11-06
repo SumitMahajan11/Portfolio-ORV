@@ -15,6 +15,7 @@ export function SiteWall() {
   const [activeWallId, setActiveWallId] = useState<WallId>(DEFAULT_WALL_ID);
   const [incomingWallId, setIncomingWallId] = useState<WallId | null>(null);
   const [incomingVisible, setIncomingVisible] = useState(false);
+  const [isHeroPinned, setIsHeroPinned] = useState(true);
 
   const activeWallRef = useRef<WallId>(activeWallId);
   const incomingWallRef = useRef<WallId | null>(incomingWallId);
@@ -33,6 +34,30 @@ export function SiteWall() {
     pathname === '/wanted' ||
     pathname?.startsWith('/dev') ||
     pathname?.startsWith('/style-test');
+
+  // Track hero pinned state to guarantee NO opacity transition runs while hero is pinned
+  useEffect(() => {
+    if (isExcludedRoute || typeof window === 'undefined') return;
+
+    const checkHeroPinned = () => {
+      const hero = document.getElementById('hero-scene-container');
+      if (hero) {
+        const rect = hero.getBoundingClientRect();
+        // Hero is pinned/active while its bottom is visible or on-screen
+        setIsHeroPinned(rect.bottom > 50);
+      } else {
+        setIsHeroPinned(false);
+      }
+    };
+
+    checkHeroPinned();
+    window.addEventListener('scroll', checkHeroPinned, { passive: true });
+    window.addEventListener('resize', checkHeroPinned, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', checkHeroPinned);
+      window.removeEventListener('resize', checkHeroPinned);
+    };
+  }, [isExcludedRoute]);
 
   // IntersectionObserver to observe sections and trigger wall switches
   useEffect(() => {
@@ -58,9 +83,19 @@ export function SiteWall() {
 
     if (elements.length === 0) return;
 
-    // Trigger switch when section is within 1 screen height (rootMargin: '100% 0px 100% 0px')
     const observer = new IntersectionObserver(
       (entries) => {
+        // While hero is pinned or active, strictly lock to default wall-01 with no transition
+        const hero = document.getElementById('hero-scene-container');
+        if (hero && hero.getBoundingClientRect().bottom > 50) {
+          if (activeWallRef.current !== DEFAULT_WALL_ID) {
+            setActiveWallId(DEFAULT_WALL_ID);
+            setIncomingWallId(null);
+            setIncomingVisible(false);
+          }
+          return;
+        }
+
         // Find visible or nearing sections
         const intersecting = entries
           .filter((e) => e.isIntersecting)
@@ -90,7 +125,7 @@ export function SiteWall() {
         }
       },
       {
-        rootMargin: '100% 0px 100% 0px',
+        rootMargin: '20% 0px 20% 0px',
         threshold: [0, 0.1, 0.5],
       }
     );
@@ -140,10 +175,12 @@ export function SiteWall() {
     <div
       aria-hidden="true"
       role="presentation"
-      className="fixed inset-0 h-[100dvh] w-full pointer-events-none select-none overflow-hidden"
+      className="site-wall-compositor fixed inset-0 h-[100dvh] w-full pointer-events-none select-none overflow-hidden"
       style={{
         zIndex: 'var(--z-wall, 0)',
         backgroundColor: 'var(--void, #07080B)',
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }}
     >
       {layers.map((layer) => {
@@ -154,13 +191,8 @@ export function SiteWall() {
           <div
             key={layer.id}
             className={`absolute inset-0 w-full h-full ${
-              isInstant ? '' : 'transition-opacity duration-700 ease-in-out'
+              isInstant || isHeroPinned ? '' : 'transition-opacity duration-700 ease-in-out'
             } ${layer.opacityClass}`}
-            style={{
-              backgroundImage: wall.placeholder ? `url(${wall.placeholder})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
           >
             <picture className="absolute inset-0 w-full h-full">
               {/* Mobile portrait sources */}
@@ -191,7 +223,7 @@ export function SiteWall() {
                 alt=""
                 decoding="async"
                 loading={isFirstWall ? 'eager' : 'lazy'}
-                fetchPriority={isFirstWall ? 'high' : 'low'}
+                fetchPriority={isFirstWall ? 'auto' : 'low'}
                 className="w-full h-full object-cover object-center"
               />
             </picture>
@@ -199,7 +231,7 @@ export function SiteWall() {
         );
       })}
 
-      {/* Dim and vignette with CSS gradients only (no blur filters, no backdrop-filter) */}
+      {/* Dim and vignette as one static layer with CSS gradients only (no blur filters, no backdrop-filter) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

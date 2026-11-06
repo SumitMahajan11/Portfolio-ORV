@@ -83,7 +83,7 @@ async function run() {
 
   await sleep(1500);
 
-  const targetsRes = await fetch(`http://localhost:${cdpPort}/json/list`);
+  const targetsRes = await fetch(`http://127.0.0.1:${cdpPort}/json/list`);
   const pages = await targetsRes.json();
   const pageTarget = pages.find(p => p.type === 'page');
   if (!pageTarget) throw new Error('No CDP page target found');
@@ -146,6 +146,14 @@ async function run() {
             failureSummary: n.failureSummary
           }))
         })),
+        incomplete: results.incomplete.map(i => ({
+          id: i.id,
+          description: i.description,
+          nodes: i.nodes.map(n => ({
+            target: n.target,
+            html: n.html
+          }))
+        })),
         passesCount: results.passes.length,
         incompleteCount: results.incomplete.length,
         inapplicableCount: results.inapplicable.length
@@ -159,6 +167,16 @@ async function run() {
     console.log(`Violations: ${parsedAxe.violations.length}`);
     console.log(`Passes: ${parsedAxe.passesCount}`);
     console.log(`Incomplete: ${parsedAxe.incompleteCount}`);
+    if (parsedAxe.incomplete && parsedAxe.incomplete.length > 0) {
+      console.log('INCOMPLETE ITEMS:');
+      for (const inc of parsedAxe.incomplete) {
+        console.log(`  Rule: ${inc.id} (${inc.description})`);
+        for (const n of inc.nodes) {
+          console.log(`    Target: ${n.target.join(' ')}`);
+          console.log(`    HTML: ${n.html.slice(0, 100)}`);
+        }
+      }
+    }
 
     if (parsedAxe.violations.length > 0) {
       console.log('\nVIOLATIONS FOUND:');

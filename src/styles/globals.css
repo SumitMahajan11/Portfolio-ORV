@@ -246,3 +246,12 @@ button,
   transform-box: fill-box;
 }
 
+/* ==========================================================================
+   PRE-4b: WALL COMPOSITOR LAYER ISOLATION
+   ========================================================================== */
+.site-wall-compositor {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+
