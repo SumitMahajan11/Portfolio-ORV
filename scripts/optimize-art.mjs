@@ -83,7 +83,7 @@ async function runArtCheck() {
       try {
         const metadata = await sharp(filePath).metadata();
         type = `${metadata.format.toUpperCase()} (${metadata.width}x${metadata.height})`;
-      } catch (err) {
+      } catch {
         // file could not be parsed by sharp
       }
     }

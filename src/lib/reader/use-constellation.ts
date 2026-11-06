@@ -184,7 +184,9 @@ export function useConstellationEngine({
         clearTimeout(dismissTimeoutRef.current);
         dismissTimeoutRef.current = null;
       }
-      setActiveLine(null);
+      queueMicrotask(() => {
+        setActiveLine(null);
+      });
       lastShownTimeRef.current = Date.now();
     }
   }, [isIntroComplete, effectiveBiyooSpeaking]);

@@ -64,9 +64,10 @@ export interface HeroLayersProps {
 }
 
 export function HeroLayers({ mode, particleCap, isTouch }: HeroLayersProps) {
+  const effectiveCap = isTouch ? Math.min(particleCap, 12) : particleCap;
   const activeParticles = PARTICLES_DATA.slice(
     0,
-    Math.min(particleCap, PARTICLES_DATA.length)
+    Math.min(effectiveCap, PARTICLES_DATA.length)
   );
 
   return (

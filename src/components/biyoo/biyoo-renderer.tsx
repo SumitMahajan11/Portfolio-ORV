@@ -23,14 +23,14 @@ export interface BiyooRendererProps {
   isReduced?: boolean;
 }
 
-export function BiyooRenderer({
-  size = 110,
-  eyeVariant,
-  mouthVariant,
-  costume = null,
-  className = "",
-  isReduced = false,
-}: BiyooRendererProps) {
+export function BiyooRenderer(props: BiyooRendererProps) {
+  const {
+    size = 110,
+    eyeVariant,
+    mouthVariant,
+    costume = null,
+    className = "",
+  } = props;
   const clampStyle = { maxWidth: "clamp(72px, 10vw, 110px)", maxHeight: "clamp(72px, 10vw, 110px)" };
   return (
     <div

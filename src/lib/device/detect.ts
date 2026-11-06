@@ -1,10 +1,10 @@
 import type { DeviceMode, DeviceSignals, DeviceState } from "./types";
 
 /**
- * Calculates particle cap per /docs/02-DESIGN-SYSTEM.md:
- * - desktop: 120
- * - mobile: 40
- * - light mode: 15
+ * Calculates particle cap per /docs/02-DESIGN-SYSTEM.md & Phase 5 performance budget:
+ * - desktop: 60
+ * - mobile / touch: 12 (capped for main-thread paint budget)
+ * - light mode: 12
  * - reduced motion: 0 (static fallback)
  */
 export function getParticleCap(
@@ -15,9 +15,9 @@ export function getParticleCap(
     return 0;
   }
   if (mode === "light") {
-    return 15;
+    return 12;
   }
-  return isMobileOrTouch ? 40 : 60;
+  return isMobileOrTouch ? 12 : 60;
 }
 
 /**

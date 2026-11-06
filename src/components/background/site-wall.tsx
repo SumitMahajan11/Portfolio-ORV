@@ -75,13 +75,7 @@ export function SiteWall() {
       'contact',
     ];
 
-    const elements: HTMLElement[] = [];
-    for (const id of sectionIds) {
-      const el = document.getElementById(id);
-      if (el) elements.push(el);
-    }
-
-    if (elements.length === 0) return;
+    const observedElements = new Set<Element>();
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -130,9 +124,25 @@ export function SiteWall() {
       }
     );
 
-    elements.forEach((el) => observer.observe(el));
+    const attachElements = () => {
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && !observedElements.has(el)) {
+          observedElements.add(el);
+          observer.observe(el);
+        }
+      }
+    };
+
+    attachElements();
+
+    const mutObserver = new MutationObserver(() => {
+      attachElements();
+    });
+    mutObserver.observe(document.body, { childList: true, subtree: true });
 
     return () => {
+      mutObserver.disconnect();
       observer.disconnect();
     };
   }, [isExcludedRoute, isInstant]);
@@ -190,6 +200,7 @@ export function SiteWall() {
         return (
           <div
             key={layer.id}
+            data-wall-id={layer.id}
             className={`absolute inset-0 w-full h-full ${
               isInstant || isHeroPinned ? '' : 'transition-opacity duration-700 ease-in-out'
             } ${layer.opacityClass}`}
