@@ -166,16 +166,17 @@ export function useConstellationEngine({
     };
   }, [dismissLine]);
 
-  // Clear any queued timer when intro is active
+  // Clear any queued timer when intro is active or Biyoo is speaking
   useEffect(() => {
-    if (!isIntroComplete) {
+    if (!isIntroComplete || effectiveBiyooSpeaking) {
       if (dismissTimeoutRef.current) {
         clearTimeout(dismissTimeoutRef.current);
         dismissTimeoutRef.current = null;
       }
+      setActiveLine(null);
       lastShownTimeRef.current = Date.now();
     }
-  }, [isIntroComplete]);
+  }, [isIntroComplete, effectiveBiyooSpeaking]);
 
   // Core candidate selection and trigger function
   const triggerLineFromPool = useCallback(
