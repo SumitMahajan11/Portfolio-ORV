@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "check:content": "node --experimental-strip-types scripts/check-content.ts",
     "walls:build": "node scripts/optimize-walls.mjs",
-    "art:check": "node scripts/optimize-art.mjs"
+    "art:check": "node scripts/optimize-art.mjs",
+    "smoke": "node scripts/smoke-live.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
