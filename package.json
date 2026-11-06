@@ -11,14 +11,15 @@
     "check:content": "node --experimental-strip-types scripts/check-content.ts",
     "walls:build": "node scripts/optimize-walls.mjs",
     "art:check": "node scripts/optimize-art.mjs",
-    "smoke": "node scripts/smoke-live.mjs"
+    "smoke": "node scripts/smoke-live.mjs",
+    "regress": "node scripts/regress.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "gsap": "^3.15.1",
     "next": "16.4.5",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
