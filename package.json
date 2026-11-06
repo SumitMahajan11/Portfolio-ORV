@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check:content": "node --experimental-strip-types scripts/check-content.ts",
-    "walls:build": "node scripts/optimize-walls.mjs"
+    "walls:build": "node scripts/optimize-walls.mjs",
+    "art:check": "node scripts/optimize-art.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -26,6 +27,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "sharp": "^0.35.5",
+    "svgo": "^4.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
