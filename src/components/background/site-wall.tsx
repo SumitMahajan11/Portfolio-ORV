@@ -221,9 +221,11 @@ export function SiteWall() {
               <img
                 src={wall.desktop.webp}
                 alt=""
+                width={1920}
+                height={1080}
                 decoding="async"
                 loading={isFirstWall ? 'eager' : 'lazy'}
-                fetchPriority={isFirstWall ? 'auto' : 'low'}
+                fetchPriority={isFirstWall ? 'high' : 'low'}
                 className="w-full h-full object-cover object-center"
               />
             </picture>

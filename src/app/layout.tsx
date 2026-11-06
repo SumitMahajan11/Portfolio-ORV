@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { Cinzel, Space_Grotesk, JetBrains_Mono, Cormorant_Garamond } from "next/font/google";
+import { Cinzel, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
 import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
@@ -12,9 +12,10 @@ import "@/styles/globals.css";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["700"],
   variable: "--font-cinzel",
   display: "swap",
+  preload: true,
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -28,14 +29,6 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains-mono",
-  display: "swap",
-});
-
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ["latin"],
-  style: ["italic"],
-  weight: ["400"],
-  variable: "--font-cormorant-garamond",
   display: "swap",
 });
 
@@ -96,7 +89,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${cormorantGaramond.variable}`}
+      className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">
         {/* Skip to Main Content Link (Keyboard accessible, first focusable item) */}
@@ -125,7 +118,7 @@ export default function RootLayout({
                 <Link
                   href="/"
                   prefetch={false}
-                  className="font-display text-xs sm:text-base font-bold tracking-tight sm:tracking-wider text-feather hover:text-star transition-colors shrink-0"
+                  className={`${cinzel.className} font-display text-xs sm:text-base font-bold tracking-tight sm:tracking-wider text-feather hover:text-star transition-colors shrink-0`}
                 >
                   SUMIT MAHAJAN
                 </Link>
@@ -140,6 +133,7 @@ export default function RootLayout({
                   {/* Bounty board link (desktop header; corner Biyoo covers mobile & tablet) */}
                   <Link
                     href="/wanted"
+                    prefetch={false}
                     className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
                   >
                     Bounty board
@@ -148,6 +142,7 @@ export default function RootLayout({
                   {/* Skip to contact link (desktop only to prevent tablet header overflow) */}
                   <Link
                     href="/#contact"
+                    prefetch={false}
                     className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
                   >
                     Skip to contact &rarr;
@@ -156,6 +151,7 @@ export default function RootLayout({
                   {/* Skip to plain version link - visible on first paint, keyboard focusable */}
                   <Link
                     href="/skip"
+                    prefetch={false}
                     className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1 shrink-0"
                   >
                     <span className="lg:hidden">Skip &rarr;</span>

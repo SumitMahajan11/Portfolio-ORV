@@ -26,7 +26,7 @@
   --font-display: var(--font-cinzel), serif;
   --font-ui: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
-  --font-narration: var(--font-cormorant-garamond), serif;
+  --font-narration: serif;
 }
 
 @theme {
@@ -49,7 +49,7 @@
   --font-display: var(--font-cinzel), serif;
   --font-ui: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
-  --font-narration: var(--font-cormorant-garamond), serif;
+  --font-narration: serif;
 }
 
 html {

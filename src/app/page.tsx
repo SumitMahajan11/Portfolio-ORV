@@ -1,44 +1,16 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { HeroScene, HeroProvider } from "@/components/dokja";
+import { DeferredWorlds } from "@/components/home/deferred-worlds";
 
 const ScenarioSelect = dynamic(
   () => import("@/components/scenario-select").then((m) => m.ScenarioSelect),
   { ssr: true }
 );
 
-const EdgeCloudWorld = dynamic(
-  () => import("@/components/worlds/edge-cloud").then((m) => m.EdgeCloudWorld),
-  { ssr: true }
-);
-
-const RaftWorld = dynamic(
-  () => import("@/components/worlds/raft").then((m) => m.RaftWorld),
-  { ssr: true }
-);
-
-const Z3World = dynamic(
-  () => import("@/components/worlds/z3").then((m) => m.Z3World),
-  { ssr: true }
-);
-
-const SideQuestsSection = dynamic(
-  () => import("@/components/side-quests").then((m) => m.SideQuestsSection),
-  { ssr: true }
-);
-
-const ReadersRecord = dynamic(
-  () => import("@/components/readers-record").then((m) => m.ReadersRecord),
-  { ssr: true }
-);
-
-const FinaleSection = dynamic(
-  () => import("@/components/finale").then((m) => m.FinaleSection),
-  { ssr: true }
-);
-
 const ConstellationGlobalLayer = dynamic(
-  () => import("@/lib/reader").then((m) => m.ConstellationGlobalLayer)
+  () => import("@/lib/reader").then((m) => m.ConstellationGlobalLayer),
+  { ssr: true }
 );
 
 export default function Home() {
@@ -54,23 +26,8 @@ export default function Home() {
         {/* Act 2 Scenario Select Section */}
         <ScenarioSelect />
 
-        {/* Act 3 Flagship World: Edge-Cloud Orchestrator */}
-        <EdgeCloudWorld />
-
-        {/* Act 3 Flagship World: Ratify (Raft) */}
-        <RaftWorld />
-
-        {/* Act 3 Flagship World: iac-verifier (Z3) */}
-        <Z3World />
-
-        {/* Act 3 Side Quests Section */}
-        <SideQuestsSection />
-
-        {/* Act 3 Reader's Record (Skills as ORV Item Info Boxes) */}
-        <ReadersRecord />
-
-        {/* Act 6 Finale & Contact Form Scene */}
-        <FinaleSection />
+        {/* Act 3 & Beyond: Flagship Worlds, Side Quests, Skills, Finale (Deferred) */}
+        <DeferredWorlds />
 
         {/* Global Floating Constellation Overlay */}
         <ConstellationGlobalLayer />

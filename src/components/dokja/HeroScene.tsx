@@ -68,13 +68,20 @@ export function HeroSceneContent({ className = "" }: HeroSceneProps) {
     }
   }, []);
 
-  // Refresh ScrollTrigger after fonts settle
+  // Refresh ScrollTrigger after window loads and document fonts settle cleanly
   useEffect(() => {
-    if (typeof document !== "undefined" && document.fonts) {
-      document.fonts.ready.then(() => ScrollTrigger.refresh());
+    if (typeof window === "undefined") return;
+
+    const onReady = () => ScrollTrigger.refresh();
+
+    if (document.readyState === "complete") {
+      if (document.fonts) {
+        document.fonts.ready.then(onReady);
+      }
+    } else {
+      window.addEventListener("load", onReady, { once: true });
+      return () => window.removeEventListener("load", onReady);
     }
-    const timer = setTimeout(() => ScrollTrigger.refresh(), 300);
-    return () => clearTimeout(timer);
   }, []);
 
   // Main Motion Choreography: Intro Timeline + Master Pinned ScrollTrigger
