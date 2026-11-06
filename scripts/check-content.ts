@@ -68,6 +68,10 @@ interface AboutSection {
 
 const isStrict = process.argv.includes("--strict");
 
+// Known baseline flagships awaiting Sumit's personal public repo links (Task P6-1)
+// Any NEW flagship added to the project must have a valid non-null repo URL immediately.
+const BASELINE_FLAGSHIP_IDS = new Set(["edge-cloud", "ratify", "iac-verifier"]);
+
 // Dynamic TS module loader using TypeScript compiler API
 function loadTsModule<T>(filePath: string): T {
   const content = fs.readFileSync(filePath, "utf8");
@@ -111,7 +115,7 @@ console.log(` Mode: ${isStrict ? "STRICT (Zero Tolerance)" : "WARN (Development)
 console.log("=================================================\n");
 
 const warnings: string[] = [];
-const strictViolations: string[] = [];
+const fatalErrors: string[] = [];
 
 // 2. Check null fields & unverified items in Identity
 console.log("--- 1. Checking Identity ---");
@@ -136,36 +140,60 @@ for (const project of projects) {
     warnings.push(`[project:${project.id}] 'oneLiner' is null`);
   }
 
-  if (project.links.repo === null) {
-    const msg = `[project:${project.id}] 'links.repo' is null [FILL]`;
-    warnings.push(msg);
-    if (isFlagship) {
-      strictViolations.push(`Flagship project '${project.id}' has a null repo link.`);
+  // Flagship repository check
+  if (isFlagship) {
+    const isBaseline = BASELINE_FLAGSHIP_IDS.has(project.id);
+    const hasNullRepo = project.links.repo === null || project.links.repo.includes("[FILL]");
+
+    if (hasNullRepo) {
+      if (!isBaseline || isStrict) {
+        fatalErrors.push(`Flagship project '${project.id}' must have a valid non-null repository link.`);
+      } else {
+        warnings.push(`[project:${project.id}] 'links.repo' is null [FILL] (pending author URL)`);
+      }
     }
+  } else if (project.links.repo === null) {
+    warnings.push(`[project:${project.id}] 'links.repo' is null [FILL]`);
   }
 
   if (project.links.demo === null) {
     warnings.push(`[project:${project.id}] 'links.demo' is null [FILL]`);
   }
 
+  // Evidence rule enforcement on claims
   for (const claim of project.claims) {
-    if (claim.evidence === "unverified") {
-      const msg = `[project:${project.id}] Unverified claim: "${claim.text}"`;
-      warnings.push(msg);
-      strictViolations.push(`Unverified claim found in '${project.id}': "${claim.text}"`);
+    // 1. Every claim must have a valid non-empty source
+    if (!claim.source || claim.source.trim().length === 0 || claim.source.includes("[FILL]")) {
+      fatalErrors.push(`Project '${project.id}' claim "${claim.text}" has no verified source. Every claim must specify a source from docs/03-CONTENT-BIBLE.md or README.`);
     }
+
+    // 2. Unverified claims are strictly forbidden
+    if (claim.evidence === "unverified") {
+      fatalErrors.push(`Project '${project.id}' contains unverified claim: "${claim.text}". Only verified claims may be published.`);
+    }
+  }
+
+  // Projects with claims must document technical limitations
+  if (project.claims.length > 0 && (!project.limits || project.limits.length === 0)) {
+    warnings.push(`[project:${project.id}] Has claims but no limits line. Every project with claims should document engineering boundaries.`);
   }
 }
 
 // 4. Check Skills
 console.log("--- 3. Checking Skills (Reader's Record) ---");
 const BANNED_SKILL_PATTERNS = [
-  { pattern: /%/, name: "%" },
+  { pattern: /%/, name: "% rating" },
   { pattern: /\blevel\b/i, name: "level" },
   { pattern: /\bexpert\b/i, name: "expert" },
   { pattern: /\badvanced\b/i, name: "advanced" },
   { pattern: /\bbeginner\b/i, name: "beginner" },
   { pattern: /\bmaster\b/i, name: "master" },
+  { pattern: /\bninja\b/i, name: "ninja" },
+  { pattern: /\bguru\b/i, name: "guru" },
+  { pattern: /\brockstar\b/i, name: "rockstar" },
+  { pattern: /\bworld-class\b/i, name: "world-class" },
+  { pattern: /\bpassionate\b/i, name: "passionate" },
+  { pattern: /\bcutting-edge\b/i, name: "cutting-edge" },
 ];
 
 for (const skill of skills) {
@@ -173,24 +201,20 @@ for (const skill of skills) {
     warnings.push(`[skill:${skill.name}] 'story' is null (needs confirmation)`);
   }
 
-  // Check for prohibited skill rating terms
+  // Check for prohibited grading or hype terms
   const fullSkillText = `${skill.name} ${skill.story ?? ""}`;
   for (const { pattern, name } of BANNED_SKILL_PATTERNS) {
     if (pattern.test(fullSkillText)) {
-      const err = `Skill '${skill.name}' violates strict rules by including prohibited grading term '${name}'.`;
-      warnings.push(`[skill:${skill.name}] Prohibited term '${name}'`);
-      strictViolations.push(err);
+      fatalErrors.push(`Skill '${skill.name}' violates content bible rules by including prohibited grading/hype term '${name}'.`);
     }
   }
 
   if (!skill.proofProjectIds || skill.proofProjectIds.length === 0) {
-    const err = `Skill '${skill.name}' has 0 proofProjectIds (skills without proof are not permitted).`;
-    warnings.push(`[skill:${skill.name}] 0 proof projects.`);
-    strictViolations.push(err);
+    fatalErrors.push(`Skill '${skill.name}' has 0 proofProjectIds (skills without proof are not permitted).`);
   } else {
     for (const pid of skill.proofProjectIds) {
       if (!projectIds.has(pid)) {
-        strictViolations.push(`Skill '${skill.name}' references non-existent project id '${pid}'.`);
+        fatalErrors.push(`Skill '${skill.name}' references non-existent project id '${pid}'.`);
       }
     }
   }
@@ -200,7 +224,7 @@ for (const skill of skills) {
 console.log("--- 4. Checking Constellation Lines ---");
 if (constellationLines.length !== 40) {
   warnings.push(`Expected 40 Constellation lines, found ${constellationLines.length}.`);
-  strictViolations.push(`Expected exactly 40 Constellation lines, got ${constellationLines.length}.`);
+  fatalErrors.push(`Expected exactly 40 Constellation lines, got ${constellationLines.length}.`);
 }
 
 // 6. Check About section
@@ -228,8 +252,7 @@ for (const file of contentFiles) {
 
   for (const { pattern, name } of BANNED_PATTERNS) {
     if (pattern.test(text)) {
-      const err = `Banned phrase '${name}' detected in file: src/content/${file}`;
-      strictViolations.push(err);
+      fatalErrors.push(`Banned phrase '${name}' detected in file: src/content/${file}`);
     }
   }
 }
@@ -237,35 +260,18 @@ for (const file of contentFiles) {
 // 8. Output Report
 console.log("\n=================================================");
 console.log(` TOTAL WARNINGS (Null / Fill / Unconfirmed): ${warnings.length}`);
+console.log(` TOTAL FATAL ERRORS: ${fatalErrors.length}`);
 console.log("=================================================");
 warnings.forEach((w) => console.log(`  ⚠ ${w}`));
 
-if (isStrict) {
+if (fatalErrors.length > 0) {
   console.log("\n=================================================");
-  console.log(" STRICT AUDIT: UNPUBLISHED PROJECTS");
+  console.log(" CONTENT AUDIT FAILURES");
   console.log("=================================================");
-  const unpublished = projects.filter((p) => !p.published);
-  if (unpublished.length === 0) {
-    console.log("  (None: all projects published)");
-  } else {
-    console.log(`  Found ${unpublished.length} unpublished project(s):`);
-    unpublished.forEach((p) => {
-      console.log(`  - [UNPUBLISHED] id: "${p.id}", title: "${p.title}", status: "${p.status}"`);
-    });
-  }
-
-  console.log("\n=================================================");
-  console.log(` STRICT MODE VIOLATIONS: ${strictViolations.length}`);
-  console.log("=================================================");
-  if (strictViolations.length > 0) {
-    strictViolations.forEach((v) => console.log(`  ✖ [STRICT ERROR] ${v}`));
-    console.log("\nResult: FAILED (strict mode rejects unverified/null flagship data).");
-    process.exit(1);
-  } else {
-    console.log("\nResult: PASSED (strict mode clean).");
-    process.exit(0);
-  }
+  fatalErrors.forEach((err) => console.log(`  ✖ [FATAL ERROR] ${err}`));
+  console.log(`\nResult: FAILED (${fatalErrors.length} fatal error(s) detected).`);
+  process.exit(1);
 } else {
-  console.log("\nResult: PASSED (warn mode exits 0).");
+  console.log("\nResult: PASSED (all content rules verified).");
   process.exit(0);
 }
