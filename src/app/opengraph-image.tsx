@@ -70,7 +70,7 @@ export default function OpenGraphImage() {
               textTransform: "uppercase",
             }}
           >
-            [SCENARIO ARCHIVE // DISTRIBUTED SYSTEMS &amp; VERIFICATION]
+            [IDENTITY ARCHIVE // VERIFIED]
           </span>
         </div>
 
@@ -79,7 +79,7 @@ export default function OpenGraphImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
+            gap: "16px",
           }}
         >
           <h1
@@ -97,13 +97,24 @@ export default function OpenGraphImage() {
           <p
             style={{
               fontSize: "26px",
-              color: "#9AA7BD",
+              color: "#5EE1E6",
               margin: 0,
-              maxWidth: "920px",
+              maxWidth: "960px",
               lineHeight: 1.4,
             }}
           >
-            From-scratch Rust Raft implementation &amp; Z3 reachability proofs on cloud infrastructure.
+            {identity.degree}, {identity.institution}, {identity.city}
+          </p>
+          <p
+            style={{
+              fontSize: "22px",
+              color: "#9AA7BD",
+              margin: 0,
+              maxWidth: "960px",
+              lineHeight: 1.4,
+            }}
+          >
+            Graduating {identity.graduation} • Targeting: {identity.targeting}
           </p>
         </div>
 
@@ -123,7 +134,7 @@ export default function OpenGraphImage() {
               color: "#9AA7BD",
             }}
           >
-            {identity.degree} • {identity.institution}, {identity.city}
+            Public Portfolio
           </span>
           <span
             style={{

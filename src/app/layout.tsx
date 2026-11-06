@@ -37,11 +37,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Sumit Mahajan — Distributed Systems & Correctness",
+    default: "Sumit Mahajan",
     template: "%s | Sumit Mahajan",
   },
   description:
-    "Sumit Mahajan — 3rd-year CSE undergrad at Pimpri Chinchwad University, Pune. From-scratch Rust Raft implementation, Z3 reachability proofs on Terraform, and carbon-aware edge-cloud orchestration.",
+    "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune. Graduating March 2028. Targeting: GSoC 2027 (CNCF / Kubeflow / KubeVirt).",
   alternates: {
     canonical: "/",
   },
@@ -50,19 +50,28 @@ export const metadata: Metadata = {
     apple: "/apple-icon",
   },
   openGraph: {
-    title: "Sumit Mahajan — Distributed Systems & Correctness",
+    title: "Sumit Mahajan",
     description:
-      "From-scratch Rust Raft implementation & Z3 reachability proofs on cloud infrastructure.",
-    url: "/",
-    siteName: "Sumit Mahajan Portfolio",
+      "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune. Graduating March 2028. Targeting: GSoC 2027 (CNCF / Kubeflow / KubeVirt).",
+    url: siteUrl,
+    siteName: "Sumit Mahajan",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: `${siteUrl}/og/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sumit Mahajan — Distributed Systems & Correctness",
+    title: "Sumit Mahajan",
     description:
-      "From-scratch Rust Raft implementation & Z3 reachability proofs on cloud infrastructure.",
+      "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune. Graduating March 2028. Targeting: GSoC 2027 (CNCF / Kubeflow / KubeVirt).",
+    images: [`${siteUrl}/og/og-image.png`],
   },
 };
 
@@ -84,6 +93,16 @@ export default function RootLayout({
     name: identity.name,
     url: siteUrl,
     sameAs: [identity.contact.github, identity.contact.linkedin].filter(Boolean),
+    affiliation: {
+      "@type": "EducationalOrganization",
+      name: identity.institution,
+    },
+    alumniOf: {
+      "@type": "EducationalOrganization",
+      name: identity.institution,
+      endDate: "2028",
+    },
+    description: `${identity.degree}, ${identity.institution}, ${identity.city}. Graduating ${identity.graduation}.`,
   };
 
   return (
