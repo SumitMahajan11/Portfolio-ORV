@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
@@ -111,6 +112,7 @@ async function runContrastVerification() {
   const lumCyan = getLuminance(TOKENS.star.r, TOKENS.star.g, TOKENS.star.b);
 
   const report = [];
+  const lanternReport = [];
   let anyFailed = false;
 
   for (const tint of TINT_PALETTES) {
@@ -143,15 +145,47 @@ async function runContrastVerification() {
       'Mist (#9AA7BD)': `${mistContrast.toFixed(2)}:1`,
       'WCAG AA': pass ? 'PASS' : 'FAIL',
     });
+
+    // W-3: Cursor Lantern at peak opacity 0.18 cyan (#5EE1E6) above scrim
+    const withLantern = {
+      r: Math.round(composite.r * 0.82 + TOKENS.star.r * 0.18),
+      g: Math.round(composite.g * 0.82 + TOKENS.star.g * 0.18),
+      b: Math.round(composite.b * 0.82 + TOKENS.star.b * 0.18),
+    };
+    const lumLantern = getLuminance(withLantern.r, withLantern.g, withLantern.b);
+    const bodyLanternContrast = getContrast(lumBody, lumLantern);
+    const passLantern = bodyLanternContrast >= 4.5;
+    if (!passLantern) anyFailed = true;
+
+    lanternReport.push({
+      'Tint State': tint.label,
+      'Composited RGB': `rgb(${composite.r},${composite.g},${composite.b})`,
+      'With Lantern (0.18 Cyan)': `rgb(${withLantern.r},${withLantern.g},${withLantern.b})`,
+      'Body Text (#F4F6FA)': `${bodyLanternContrast.toFixed(2)}:1 (${passLantern ? 'PASS' : 'FAIL'})`,
+      'WCAG AA Normal Text (>=4.5:1)': passLantern ? 'PASS' : 'FAIL',
+    });
   }
 
+  console.log('1. BASE TINT STATES (NO LANTERN):');
   console.table(report);
+
+  console.log('\n2. WITH CURSOR LANTERN AT PEAK OPACITY (0.18 CYAN #5EE1E6 ABOVE SCRIM):');
+  console.table(lanternReport);
+
+  const proofDir = path.resolve('docs/proofs');
+  fs.mkdirSync(proofDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(proofDir, 'contrast-recheck-output.txt'),
+    `=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY LANTERN (0.18 CYAN) ===\n\n` +
+    JSON.stringify(lanternReport, null, 2) + '\n\n' +
+    JSON.stringify(report, null, 2) + '\n'
+  );
 
   if (anyFailed) {
     console.error('\nFAILED: One or more tint states fail WCAG AA contrast threshold.');
     process.exit(1);
   } else {
-    console.log('\nPASSED: All tinted states satisfy WCAG AA contrast on the brightest region behind text.');
+    console.log('\nPASSED: All tinted states satisfy WCAG AA contrast on brightest region both with and without peak lantern.');
   }
 }
 

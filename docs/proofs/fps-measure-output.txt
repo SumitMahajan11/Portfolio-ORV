@@ -11,16 +11,16 @@ FPS Measurement Summary:
 ├───────────────────────┼───────────────────────────────┤
 │ Device Viewport       │ '390x844 (Mobile)'            │
 │ CPU Throttle Rate     │ '4x Slowdown'                 │
-│ Effective FPS         │ '55.9 fps'                    │
-│ Avg Frame Time        │ '17.88 ms'                    │
+│ Effective FPS         │ '55.6 fps'                    │
+│ Avg Frame Time        │ '18.00 ms'                    │
 │ Min Frame Time        │ '16.5 ms'                     │
-│ Max Frame Time        │ '166.6 ms'                    │
-│ Total Frames Recorded │ 329                           │
-│ Frames > 20ms         │ 15                            │
-│ Frames > 33ms         │ 10                            │
+│ Max Frame Time        │ '133.2 ms'                    │
+│ Total Frames Recorded │ 338                           │
+│ Frames > 20ms         │ 20                            │
+│ Frames > 33ms         │ 16                            │
 │ Blend Mode Tested     │ 'plain-alpha'                 │
 │ Threshold             │ '>= 55 fps'                   │
 │ Status                │ 'PASS (plain-alpha approved)' │
 └───────────────────────┴───────────────────────────────┘
 
-SUCCESS: Effective FPS (55.9) meets or exceeds 55 fps on 4x CPU throttled mobile.
+SUCCESS: Effective FPS (55.6) meets or exceeds 55 fps on 4x CPU throttled mobile.

@@ -44,6 +44,45 @@ interface SectionSpan {
   bottom: number;
 }
 
+interface PaperSpriteProps {
+  className?: string;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * Original inline SVG paper shape:
+ * Slightly bent rectangle manuscript paper, faint text lines, 1px cyan edge glow.
+ * NO blur, NO filters.
+ */
+function PaperSprite({ className = '', width = 56, height = 76 }: PaperSpriteProps) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 56 76"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M 5 4 C 18 1.5, 36 2, 50 5 C 52 24, 51 48, 49 71 C 34 74, 18 72, 4 72 C 3 49, 4 26, 5 4 Z"
+        fill="rgba(10, 15, 24, 0.72)"
+        stroke="#5EE1E6"
+        strokeWidth="1"
+        strokeOpacity="0.45"
+      />
+      <line x1="10" y1="14" x2="44" y2="15" stroke="rgba(244, 246, 250, 0.25)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="23" x2="41" y2="24" stroke="rgba(244, 246, 250, 0.2)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="32" x2="45" y2="33" stroke="rgba(244, 246, 250, 0.22)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="41" x2="33" y2="42" stroke="rgba(244, 246, 250, 0.18)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="50" x2="43" y2="51" stroke="rgba(244, 246, 250, 0.2)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="59" x2="26" y2="60" stroke="rgba(94, 225, 230, 0.3)" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /**
  * LivingWall:
  * Single global living wall background (wall-01) with GSAP ScrollTrigger
@@ -52,13 +91,8 @@ interface SectionSpan {
  */
 export function LivingWall() {
   const pathname = usePathname();
-  const { lightMode, reducedMotion } = useMode();
+  const { mode, lightMode, reducedMotion, signals, isHydrated } = useMode();
   const isInstant = lightMode || reducedMotion;
-
-  const zoomRef = useRef<HTMLDivElement>(null);
-  const breathRef = useRef<HTMLDivElement>(null);
-  const tintRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const activeTintRef = useRef<TintId>('hub');
 
   // Route-aware: Plain dark background for /skip, /wanted, /dev, and /style-test routes
   const isExcludedRoute =
@@ -66,6 +100,28 @@ export function LivingWall() {
     pathname === '/wanted' ||
     pathname?.startsWith('/dev') ||
     pathname?.startsWith('/style-test');
+
+  const isDesktop =
+    typeof window !== 'undefined' &&
+    window.innerWidth >= 769 &&
+    !signals.isCoarsePointer &&
+    !signals.isTouch;
+  const isDesktopFull =
+    isHydrated &&
+    !isExcludedRoute &&
+    !isInstant &&
+    mode === 'full' &&
+    isDesktop;
+
+  const zoomRef = useRef<HTMLDivElement>(null);
+  const breathRef = useRef<HTMLDivElement>(null);
+  const tintRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const activeTintRef = useRef<TintId>('hub');
+  const lanternRef = useRef<HTMLDivElement>(null);
+  const papersContainerRef = useRef<HTMLDivElement>(null);
+  const paperFarRef = useRef<HTMLDivElement>(null);
+  const paperMidRef = useRef<HTMLDivElement>(null);
+  const paperNearRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isExcludedRoute || typeof window === 'undefined') return;
@@ -86,6 +142,11 @@ export function LivingWall() {
 
     // Desktop: Scroll zoom 1.00 -> 1.12 + translate drift toward the light (max ~1.5%) + idle breathing loop
     mm.add('(min-width: 769px)', () => {
+      // Scroll parallax for floating papers (3 depth layers: far, mid, near)
+      const farSetter = paperFarRef.current ? gsap.quickSetter(paperFarRef.current, 'y', 'px') : null;
+      const midSetter = paperMidRef.current ? gsap.quickSetter(paperMidRef.current, 'y', 'px') : null;
+      const nearSetter = paperNearRef.current ? gsap.quickSetter(paperNearRef.current, 'y', 'px') : null;
+
       // 1. One GSAP ScrollTrigger scrubbing the whole document scroll
       gsap.fromTo(
         zoomEl,
@@ -101,7 +162,15 @@ export function LivingWall() {
             end: 'bottom bottom',
             scrub: DEFAULT_SCRUB,
             invalidateOnRefresh: true,
-            onUpdate: (self) => syncTint(self.scroll(), 0.8),
+            onUpdate: (self) => {
+              const scrollY = self.scroll();
+              syncTint(scrollY, 0.8);
+              if (farSetter && midSetter && nearSetter) {
+                farSetter(scrollY * -0.03);
+                midSetter(scrollY * -0.06);
+                nearSetter(scrollY * -0.10);
+              }
+            },
           },
         }
       );
@@ -293,6 +362,63 @@ export function LivingWall() {
       }
     };
 
+    // Cursor lantern & tab visibility handler (desktop full mode only)
+    let cleanupLanternAndPapers: (() => void) | null = null;
+
+    if (isDesktopFull && lanternRef.current) {
+      const lanternEl = lanternRef.current;
+      const xTo = gsap.quickTo(lanternEl, 'x', { duration: 0.35, ease: 'power2.out' });
+      const yTo = gsap.quickTo(lanternEl, 'y', { duration: 0.35, ease: 'power2.out' });
+
+      let hasMoved = false;
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!hasMoved) {
+          hasMoved = true;
+          gsap.set(lanternEl, { x: e.clientX, y: e.clientY });
+          gsap.to(lanternEl, { opacity: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        } else {
+          xTo(e.clientX);
+          yTo(e.clientY);
+          if (Number(gsap.getProperty(lanternEl, 'opacity')) < 1) {
+            gsap.to(lanternEl, { opacity: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+          }
+        }
+      };
+
+      const onPointerLeave = () => {
+        if (!hasMoved) return;
+        gsap.to(lanternEl, { opacity: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      };
+
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          if (hasMoved) {
+            gsap.to(lanternEl, { opacity: 0, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+          }
+          if (papersContainerRef.current) {
+            papersContainerRef.current.classList.add('is-paused');
+          }
+        } else {
+          if (papersContainerRef.current) {
+            papersContainerRef.current.classList.remove('is-paused');
+          }
+        }
+      };
+
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      document.addEventListener('pointerleave', onPointerLeave);
+      document.addEventListener('mouseleave', onPointerLeave);
+      document.addEventListener('visibilitychange', onVisibilityChange);
+
+      cleanupLanternAndPapers = () => {
+        window.removeEventListener('pointermove', onPointerMove);
+        document.removeEventListener('pointerleave', onPointerLeave);
+        document.removeEventListener('mouseleave', onPointerLeave);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+      };
+    }
+
     // No work during the first 2s after load
     const scheduleInit = () => {
       initTimer = setTimeout(() => {
@@ -319,9 +445,10 @@ export function LivingWall() {
       if (mutObserver) mutObserver.disconnect();
       window.removeEventListener('resize', debouncedRecompute);
       window.removeEventListener('scroll', handleScroll);
+      if (cleanupLanternAndPapers) cleanupLanternAndPapers();
       mm.revert();
     };
-  }, [isExcludedRoute, isInstant]);
+  }, [isExcludedRoute, isInstant, isDesktopFull]);
 
   if (isExcludedRoute) {
     return null;
@@ -443,6 +570,129 @@ export function LivingWall() {
           </div>
         )}
 
+        {/* Floating papers: placed between tint layer and scrim (Desktop full only) */}
+        {isDesktopFull && (
+          <div
+            ref={papersContainerRef}
+            aria-hidden="true"
+            className="living-wall-papers absolute inset-0 pointer-events-none overflow-hidden"
+          >
+            {/* Far depth layer (smaller + dimmer) */}
+            <div
+              ref={paperFarRef}
+              className="absolute inset-0 pointer-events-none"
+              style={{ willChange: 'transform' }}
+            >
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: '16%',
+                  left: '12%',
+                  transform: 'rotate(-4deg)',
+                  opacity: 0.18,
+                }}
+              >
+                <PaperSprite
+                  width={38}
+                  height={52}
+                  className="living-wall-paper-sprite living-wall-paper-1"
+                />
+              </div>
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: '64%',
+                  left: '78%',
+                  transform: 'rotate(6deg)',
+                  opacity: 0.16,
+                }}
+              >
+                <PaperSprite
+                  width={40}
+                  height={54}
+                  className="living-wall-paper-sprite living-wall-paper-2"
+                />
+              </div>
+            </div>
+
+            {/* Mid depth layer */}
+            <div
+              ref={paperMidRef}
+              className="absolute inset-0 pointer-events-none"
+              style={{ willChange: 'transform' }}
+            >
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: '36%',
+                  left: '84%',
+                  transform: 'rotate(8deg)',
+                  opacity: 0.28,
+                }}
+              >
+                <PaperSprite
+                  width={48}
+                  height={66}
+                  className="living-wall-paper-sprite living-wall-paper-3"
+                />
+              </div>
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: '78%',
+                  left: '20%',
+                  transform: 'rotate(-5deg)',
+                  opacity: 0.26,
+                }}
+              >
+                <PaperSprite
+                  width={50}
+                  height={68}
+                  className="living-wall-paper-sprite living-wall-paper-4"
+                />
+              </div>
+            </div>
+
+            {/* Near depth layer (larger + brighter) */}
+            <div
+              ref={paperNearRef}
+              className="absolute inset-0 pointer-events-none"
+              style={{ willChange: 'transform' }}
+            >
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: '20%',
+                  left: '70%',
+                  transform: 'rotate(-7deg)',
+                  opacity: 0.42,
+                }}
+              >
+                <PaperSprite
+                  width={58}
+                  height={80}
+                  className="living-wall-paper-sprite living-wall-paper-5"
+                />
+              </div>
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: '50%',
+                  left: '14%',
+                  transform: 'rotate(5deg)',
+                  opacity: 0.46,
+                }}
+              >
+                <PaperSprite
+                  width={64}
+                  height={88}
+                  className="living-wall-paper-sprite living-wall-paper-6"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Fixed scrim layer above the wall: vignette + soft dark gradient */}
         <div
           className="living-wall-scrim absolute inset-0 pointer-events-none"
@@ -453,6 +703,28 @@ export function LivingWall() {
             `,
           }}
         />
+
+        {/* Cursor lantern: fixed element above the scrim (Desktop full only) */}
+        {isDesktopFull && (
+          <div
+            ref={lanternRef}
+            aria-hidden="true"
+            className="living-wall-lantern pointer-events-none fixed"
+            style={{
+              width: 480,
+              height: 480,
+              top: 0,
+              left: 0,
+              marginTop: -240,
+              marginLeft: -240,
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle at center, rgba(94, 225, 230, 0.18) 0%, rgba(94, 225, 230, 0.08) 40%, rgba(94, 225, 230, 0) 70%)',
+              opacity: 0,
+              willChange: 'transform, opacity',
+            }}
+          />
+        )}
       </div>
     </>
   );

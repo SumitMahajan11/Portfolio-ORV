@@ -1,0 +1,27 @@
+=== DESKTOP 1440x900 SCROLL FPS WITH POINTER MOVING ===
+
+Date: 2026-11-07T18:38:39.748Z
+Effective FPS: 58.3 fps
+Avg Frame Time: 17.14 ms
+Min Frame Time: 16.6 ms
+Max Frame Time: 50 ms
+Total Frames: 209
+Frames > 18ms: 5
+Frames > 33.3ms: 4
+Threshold: >= 58 fps
+Status: PASS
+
+{
+  "Device Viewport": "1440x900 (Desktop Unthrottled)",
+  "CPU Throttle Rate": "1x (None)",
+  "Effective FPS": "58.3 fps",
+  "Avg Frame Time": "17.14 ms",
+  "Min Frame Time": "16.6 ms",
+  "Max Frame Time": "50 ms",
+  "Total Frames Recorded": 209,
+  "Frames > 18ms": 5,
+  "Frames > 33.3ms": 4,
+  "Lantern & Papers Active": "YES",
+  "Threshold": ">= 58 fps",
+  "Status": "PASS"
+}
