@@ -4,9 +4,7 @@
  */
 
 export const WALL_PLACEHOLDERS: Record<string, string> = {
-  "wall-01": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoYAA4APzmYvlYvLCajsAgB4CcJQBOgDSv8uP8gPboAAP73eEkiuE9nciT9t8dPZWxMluRVP9L5qBZXeDkIFMwA",
-  "wall-02": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAAAwAwCdASoYAA4APzleyV8vI6qmGAHgJwlAE6ZQAIzH2eQAAP7tXgWUOJL6tElazXkWclPBZshRhH01iAqEAA==",
-  "wall-03": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAABQAwCdASoYAA4APzmOvlOvKqcisAgB4CcJY2ZARgAw34IgAAD+9JwXiSXx7jxiJvohXKAz9Lonk8i1bGYfAMcAAAA="
+  "wall-01": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoYAA4APzmYvlYvLCajsAgB4CcJQBOgDSv8uP8gPboAAP73eEkiuE9nciT9t8dPZWxMluRVP9L5qBZXeDkIFMwA"
 } as const;
 
-export type WallId = 'wall-01' | 'wall-02' | 'wall-03';
+export type WallId = 'wall-01';

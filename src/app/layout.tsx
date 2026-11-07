@@ -6,7 +6,7 @@ import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
 import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
 import { CornerBountyButton } from "@/components/biyoo/corner-bounty-button";
-import { SiteWall } from "@/components/background/site-wall";
+import { LivingWall } from "@/components/background/site-wall";
 import { identity } from "@/content";
 import "@/styles/globals.css";
 
@@ -128,8 +128,8 @@ export default function RootLayout({
         />
         <ModeProvider>
           <SoundProvider>
-            {/* Global Background Wall Layer (PRE-4) */}
-            <SiteWall />
+            {/* Global Living Wall Background */}
+            <LivingWall />
 
             {/* Persistent Accessible Header */}
             <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">

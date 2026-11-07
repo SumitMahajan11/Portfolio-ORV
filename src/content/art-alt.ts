@@ -290,31 +290,7 @@ export const ART_ALT_REGISTRY: Record<string, ArtAssetMetadata> = {
     alt: "Dark starlit cosmic void with ethereal blue nebula and floating pages",
     ariaHidden: false,
     decorative: false,
-    description: "Story Wall background for Hero through Scenario Select",
-  },
-  "wall-02": {
-    id: "wall-02",
-    category: "wall",
-    alt: "Digital neon archive with illuminated terminal screens and grid corridors",
-    ariaHidden: false,
-    decorative: false,
-    description: "Worlds Wall background for Worlds, Side Quests, and Skills",
-  },
-  "wall-03": {
-    id: "wall-03",
-    category: "wall",
-    alt: "Cyan-lit paper wall with cascading manuscript sheets and constellation lines",
-    ariaHidden: false,
-    decorative: false,
-    description: "Finale Wall background for Finale and Contact Form",
-  },
-  "wall-04": {
-    id: "wall-04",
-    category: "wall",
-    alt: "Alternative starlit paper archive background",
-    ariaHidden: false,
-    decorative: false,
-    description: "Alternative wall intake asset",
+    description: "Living Wall background for the site",
   },
 
   // =========================================================================

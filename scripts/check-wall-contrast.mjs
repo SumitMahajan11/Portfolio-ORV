@@ -10,9 +10,7 @@ const TOKENS = {
 };
 
 const WALLS = [
-  { id: 'wall-01', source: 'docs/reference/walls/wall-01.png', label: 'Story Wall (wall-01)' },
-  { id: 'wall-02', source: 'docs/reference/walls/wall-02.png', label: 'Worlds Wall (wall-02)' },
-  { id: 'wall-03', source: 'docs/reference/walls/wall-03.png', label: 'Finale Wall (wall-03)' },
+  { id: 'wall-01', source: 'docs/reference/walls/wall-01.png', label: 'Living Wall (wall-01)' },
 ];
 
 function sRGBtoLinear(c255) {
@@ -134,11 +132,10 @@ async function analyze() {
     process.exit(1);
   }
 
-  console.log(`\nPASSED: All walls meet WCAG AA requirements with dim overlay >= ${dimArg}.`);
+  console.log(`\nPASSED: Living wall meets WCAG AA requirements with dim overlay >= ${dimArg}.`);
 }
 
 analyze().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-

@@ -3,16 +3,14 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 const WALLS = [
-  { id: 'wall-01', source: 'docs/reference/walls/wall-01.png', role: 'story' },
-  { id: 'wall-02', source: 'docs/reference/walls/wall-02.png', role: 'worlds' },
-  { id: 'wall-03', source: 'docs/reference/walls/wall-03.png', role: 'finale' },
+  { id: 'wall-01', source: 'docs/reference/walls/wall-01.png', role: 'living' },
 ];
 
 const BUDGETS = {
-  desktopAvif: 120 * 1024,   // 120 KB
-  desktopWebp: 180 * 1024,   // 180 KB
-  portraitAvif: 100 * 1024,  // 100 KB
-  portraitWebp: 150 * 1024,  // 150 KB
+  desktopAvif: 200 * 1024,   // 200 KB target
+  desktopWebp: 300 * 1024,   // 300 KB
+  portraitAvif: 120 * 1024,  // 120 KB target
+  portraitWebp: 180 * 1024,  // 180 KB
   placeholder: 1024,         // 1 KB
 };
 
@@ -20,7 +18,7 @@ const OUT_DIR = path.resolve('public/art/wall');
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 async function optimize() {
-  console.log('=== Optimizing Wall Assets ===\n');
+  console.log('=== Optimizing Living Wall Assets (wall-01) ===\n');
   const results = [];
   const placeholders = {};
   let anyFailed = false;
@@ -34,18 +32,18 @@ async function optimize() {
     const image = sharp(srcPath);
     const meta = await image.metadata();
 
-    // 1. Desktop: 1920x1080 cover crop
+    // 1. Desktop: 2560x1440 cover crop (AVIF target <= 200KB)
     const desktopBufferAvif = await sharp(srcPath)
-      .resize(1920, 1080, { fit: 'cover', position: 'center' })
+      .resize(2560, 1440, { fit: 'cover', position: 'center' })
       .avif({ quality: 60, effort: 6 })
       .toBuffer();
 
     const desktopBufferWebp = await sharp(srcPath)
-      .resize(1920, 1080, { fit: 'cover', position: 'center' })
+      .resize(2560, 1440, { fit: 'cover', position: 'center' })
       .webp({ quality: 80, effort: 6 })
       .toBuffer();
 
-    // 2. Mobile portrait: 1080x1920 cover crop from the calmest/darkest region (left side: x 0..529, full height)
+    // 2. Mobile portrait: 1080x1920 cover crop (AVIF target <= 120KB)
     // 941 * (9/16) = ~529px width
     const cropWidth = Math.round(meta.height * (9 / 16));
     const portraitCrop = sharp(srcPath)
@@ -112,7 +110,7 @@ async function optimize() {
 
 export const WALL_PLACEHOLDERS: Record<string, string> = ${JSON.stringify(placeholders, null, 2)} as const;
 
-export type WallId = 'wall-01' | 'wall-02' | 'wall-03';
+export type WallId = 'wall-01';
 `;
 
   const placeholderPath = path.resolve('src/content/wall-placeholders.ts');
@@ -134,4 +132,3 @@ optimize().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
