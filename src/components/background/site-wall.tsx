@@ -3,14 +3,22 @@
 import React, { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useMode } from '@/lib/flags';
-import { WALL_DEFINITIONS, DEFAULT_WALL_ID } from '@/content/walls';
-import { gsap, registerMotionPlugins, DEFAULT_SCRUB } from '@/lib/motion';
+import {
+  WALL_DEFINITIONS,
+  DEFAULT_WALL_ID,
+  TINT_DEFINITIONS,
+  VISIBLE_TINT_IDS,
+  SECTION_TINT_MAP,
+  MONITORED_SECTION_IDS,
+  type TintId,
+} from '@/content/walls';
+import { gsap, ScrollTrigger, registerMotionPlugins, DEFAULT_SCRUB } from '@/lib/motion';
 
 /**
  * LivingWall:
  * Single global living wall background (wall-01) with GSAP ScrollTrigger
  * scrubbing a subtle zoom/drift toward the light, idle breathing loop (desktop full mode),
- * and a fixed vignette/scrim layer for WCAG AA contrast.
+ * per-section color grading tint layers, and a fixed vignette/scrim layer for WCAG AA contrast.
  */
 export function LivingWall() {
   const pathname = usePathname();
@@ -19,6 +27,8 @@ export function LivingWall() {
 
   const zoomRef = useRef<HTMLDivElement>(null);
   const breathRef = useRef<HTMLDivElement>(null);
+  const tintRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const activeTintRef = useRef<TintId>('hub');
 
   // Route-aware: Plain dark background for /skip, /wanted, /dev, and /style-test routes
   const isExcludedRoute =
@@ -35,7 +45,7 @@ export function LivingWall() {
     const breathEl = breathRef.current;
     if (!zoomEl || !breathEl) return;
 
-    // Light mode and reduced motion: static wall at scale 1, no ScrollTrigger, no loops
+    // Light mode and reduced motion: static wall at scale 1, no ScrollTrigger, no loops, no tints
     if (isInstant) {
       gsap.set(zoomEl, { scale: 1, xPercent: 0, yPercent: 0, clearProps: 'transform' });
       gsap.set(breathEl, { scale: 1, clearProps: 'transform' });
@@ -102,7 +112,107 @@ export function LivingWall() {
       gsap.set(breathEl, { scale: 1.0 });
     });
 
+    // Per-section tint crossfade controller (opacity only, 0.8s power2.inOut)
+    const crossfadeTo = (targetTint: TintId, duration = 0.8) => {
+      if (activeTintRef.current === targetTint && duration > 0) return;
+      activeTintRef.current = targetTint;
+
+      VISIBLE_TINT_IDS.forEach((tintId) => {
+        const el = tintRefs.current[tintId];
+        if (!el) return;
+
+        if (tintId === targetTint) {
+          gsap.to(el, {
+            opacity: 0.35,
+            duration,
+            ease: 'power2.inOut',
+            overwrite: 'auto',
+          });
+        } else {
+          gsap.to(el, {
+            opacity: 0,
+            duration,
+            ease: 'power2.inOut',
+            overwrite: 'auto',
+          });
+        }
+      });
+    };
+
+    // Attach one ScrollTrigger per monitored section element
+    const sectionTriggers: ScrollTrigger[] = [];
+    const attachedIds = new Set<string>();
+
+    const syncCurrentSectionTint = (duration = 0) => {
+      const vCenter = window.innerHeight * 0.5;
+      for (const id of MONITORED_SECTION_IDS) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= vCenter && rect.bottom >= vCenter) {
+            crossfadeTo(SECTION_TINT_MAP[id] || 'hub', duration);
+            return;
+          }
+        }
+      }
+      crossfadeTo('hub', duration);
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      ScrollTrigger.refresh();
+      syncCurrentSectionTint(0);
+    });
+
+    const attachSectionTriggers = () => {
+      let anyNew = false;
+      for (const id of MONITORED_SECTION_IDS) {
+        if (!attachedIds.has(id)) {
+          const el = document.getElementById(id);
+          if (el) {
+            attachedIds.add(id);
+            resizeObserver.observe(el);
+            const tintId = SECTION_TINT_MAP[id] || 'hub';
+            const st = ScrollTrigger.create({
+              trigger: el,
+              start: id === 'hero-scene-container' ? 'top top' : 'top 50%',
+              end: 'bottom 50%',
+              onEnter: () => crossfadeTo(tintId),
+              onEnterBack: () => crossfadeTo(tintId),
+              onLeaveBack: id === 'scenario-select' || id === 'hero-scene-container' ? () => crossfadeTo('hub') : undefined,
+              onLeave: id === 'contact' ? () => crossfadeTo('hub') : undefined,
+            });
+            sectionTriggers.push(st);
+            anyNew = true;
+          }
+        }
+      }
+      if (anyNew) {
+        ScrollTrigger.refresh();
+      }
+    };
+
+    attachSectionTriggers();
+
+    // Sync initial active section tint immediately
+    syncCurrentSectionTint(0);
+
+    // Observe deferred worlds mounting below the fold
+    const mutObserver = new MutationObserver(() => {
+      attachSectionTriggers();
+      if (attachedIds.size >= MONITORED_SECTION_IDS.length) {
+        mutObserver.disconnect();
+      }
+    });
+    mutObserver.observe(document.body, { childList: true, subtree: true });
+
     return () => {
+      mutObserver.disconnect();
+      resizeObserver.disconnect();
+      sectionTriggers.forEach((st) => {
+        if (st && typeof st.kill === 'function') {
+          st.kill();
+        }
+      });
       mm.revert();
     };
   }, [isExcludedRoute, isInstant]);
@@ -199,6 +309,34 @@ export function LivingWall() {
           </div>
         </div>
 
+        {/* Tint Layer: One fixed layer above the wall and below the scrim; one stacked child per tint */}
+        {!isInstant && (
+          <div
+            aria-hidden="true"
+            className="living-wall-tints absolute inset-0 pointer-events-none"
+            style={{ willChange: 'opacity' }}
+          >
+            {VISIBLE_TINT_IDS.map((tintId: TintId) => {
+              const def = TINT_DEFINITIONS[tintId];
+              return (
+                <div
+                  key={tintId}
+                  ref={(el) => {
+                    tintRefs.current[tintId] = el;
+                  }}
+                  data-tint={tintId}
+                  data-tint-id={tintId}
+                  className="absolute inset-0 pointer-events-none opacity-0"
+                  style={{
+                    background: def.gradient ?? undefined,
+                    willChange: 'opacity',
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+
         {/* Fixed scrim layer above the wall: vignette + soft dark gradient */}
         <div
           className="living-wall-scrim absolute inset-0 pointer-events-none"
@@ -213,6 +351,3 @@ export function LivingWall() {
     </>
   );
 }
-
-// Backward-compatible alias
-export const SiteWall = LivingWall;
