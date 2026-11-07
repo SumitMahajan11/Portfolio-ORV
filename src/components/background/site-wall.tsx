@@ -14,6 +14,36 @@ import {
 } from '@/content/walls';
 import { gsap, ScrollTrigger, registerMotionPlugins, DEFAULT_SCRUB } from '@/lib/motion';
 
+type IdleCallbackHandle = number | ReturnType<typeof setTimeout>;
+
+const scheduleIdle = (fn: () => void): IdleCallbackHandle => {
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    return window.requestIdleCallback((deadline) => {
+      if (deadline.timeRemaining() > 10 || deadline.didTimeout) {
+        fn();
+      } else {
+        scheduleIdle(fn);
+      }
+    });
+  }
+  return setTimeout(fn, 1000);
+};
+
+const cancelIdle = (handle: IdleCallbackHandle): void => {
+  if (typeof window !== 'undefined' && typeof handle === 'number' && 'cancelIdleCallback' in window) {
+    window.cancelIdleCallback(handle);
+    return;
+  }
+  clearTimeout(handle as ReturnType<typeof setTimeout>);
+};
+
+interface SectionSpan {
+  id: string;
+  tintId: TintId;
+  top: number;
+  bottom: number;
+}
+
 /**
  * LivingWall:
  * Single global living wall background (wall-01) with GSAP ScrollTrigger
@@ -71,6 +101,7 @@ export function LivingWall() {
             end: 'bottom bottom',
             scrub: DEFAULT_SCRUB,
             invalidateOnRefresh: true,
+            onUpdate: (self) => syncTint(self.scroll(), 0.8),
           },
         }
       );
@@ -105,6 +136,7 @@ export function LivingWall() {
             end: 'bottom bottom',
             scrub: DEFAULT_SCRUB,
             invalidateOnRefresh: true,
+            onUpdate: (self) => syncTint(self.scroll(), 0.8),
           },
         }
       );
@@ -121,7 +153,9 @@ export function LivingWall() {
         const el = tintRefs.current[tintId];
         if (!el) return;
 
-        if (tintId === targetTint) {
+        if (duration === 0) {
+          gsap.set(el, { opacity: tintId === targetTint ? 0.35 : 0 });
+        } else if (tintId === targetTint) {
           gsap.to(el, {
             opacity: 0.35,
             duration,
@@ -139,80 +173,152 @@ export function LivingWall() {
       });
     };
 
-    // Attach one ScrollTrigger per monitored section element
-    const sectionTriggers: ScrollTrigger[] = [];
-    const attachedIds = new Set<string>();
+    let sectionSpans: SectionSpan[] = [];
+    let mutObserver: MutationObserver | null = null;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let idleHandle: IdleCallbackHandle | null = null;
+    let initTimer: ReturnType<typeof setTimeout> | null = null;
+    let initIdleHandle: IdleCallbackHandle | null = null;
+    let cachedVCenter = typeof window !== 'undefined' ? window.innerHeight * 0.5 : 400;
 
-    const syncCurrentSectionTint = (duration = 0) => {
-      const vCenter = window.innerHeight * 0.5;
+    const computeOffsets = () => {
+      cachedVCenter = window.innerHeight * 0.5;
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const spans: SectionSpan[] = [];
+
       for (const id of MONITORED_SECTION_IDS) {
         const el = document.getElementById(id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= vCenter && rect.bottom >= vCenter) {
-            crossfadeTo(SECTION_TINT_MAP[id] || 'hub', duration);
-            return;
-          }
+          spans.push({
+            id,
+            tintId: SECTION_TINT_MAP[id] || 'hub',
+            top: rect.top + scrollY,
+            bottom: rect.bottom + scrollY,
+          });
         }
       }
-      crossfadeTo('hub', duration);
+
+      spans.sort((a, b) => a.top - b.top);
+      sectionSpans = spans;
     };
 
-    const resizeObserver = new ResizeObserver(() => {
+    const getTargetTint = (probe: number): TintId => {
+      if (sectionSpans.length === 0) return 'hub';
+      if (probe < sectionSpans[0].top) return 'hub';
+
+      for (let i = 0; i < sectionSpans.length; i++) {
+        const cur = sectionSpans[i];
+        const next = sectionSpans[i + 1];
+        const end = next ? next.top : cur.bottom;
+        if (probe >= cur.top && probe < end) {
+          return cur.tintId;
+        }
+      }
+
+      return 'hub';
+    };
+
+    let isInitialized = false;
+
+    const syncTint = (scrollY: number = window.scrollY || document.documentElement.scrollTop, duration = 0.8) => {
+      if (!isInitialized) {
+        if (scrollY > 10) {
+          isInitialized = true;
+          computeOffsets();
+        } else {
+          return;
+        }
+      }
+      if (sectionSpans.length === 0) return;
+      const probe = scrollY + cachedVCenter;
+      const targetTint = getTargetTint(probe);
+      crossfadeTo(targetTint, duration);
+    };
+
+    const handleScroll = () => {
+      syncTint(window.scrollY, 0.8);
+    };
+
+    const recomputeOffsets = () => {
+      computeOffsets();
       ScrollTrigger.refresh();
-      syncCurrentSectionTint(0);
-    });
+      syncTint(window.scrollY, 0);
+    };
 
-    const attachSectionTriggers = () => {
-      let anyNew = false;
-      for (const id of MONITORED_SECTION_IDS) {
-        if (!attachedIds.has(id)) {
-          const el = document.getElementById(id);
-          if (el) {
-            attachedIds.add(id);
-            resizeObserver.observe(el);
-            const tintId = SECTION_TINT_MAP[id] || 'hub';
-            const st = ScrollTrigger.create({
-              trigger: el,
-              start: id === 'hero-scene-container' ? 'top top' : 'top 50%',
-              end: 'bottom 50%',
-              onEnter: () => crossfadeTo(tintId),
-              onEnterBack: () => crossfadeTo(tintId),
-              onLeaveBack: id === 'scenario-select' || id === 'hero-scene-container' ? () => crossfadeTo('hub') : undefined,
-              onLeave: id === 'contact' ? () => crossfadeTo('hub') : undefined,
-            });
-            sectionTriggers.push(st);
-            anyNew = true;
-          }
-        }
+    const debouncedRecompute = () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+        debounceTimer = null;
       }
-      if (anyNew) {
-        ScrollTrigger.refresh();
+      if (idleHandle !== null) {
+        cancelIdle(idleHandle);
+        idleHandle = null;
+      }
+
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        idleHandle = scheduleIdle(() => {
+          idleHandle = null;
+          recomputeOffsets();
+        });
+      }, 250);
+    };
+
+    const initTintController = () => {
+      isInitialized = true;
+      computeOffsets();
+      syncTint(window.scrollY, 0);
+
+      window.addEventListener('resize', debouncedRecompute);
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
+      const allMounted = MONITORED_SECTION_IDS.every(
+        (id) => document.getElementById(id) !== null
+      );
+
+      if (!allMounted) {
+        mutObserver = new MutationObserver(() => {
+          const nowAllMounted = MONITORED_SECTION_IDS.every(
+            (id) => document.getElementById(id) !== null
+          );
+          if (nowAllMounted) {
+            mutObserver?.disconnect();
+            mutObserver = null;
+            debouncedRecompute();
+          }
+        });
+        const container = document.getElementById('main-content') || document.body;
+        mutObserver.observe(container, { childList: true, subtree: true });
       }
     };
 
-    attachSectionTriggers();
+    // No work during the first 2s after load
+    const scheduleInit = () => {
+      initTimer = setTimeout(() => {
+        initTimer = null;
+        initIdleHandle = scheduleIdle(() => {
+          initIdleHandle = null;
+          initTintController();
+        });
+      }, 2000);
+    };
 
-    // Sync initial active section tint immediately
-    syncCurrentSectionTint(0);
-
-    // Observe deferred worlds mounting below the fold
-    const mutObserver = new MutationObserver(() => {
-      attachSectionTriggers();
-      if (attachedIds.size >= MONITORED_SECTION_IDS.length) {
-        mutObserver.disconnect();
-      }
-    });
-    mutObserver.observe(document.body, { childList: true, subtree: true });
+    if (document.readyState === 'complete') {
+      scheduleInit();
+    } else {
+      window.addEventListener('load', scheduleInit, { once: true });
+    }
 
     return () => {
-      mutObserver.disconnect();
-      resizeObserver.disconnect();
-      sectionTriggers.forEach((st) => {
-        if (st && typeof st.kill === 'function') {
-          st.kill();
-        }
-      });
+      window.removeEventListener('load', scheduleInit);
+      if (initTimer) clearTimeout(initTimer);
+      if (initIdleHandle !== null) cancelIdle(initIdleHandle);
+      if (debounceTimer) clearTimeout(debounceTimer);
+      if (idleHandle !== null) cancelIdle(idleHandle);
+      if (mutObserver) mutObserver.disconnect();
+      window.removeEventListener('resize', debouncedRecompute);
+      window.removeEventListener('scroll', handleScroll);
       mm.revert();
     };
   }, [isExcludedRoute, isInstant]);
