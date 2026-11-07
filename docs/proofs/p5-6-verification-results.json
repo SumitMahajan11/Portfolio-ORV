@@ -1,0 +1,90 @@
+{
+  "scrollTrigger": {
+    "at0Pct": 4,
+    "at100Pct": 3
+  },
+  "leakCheck": {
+    "initial": 4,
+    "onSkip": 0,
+    "afterReturn": 4,
+    "noLeak": true
+  },
+  "keyboardPath": {
+    "focusSteps": [
+      {
+        "tag": "A",
+        "id": "",
+        "text": "Skip to main content →",
+        "ariaLabel": null,
+        "role": null,
+        "href": "#main-content"
+      },
+      {
+        "tag": "A",
+        "id": "",
+        "text": "SUMIT MAHAJAN",
+        "ariaLabel": null,
+        "role": null,
+        "href": "/"
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "Full",
+        "ariaLabel": null,
+        "role": null,
+        "href": null
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "Light",
+        "ariaLabel": null,
+        "role": null,
+        "href": null
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "Sound Off",
+        "ariaLabel": "Sound Off (Click to turn on)",
+        "role": null,
+        "href": null
+      },
+      {
+        "tag": "A",
+        "id": "",
+        "text": "Bounty board",
+        "ariaLabel": null,
+        "role": null,
+        "href": "/wanted"
+      },
+      {
+        "tag": "A",
+        "id": "",
+        "text": "Skip to contact →",
+        "ariaLabel": null,
+        "role": null,
+        "href": "/#contact"
+      }
+    ],
+    "firstIsSkip": true,
+    "traversesNav": true
+  },
+  "reducedMotion": {
+    "storyboardPresent": true,
+    "storyboardVisible": true,
+    "standardHidden": false,
+    "cardCount": 18
+  },
+  "lightMode": {
+    "dustMoteCount": 0,
+    "starRingVisible": true,
+    "cpuThrottleActive": true
+  },
+  "throttledMobile": {
+    "rate": 4,
+    "viewport": "390x844",
+    "fpsResponsive": true
+  }
+}
