@@ -1,4 +1,4 @@
-﻿====================================================
+====================================================
  MEASURING SCROLL FPS ON THROTTLED MOBILE (4x CPU) 
  Target: 390x844 Viewport, 4x CPU Throttle, Plain Alpha Gradients
 ====================================================
@@ -11,16 +11,16 @@ FPS Measurement Summary:
 ├───────────────────────┼───────────────────────────────┤
 │ Device Viewport       │ '390x844 (Mobile)'            │
 │ CPU Throttle Rate     │ '4x Slowdown'                 │
-│ Effective FPS         │ '55.6 fps'                    │
-│ Avg Frame Time        │ '18.00 ms'                    │
+│ Effective FPS         │ '54 fps'                    │
+│ Avg Frame Time        │ '18.51 ms'                    │
 │ Min Frame Time        │ '16.5 ms'                     │
-│ Max Frame Time        │ '133.2 ms'                    │
-│ Total Frames Recorded │ 338                           │
-│ Frames > 20ms         │ 20                            │
-│ Frames > 33ms         │ 16                            │
+│ Max Frame Time        │ '150 ms'                    │
+│ Total Frames Recorded │ 334                           │
+│ Frames > 20ms         │ 29                            │
+│ Frames > 33ms         │ 25                            │
 │ Blend Mode Tested     │ 'plain-alpha'                 │
 │ Threshold             │ '>= 55 fps'                   │
-│ Status                │ 'PASS (plain-alpha approved)' │
+│ Status                │ 'FAIL' │
 └───────────────────────┴───────────────────────────────┘
 
-SUCCESS: Effective FPS (55.6) meets or exceeds 55 fps on 4x CPU throttled mobile.
+WARNING: Effective FPS (54) is below 55 threshold.

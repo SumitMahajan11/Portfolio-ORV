@@ -110,6 +110,22 @@ export default function RootLayout({
       lang="en"
       className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          href="/art/biyoo/biyoo-calm-360.avif"
+          media="(max-width: 639px)"
+        />
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          href="/art/biyoo/biyoo-calm-720.avif"
+          media="(min-width: 640px)"
+        />
+      </head>
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">
         {/* Skip to Main Content Link (Keyboard accessible, first focusable item) */}
         <nav aria-label="Skip navigation">

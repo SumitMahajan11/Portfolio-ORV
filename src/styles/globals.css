@@ -234,18 +234,6 @@ button,
   transform-box: view-box;
 }
 
-/* Elements animated with keyword/percentage origins (e.g. bottom center) */
-#biyoo_body,
-#biyoo_head,
-#biyoo_arms_l,
-#biyoo_arms_r,
-#biyoo_legs_l,
-#biyoo_legs_r,
-#biyoo_horns_l,
-#biyoo_horns_r {
-  transform-box: fill-box;
-}
-
 /* ==========================================================================
    PRE-4b: WALL COMPOSITOR LAYER ISOLATION
    ========================================================================== */

@@ -168,6 +168,30 @@ export const ART_ALT_REGISTRY: Record<string, ArtAssetMetadata> = {
   // =========================================================================
   // BIYOO MASCOT LAYERS & STATES
   // =========================================================================
+  "biyoo_calm": {
+    id: "biyoo_calm",
+    category: "biyoo",
+    alt: "Biyoo, a fluffy spherical cotton mascot with two striped amber horns floating in a calm, cheerful pose",
+    ariaHidden: false,
+    decorative: false,
+    description: "Biyoo companion in calm default floating pose",
+  },
+  "biyoo_excited": {
+    id: "biyoo_excited",
+    category: "biyoo",
+    alt: "Biyoo excited and cheering with outstretched arms and smiling eyes",
+    ariaHidden: false,
+    decorative: false,
+    description: "Biyoo companion in excited reaction pose",
+  },
+  "biyoo_burst": {
+    id: "biyoo_burst",
+    category: "biyoo",
+    alt: "Golden exclamation alert marks beside Biyoo's horn",
+    ariaHidden: true,
+    decorative: true,
+    description: "Golden exclamation burst mark icon indicating alert or reaction",
+  },
   "biyoo_body_base": {
     id: "biyoo_body_base",
     category: "biyoo",

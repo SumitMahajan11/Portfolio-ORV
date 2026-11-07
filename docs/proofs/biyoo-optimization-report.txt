@@ -1,0 +1,51 @@
+=== BIYOO ASSET OPTIMIZATION REPORT ===
+
+Date: 2026-11-07T19:16:04.434Z
+Budget: Each 2x pose <= 60 KB AVIF
+
+[
+  {
+    "Asset": "calm",
+    "Width": "360px",
+    "AVIF Size": "17.3 KB (17750 B)",
+    "WebP Size": "17.6 KB (17998 B)",
+    "2x Budget Check": "OK"
+  },
+  {
+    "Asset": "calm",
+    "Width": "720px",
+    "AVIF Size": "40.4 KB (41361 B)",
+    "WebP Size": "44.8 KB (45920 B)",
+    "2x Budget Check": "PASS (<=60KB)"
+  },
+  {
+    "Asset": "excited",
+    "Width": "360px",
+    "AVIF Size": "17.1 KB (17548 B)",
+    "WebP Size": "18.3 KB (18758 B)",
+    "2x Budget Check": "OK"
+  },
+  {
+    "Asset": "excited",
+    "Width": "720px",
+    "AVIF Size": "37.6 KB (38549 B)",
+    "WebP Size": "46.7 KB (47788 B)",
+    "2x Budget Check": "PASS (<=60KB)"
+  },
+  {
+    "Asset": "burst",
+    "Width": "96px",
+    "AVIF Size": "3.6 KB (3678 B)",
+    "WebP Size": "3.9 KB (4020 B)",
+    "2x Budget Check": "OK"
+  },
+  {
+    "Asset": "burst",
+    "Width": "192px",
+    "AVIF Size": "2.1 KB (2179 B)",
+    "WebP Size": "2.3 KB (2374 B)",
+    "2x Budget Check": "OK"
+  }
+]
+
+Verdict: ALL BUDGETS SATISFIED

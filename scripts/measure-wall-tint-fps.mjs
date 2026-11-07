@@ -161,6 +161,38 @@ async function measureFps() {
       console.log(`\nSUCCESS: Effective FPS (${data.effectiveFps}) meets or exceeds 55 fps on 4x CPU throttled mobile.`);
     }
 
+    const proofDir = path.resolve('docs/proofs');
+    fs.mkdirSync(proofDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(proofDir, 'fps-measure-output.txt'),
+      `====================================================\n` +
+      ` MEASURING SCROLL FPS ON THROTTLED MOBILE (4x CPU) \n` +
+      ` Target: 390x844 Viewport, 4x CPU Throttle, Plain Alpha Gradients\n` +
+      `====================================================\n\n` +
+      `Navigating to ${TARGET_URL}...\n` +
+      `Starting scroll FPS probe through all section tints (down and up)...\n` +
+      `FPS Measurement Summary:\n` +
+      `┌───────────────────────┬───────────────────────────────┐\n` +
+      `│ (index)               │ Values                        │\n` +
+      `├───────────────────────┼───────────────────────────────┤\n` +
+      `│ Device Viewport       │ '390x844 (Mobile)'            │\n` +
+      `│ CPU Throttle Rate     │ '4x Slowdown'                 │\n` +
+      `│ Effective FPS         │ '${data.effectiveFps} fps'                    │\n` +
+      `│ Avg Frame Time        │ '${data.avgFrameMs} ms'                    │\n` +
+      `│ Min Frame Time        │ '${data.minFrameMs} ms'                     │\n` +
+      `│ Max Frame Time        │ '${data.maxFrameMs} ms'                    │\n` +
+      `│ Total Frames Recorded │ ${data.totalFrames}                           │\n` +
+      `│ Frames > 20ms         │ ${data.slowOver20ms}                            │\n` +
+      `│ Frames > 33ms         │ ${data.slowOver33ms}                            │\n` +
+      `│ Blend Mode Tested     │ 'plain-alpha'                 │\n` +
+      `│ Threshold             │ '>= 55 fps'                   │\n` +
+      `│ Status                │ '${data.effectiveFps >= 55 ? 'PASS (plain-alpha approved)' : 'FAIL'}' │\n` +
+      `└───────────────────────┴───────────────────────────────┘\n\n` +
+      (data.effectiveFps >= 55
+        ? `SUCCESS: Effective FPS (${data.effectiveFps}) meets or exceeds 55 fps on 4x CPU throttled mobile.\n`
+        : `WARNING: Effective FPS (${data.effectiveFps}) is below 55 threshold.\n`)
+    );
+
     return data;
   } catch (err) {
     chromeProc.kill();
