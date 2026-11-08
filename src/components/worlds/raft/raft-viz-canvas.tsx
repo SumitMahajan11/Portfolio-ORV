@@ -82,8 +82,13 @@ export function RaftVizCanvas({ onClearScenario }: RaftVizCanvasProps) {
         </div>
 
         {/* REQUIRED NOTICE */}
-        <div className="px-2.5 py-1 rounded border border-[#F28C28]/40 bg-[#F28C28]/10 text-[#F28C28] font-mono text-[10px] sm:text-xs uppercase tracking-wider font-semibold">
-          illustrative visualization, not the Ratify code
+        <div className="flex flex-col sm:items-end gap-1">
+          <div className="px-2.5 py-1 rounded border border-[#F28C28]/40 bg-[#F28C28]/10 text-[#F28C28] font-mono text-[10px] sm:text-xs uppercase tracking-wider font-semibold">
+            illustrative visualization, not the Ratify code
+          </div>
+          <div className="text-[10px] font-mono text-mist/70 italic text-right max-w-md">
+            Simplified 3-node teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
+          </div>
         </div>
       </div>
 
@@ -183,7 +188,7 @@ export function RaftVizCanvas({ onClearScenario }: RaftVizCanvasProps) {
 
         {/* Partition Barrier Line (Animates opacity and transform) */}
         <div
-          className={`absolute inset-y-12 left-1/3 w-[3px] z-20 pointer-events-none transition-all duration-700 transform ${activeStep.partitionActive
+          className={`absolute inset-y-12 left-2/3 w-[3px] z-20 pointer-events-none transition-all duration-700 transform ${activeStep.partitionActive
               ? "opacity-100 scale-y-100"
               : "opacity-0 scale-y-0"
             }`}
@@ -222,16 +227,30 @@ export function RaftVizCanvas({ onClearScenario }: RaftVizCanvasProps) {
                     Replicated Scrolls ({node.logs.length})
                   </span>
                   <div className="flex items-center gap-1">
-                    {node.logs.map((log) => (
-                      <div
-                        key={log.index}
-                        className="px-1.5 py-0.5 rounded border border-[#F1E4C3]/40 bg-[#F1E4C3]/10 text-[#F1E4C3] font-mono text-[9px] flex items-center gap-1 shadow-sm"
-                        title={`Log #${log.index} (Term ${log.term}): ${log.data}`}
-                      >
-                        <span>📜</span>
-                        <span>#{log.index}</span>
-                      </div>
-                    ))}
+                    {node.logs.map((log) => {
+                      const isCommitted = log.committed;
+                      return (
+                        <div
+                          key={log.index}
+                          className={`px-1.5 py-0.5 rounded font-mono text-[9px] flex items-center gap-1 shadow-sm transition-all ${
+                            isCommitted
+                              ? "border border-[#F1E4C3]/40 bg-[#F1E4C3]/10 text-[#F1E4C3]"
+                              : "border border-dashed border-[#F1E4C3]/30 bg-[#F1E4C3]/5 text-[#F1E4C3]/50 opacity-60"
+                          }`}
+                          title={`Log #${log.index} (Term ${log.term}): ${log.data} [${
+                            isCommitted ? "Committed" : "Pending"
+                          }]`}
+                        >
+                          <span>📜</span>
+                          <span>#{log.index}</span>
+                          {!isCommitted && (
+                            <span className="text-[8px] uppercase tracking-tighter text-mist/60">
+                              (pending)
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -239,6 +258,11 @@ export function RaftVizCanvas({ onClearScenario }: RaftVizCanvasProps) {
                 {node.role === "leader" && (
                   <div className="px-2 py-0.5 rounded-full bg-[#F28C28]/20 border border-[#F28C28]/40 text-[#F28C28] font-mono text-[9px] font-semibold">
                     Quorum: {node.votesReceived.length}/3 votes
+                  </div>
+                )}
+                {node.role === "candidate" && (
+                  <div className="px-2 py-0.5 rounded-full bg-[#D4B15F]/20 border border-[#D4B15F]/40 text-[#D4B15F] font-mono text-[9px] font-semibold">
+                    Seeking: {node.votesReceived.length}/3 votes
                   </div>
                 )}
               </div>

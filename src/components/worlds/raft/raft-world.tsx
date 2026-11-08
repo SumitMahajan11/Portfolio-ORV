@@ -119,6 +119,9 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
             <p className="font-mono text-xs text-mist">
               Observe leader failure, term increments, majority quorum elections, partition walls, and stale leader demotion.
             </p>
+            <p className="font-mono text-xs text-[#F28C28]/90 font-medium">
+              Simplified 3-node teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
+            </p>
           </div>
 
           {/* Conditional Progressive Enhancement: Static diagram for reduced-motion/light, dynamic for full interactive */}

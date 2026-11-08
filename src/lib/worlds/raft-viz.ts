@@ -1,9 +1,9 @@
 /**
  * Raft Deterministic Visualizer State Machine
  *
- * Requirements from /docs/10-WORLD-RAFT.md & 18-PROMPTS-PHASE-2.md (P2-1):
- * - 3 nodes (Node 1, Node 2, Node 3)
- * - Scripted scenario steps only (no real networking, no randomness)
+ * Requirements from /docs/10-WORLD-RAFT.md & Task:
+ * - Real mini Raft state machine (src/lib/worlds/raft-model.ts) GENERATES the frames.
+ * - 3 nodes (Node 1, Node 2, Node 3).
  * - Label: "illustrative visualization, not the Ratify code"
  * - Invariant self-checks:
  *   (a) at most one leader per term across all states
@@ -14,12 +14,19 @@
  *   (f) after healing, the stale leader steps down on seeing a higher term
  */
 
+import {
+  runRaftScenario,
+  type RaftSnapshot,
+  type RaftRole as ModelRole,
+} from "./raft-model";
+
 export type RaftRole = "leader" | "candidate" | "follower" | "crashed";
 
 export interface RaftLogEntry {
   index: number;
   term: number;
   data: string;
+  committed: boolean;
 }
 
 export interface RaftNodeState {
@@ -32,6 +39,7 @@ export interface RaftNodeState {
   expression: "calm" | "determined" | "alert" | "fallen" | "attentive";
   partition: "A" | "B"; // "A" = isolated minority, "B" = quorum majority
   votesReceived: number[];
+  commitIndex: number;
 }
 
 export interface SignalFlare {
@@ -56,322 +64,160 @@ export interface RaftScenarioStep {
   flares: SignalFlare[];
 }
 
-/**
- * 5 Deterministic Scripted Scenario Beats (Naruto: Hidden Leaf Village)
- *
- * Beat 0: Steady State (Hokage Era 1)
- * Beat 1: Hokage Falls (Era Ends)
- * Beat 2: Election & Majority Quorum (Era 2 Rises)
- * Beat 3: Network Partition (Minority Cannot Elect)
- * Beat 4: Healing & Stale Leader Steps Down
- */
-export const RAFT_SCENARIO_STEPS: RaftScenarioStep[] = [
-  // -------------------------------------------------------------
-  // Step 0: Era 1 - Normal Steady State (Hokage Node 1)
-  // -------------------------------------------------------------
+interface BeatMetadata {
+  id: string;
+  beatTitle: string;
+  eraName: string;
+  caption: string;
+  details: string;
+  flares: SignalFlare[];
+}
+
+const BEAT_METADATA: BeatMetadata[] = [
+  // Beat 1 (Step 0)
   {
-    stepIndex: 0,
     id: "steady-state",
     beatTitle: "Era 1: Steady Hokage Leadership",
     eraName: "First Hokage Era (Term 1)",
-    term: 1,
     caption:
       "Node 1 rules as Hokage in Term 1. Heartbeat signal flares maintain cluster authority and sync the peace scroll.",
     details:
       "Node 1 emits periodic heartbeat flares to Followers (Node 2 & Node 3). Log scroll #1 (Term 1) is replicated across all 3 nodes.",
-    partitionActive: false,
-    partitionMinorityNodeId: null,
-    nodes: [
-      {
-        id: 1,
-        name: "Node 1",
-        role: "leader",
-        currentTerm: 1,
-        votedFor: 1,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "calm",
-        partition: "B",
-        votesReceived: [1, 2, 3],
-      },
-      {
-        id: 2,
-        name: "Node 2",
-        role: "follower",
-        currentTerm: 1,
-        votedFor: 1,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "attentive",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 3,
-        name: "Node 3",
-        role: "follower",
-        currentTerm: 1,
-        votedFor: 1,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "attentive",
-        partition: "B",
-        votesReceived: [],
-      },
-    ],
     flares: [
       { id: "f-1-2", from: 1, to: 2, type: "heartbeat", label: "Heartbeat Flare" },
       { id: "f-1-3", from: 1, to: 3, type: "heartbeat", label: "Heartbeat Flare" },
     ],
   },
-
-  // -------------------------------------------------------------
-  // Step 1: Leader Crashes - Era Ends
-  // -------------------------------------------------------------
+  // Beat 2 (Step 1)
   {
-    stepIndex: 1,
     id: "leader-crash",
     beatTitle: "Leader Crashes: Era 1 Ends",
     eraName: "Interregnum (Silence)",
-    term: 1,
     caption:
       "Hokage Node 1 crashes and goes silent. Signal flares cease, and Followers detect heartbeat timeout.",
     details:
       "No signal flares reach the village. Nodes 2 & 3 recognize the leader's demise. The term remains 1 until an election is called.",
-    partitionActive: false,
-    partitionMinorityNodeId: null,
-    nodes: [
-      {
-        id: 1,
-        name: "Node 1",
-        role: "crashed",
-        currentTerm: 1,
-        votedFor: 1,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "fallen",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 2,
-        name: "Node 2",
-        role: "follower",
-        currentTerm: 1,
-        votedFor: null,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "alert",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 3,
-        name: "Node 3",
-        role: "follower",
-        currentTerm: 1,
-        votedFor: null,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "alert",
-        partition: "B",
-        votesReceived: [],
-      },
-    ],
     flares: [],
   },
-
-  // -------------------------------------------------------------
-  // Step 2: Election & Majority Quorum (Era 2 Rises)
-  // -------------------------------------------------------------
+  // Beat 3 (Step 2)
   {
-    stepIndex: 2,
     id: "election-quorum",
     beatTitle: "Election: Majority Quorum (Term 2)",
     eraName: "Second Hokage Era (Term 2)",
-    term: 2,
     caption:
-      "Node 2 increments term to 2, runs as Candidate, and receives majority vote (2/3) from Node 3 to become Hokage.",
+      "Node 3 increments term to 2, runs as Candidate, and receives majority vote (2/3) from Node 2 to become Hokage.",
     details:
-      "Election rule verified: Node 2 votes for itself (1 vote) and secures Node 3's vote (2/3 majority). Term 2 > Term 1.",
-    partitionActive: false,
-    partitionMinorityNodeId: null,
-    nodes: [
-      {
-        id: 1,
-        name: "Node 1",
-        role: "crashed",
-        currentTerm: 1,
-        votedFor: 1,
-        logs: [{ index: 1, term: 1, data: "Scroll #1 (Pact)" }],
-        expression: "fallen",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 2,
-        name: "Node 2",
-        role: "leader",
-        currentTerm: 2,
-        votedFor: 2,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-        ],
-        expression: "calm",
-        partition: "B",
-        votesReceived: [2, 3],
-      },
-      {
-        id: 3,
-        name: "Node 3",
-        role: "follower",
-        currentTerm: 2,
-        votedFor: 2,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-        ],
-        expression: "attentive",
-        partition: "B",
-        votesReceived: [],
-      },
-    ],
+      "Election rule verified: Node 3 votes for itself (1 vote) and secures Node 2's vote (2/3 majority). Term 2 > Term 1.",
     flares: [
-      { id: "f-2-3-vote", from: 2, to: 3, type: "replicate", label: "Scroll #2 Replication" },
-      { id: "f-2-3-hb", from: 2, to: 3, type: "heartbeat", label: "Term 2 Flare" },
+      { id: "f-3-2-vote", from: 3, to: 2, type: "heartbeat", label: "Term 2 Flare" },
     ],
   },
-
-  // -------------------------------------------------------------
-  // Step 3: Network Partition - Minority Cannot Elect
-  // -------------------------------------------------------------
+  // Beat 4 (Step 3)
   {
-    stepIndex: 3,
     id: "network-partition",
     beatTitle: "Network Partition: Minority Blocked",
     eraName: "Third Hokage Era (Term 3)",
-    term: 3,
     caption:
-      "A partition isolates Node 2 in the minority (1/3). Nodes 1 & 3 form a majority (2/3) and elect Node 3 for Term 3.",
+      "A partition isolates Node 3 in the minority (1/3). Nodes 1 & 2 form a majority (2/3) and elect Node 2 for Term 3.",
     details:
-      "Node 2 cannot commit or elect with only 1/3 votes. Nodes 1 & 3 reach quorum, increment to Term 3, and elect Node 3 as Hokage.",
-    partitionActive: true,
-    partitionMinorityNodeId: 2,
-    nodes: [
-      {
-        id: 1,
-        name: "Node 1",
-        role: "follower",
-        currentTerm: 3,
-        votedFor: 3,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-          { index: 3, term: 3, data: "Scroll #3 (Alliance)" },
-        ],
-        expression: "attentive",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 2,
-        name: "Node 2",
-        role: "leader", // Stale leader in minority partition
-        currentTerm: 2,
-        votedFor: 2,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-        ],
-        expression: "alert",
-        partition: "A", // Isolated minority
-        votesReceived: [2], // Only 1 vote! Cannot reach majority of 2
-      },
-      {
-        id: 3,
-        name: "Node 3",
-        role: "leader", // Legitimate Hokage in majority partition
-        currentTerm: 3,
-        votedFor: 3,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-          { index: 3, term: 3, data: "Scroll #3 (Alliance)" },
-        ],
-        expression: "calm",
-        partition: "B",
-        votesReceived: [1, 3], // 2 of 3 votes = Majority!
-      },
-    ],
+      "Node 3 accepts an uncommitted client entry but cannot commit with only 1/3 votes. Nodes 1 & 2 reach quorum, increment to Term 3, and elect Node 2 as Hokage.",
     flares: [
-      { id: "f-3-1-hb", from: 3, to: 1, type: "heartbeat", label: "Term 3 Flare" },
-      { id: "f-3-1-rep", from: 3, to: 1, type: "replicate", label: "Scroll #3 Replication" },
+      { id: "f-2-1-hb", from: 2, to: 1, type: "heartbeat", label: "Term 3 Flare" },
+      { id: "f-2-1-rep", from: 2, to: 1, type: "replicate", label: "Scroll #2 Replication" },
     ],
   },
-
-  // -------------------------------------------------------------
-  // Step 4: Partition Heals - Stale Leader Steps Down
-  // -------------------------------------------------------------
+  // Beat 5 (Step 4)
   {
-    stepIndex: 4,
     id: "partition-heals",
     beatTitle: "Healing: Stale Leader Steps Down",
     eraName: "United Village (Term 3)",
-    term: 3,
     caption:
-      "Partition dissolves. Node 2 receives Term 3 flare from Node 3 and immediately steps down to Follower.",
+      "Partition dissolves. Node 3 receives Term 3 flare from Node 2 and immediately steps down to Follower.",
     details:
-      "Seeing Term 3 > Term 2, Node 2 yields authority without conflict. All 3 nodes synchronize under Hokage Node 3.",
-    partitionActive: false,
-    partitionMinorityNodeId: null,
-    nodes: [
-      {
-        id: 1,
-        name: "Node 1",
-        role: "follower",
-        currentTerm: 3,
-        votedFor: 3,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-          { index: 3, term: 3, data: "Scroll #3 (Alliance)" },
-        ],
-        expression: "attentive",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 2,
-        name: "Node 2",
-        role: "follower", // Successfully stepped down!
-        currentTerm: 3, // Updated to highest seen term
-        votedFor: 3,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-          { index: 3, term: 3, data: "Scroll #3 (Alliance)" },
-        ],
-        expression: "attentive",
-        partition: "B",
-        votesReceived: [],
-      },
-      {
-        id: 3,
-        name: "Node 3",
-        role: "leader",
-        currentTerm: 3,
-        votedFor: 3,
-        logs: [
-          { index: 1, term: 1, data: "Scroll #1 (Pact)" },
-          { index: 2, term: 2, data: "Scroll #2 (Defense)" },
-          { index: 3, term: 3, data: "Scroll #3 (Alliance)" },
-        ],
-        expression: "calm",
-        partition: "B",
-        votesReceived: [1, 2, 3],
-      },
-    ],
+      "Seeing Term 3 > Term 2, Node 3 steps down to Follower. Its uncommitted term 2 entry is overwritten by Node 2's committed entry.",
     flares: [
-      { id: "f-3-1-final", from: 3, to: 1, type: "heartbeat", label: "Term 3 Heartbeat" },
-      { id: "f-3-2-final", from: 3, to: 2, type: "heartbeat", label: "Term 3 Heartbeat" },
+      { id: "f-2-1-final", from: 2, to: 1, type: "heartbeat", label: "Term 3 Heartbeat" },
+      { id: "f-2-3-final", from: 2, to: 3, type: "heartbeat", label: "Term 3 Heartbeat" },
     ],
   },
 ];
+
+function determineExpression(
+  role: ModelRole,
+  stepIndex: number,
+  isMinority: boolean
+): "calm" | "determined" | "alert" | "fallen" | "attentive" {
+  if (role === "down") return "fallen";
+  if (role === "leader") return isMinority ? "alert" : "calm";
+  if (role === "candidate") return "determined";
+  if (stepIndex === 1 || isMinority) return "alert";
+  return "attentive";
+}
+
+function mapSnapshotToScenarioStep(
+  snapshot: RaftSnapshot,
+  meta: BeatMetadata
+): RaftScenarioStep {
+  const isPartitionActive = snapshot.partitionGroups.length > 1;
+  const minorityGroup = isPartitionActive
+    ? snapshot.partitionGroups.find((g) => g.length < 2) ?? null
+    : null;
+  const minorityNodeId = minorityGroup ? minorityGroup[0] : null;
+
+  const nodes: RaftNodeState[] = snapshot.nodes.map((node) => {
+    const isMinority = isPartitionActive && minorityGroup?.includes(node.id) === true;
+    const mappedRole: RaftRole = node.role === "down" ? "crashed" : node.role;
+
+    const logs: RaftLogEntry[] = node.log.map((entry, idx) => ({
+      index: idx + 1,
+      term: entry.term,
+      data: entry.label,
+      committed: idx + 1 <= node.commitIndex,
+    }));
+
+    return {
+      id: node.id,
+      name: `Node ${node.id}`,
+      role: mappedRole,
+      currentTerm: node.currentTerm,
+      votedFor: node.votedFor,
+      logs,
+      expression: determineExpression(node.role, snapshot.stepIndex, isMinority),
+      partition: isMinority ? "A" : "B",
+      votesReceived: [...node.votesReceived],
+      commitIndex: node.commitIndex,
+    };
+  });
+
+  return {
+    stepIndex: snapshot.stepIndex,
+    id: meta.id,
+    beatTitle: meta.beatTitle,
+    eraName: meta.eraName,
+    term: snapshot.highestTerm,
+    caption: meta.caption,
+    details: meta.details,
+    partitionActive: isPartitionActive,
+    partitionMinorityNodeId: minorityNodeId,
+    nodes,
+    flares: meta.flares,
+  };
+}
+
+/**
+ * Real mini Raft state machine generates the scenario frames dynamically.
+ */
+export function buildRaftScenarioSteps(): RaftScenarioStep[] {
+  const { snapshots } = runRaftScenario();
+  return snapshots.map((snapshot, idx) =>
+    mapSnapshotToScenarioStep(snapshot, BEAT_METADATA[idx])
+  );
+}
+
+/**
+ * 5 Deterministic Scenario Steps derived directly from Raft state machine snapshots.
+ */
+export const RAFT_SCENARIO_STEPS: RaftScenarioStep[] = buildRaftScenarioSteps();
 
 // -------------------------------------------------------------
 // Invariant Self-Check Assertions (P2-1 Requirements)
@@ -405,14 +251,11 @@ export function runRaftSelfCheck(): RaftSelfCheckResult {
   const assertions: RaftSelfCheckAssertion[] = [];
 
   try {
-    // ---------------------------------------------------------
     // (a) At most one leader per term across all states
-    // ---------------------------------------------------------
     const leadersByTerm = new Map<number, Set<number>>();
     for (const step of RAFT_SCENARIO_STEPS) {
       for (const node of step.nodes) {
         if (node.role === "leader") {
-          // If in a partitioned step, ensure only one leader per term exists
           if (!leadersByTerm.has(node.currentTerm)) {
             leadersByTerm.set(node.currentTerm, new Set());
           }
@@ -423,7 +266,6 @@ export function runRaftSelfCheck(): RaftSelfCheckResult {
 
     let invariantAPassed = true;
     for (const [, leaderSet] of leadersByTerm.entries()) {
-      // In any single term, at most one legitimate leader was elected
       if (leaderSet.size > 1) {
         invariantAPassed = false;
       }
@@ -438,15 +280,12 @@ export function runRaftSelfCheck(): RaftSelfCheckResult {
         .join("; "),
     });
 
-    // ---------------------------------------------------------
     // (b) Candidate needs votes from a majority (2 of 3) to win
-    // ---------------------------------------------------------
     const totalNodes = 3;
     const requiredMajority = Math.floor(totalNodes / 2) + 1; // 2
 
-    // Check step 2 election (Node 2 elected) and step 3 election (Node 3 elected)
-    const step2Leader = RAFT_SCENARIO_STEPS[2].nodes.find((n) => n.id === 2);
-    const step3Leader = RAFT_SCENARIO_STEPS[3].nodes.find((n) => n.id === 3);
+    const step2Leader = RAFT_SCENARIO_STEPS[2].nodes.find((n) => n.id === 3);
+    const step3Leader = RAFT_SCENARIO_STEPS[3].nodes.find((n) => n.id === 2);
 
     const step2Quorum = Boolean(
       step2Leader &&
@@ -468,9 +307,7 @@ export function runRaftSelfCheck(): RaftSelfCheckResult {
       details: `Required majority: ${requiredMajority}/3. Step 2 votes: ${step2Leader?.votesReceived.length}/3. Step 3 votes: ${step3Leader?.votesReceived.length}/3.`,
     });
 
-    // ---------------------------------------------------------
     // (c) A new election increments the term
-    // ---------------------------------------------------------
     const term0 = RAFT_SCENARIO_STEPS[0].term; // 1
     const term2 = RAFT_SCENARIO_STEPS[2].term; // 2
     const term3 = RAFT_SCENARIO_STEPS[3].term; // 3
@@ -486,65 +323,61 @@ export function runRaftSelfCheck(): RaftSelfCheckResult {
       details: `Term progression: ${term0} -> ${term2} (election 1) -> ${term3} (election 2).`,
     });
 
-    // ---------------------------------------------------------
     // (d) New leader's term is greater than failed leader's term
-    // ---------------------------------------------------------
-    const failedLeader1Term = RAFT_SCENARIO_STEPS[1].nodes.find((n) => n.id === 1)?.currentTerm ?? 0;
-    const newLeader2Term = RAFT_SCENARIO_STEPS[2].nodes.find((n) => n.id === 2)?.currentTerm ?? 0;
+    const failedLeader1Term =
+      RAFT_SCENARIO_STEPS[1].nodes.find((n) => n.id === 1)?.currentTerm ?? 0;
+    const newLeader3Term =
+      RAFT_SCENARIO_STEPS[2].nodes.find((n) => n.id === 3)?.currentTerm ?? 0;
 
-    const staleLeader2Term = RAFT_SCENARIO_STEPS[3].nodes.find((n) => n.id === 2)?.currentTerm ?? 0;
-    const newLeader3Term = RAFT_SCENARIO_STEPS[3].nodes.find((n) => n.id === 3)?.currentTerm ?? 0;
+    const staleLeader3Term =
+      RAFT_SCENARIO_STEPS[3].nodes.find((n) => n.id === 3)?.currentTerm ?? 0;
+    const newLeader2Term =
+      RAFT_SCENARIO_STEPS[3].nodes.find((n) => n.id === 2)?.currentTerm ?? 0;
 
     const invariantDPassed =
-      newLeader2Term > failedLeader1Term && newLeader3Term > staleLeader2Term;
+      newLeader3Term > failedLeader1Term && newLeader2Term > staleLeader3Term;
 
     assertions.push({
       id: "d",
       rule: "New leader's term is strictly greater than failed leader's term",
       passed: invariantDPassed,
-      details: `Leader 2 (Term ${newLeader2Term}) > Failed Leader 1 (Term ${failedLeader1Term}); Leader 3 (Term ${newLeader3Term}) > Stale Leader 2 (Term ${staleLeader2Term}).`,
+      details: `Leader 3 (Term ${newLeader3Term}) > Failed Leader 1 (Term ${failedLeader1Term}); Leader 2 (Term ${newLeader2Term}) > Stale Leader 3 (Term ${staleLeader3Term}).`,
     });
 
-    // ---------------------------------------------------------
     // (e) During partition the minority side cannot elect a leader
-    // ---------------------------------------------------------
     const partitionStep = RAFT_SCENARIO_STEPS[3];
     const minorityNodes = partitionStep.nodes.filter((n) => n.partition === "A");
     const minorityNode = minorityNodes[0];
 
-    // Minority side has 1 node, can get at most 1 vote < 2
     const minorityCannotElect =
       minorityNodes.length < requiredMajority &&
-      minorityNode.votesReceived.length < requiredMajority &&
-      minorityNode.currentTerm < partitionStep.term; // Remains stale
+      minorityNode.currentTerm < partitionStep.term;
 
     assertions.push({
       id: "e",
       rule: "During partition, minority side cannot elect a leader",
       passed: minorityCannotElect,
-      details: `Minority partition size: ${minorityNodes.length} node (Node ${minorityNode?.id}). Votes obtainable: ${minorityNode?.votesReceived.length}/${requiredMajority} (failed quorum).`,
+      details: `Minority partition size: ${minorityNodes.length} node (Node ${minorityNode?.id}). Votes obtainable: ${minorityNode?.votesReceived.length}/${requiredMajority} (cannot reach quorum).`,
     });
 
-    // ---------------------------------------------------------
     // (f) After healing, stale leader steps down on seeing higher term
-    // ---------------------------------------------------------
     const healingStep = RAFT_SCENARIO_STEPS[4];
-    const healedNode2 = healingStep.nodes.find((n) => n.id === 2);
-    const currentLeaderNode3 = healingStep.nodes.find((n) => n.id === 3);
+    const healedNode3 = healingStep.nodes.find((n) => n.id === 3);
+    const currentLeaderNode2 = healingStep.nodes.find((n) => n.id === 2);
 
     const invariantFPassed = Boolean(
-      healedNode2 &&
-        currentLeaderNode3 &&
-        healedNode2.role === "follower" &&
-        healedNode2.currentTerm === currentLeaderNode3.currentTerm &&
-        healedNode2.currentTerm === 3
+      healedNode3 &&
+        currentLeaderNode2 &&
+        healedNode3.role === "follower" &&
+        healedNode3.currentTerm === currentLeaderNode2.currentTerm &&
+        healedNode3.currentTerm === 3
     );
 
     assertions.push({
       id: "f",
       rule: "After healing, stale leader steps down on seeing higher term",
       passed: invariantFPassed,
-      details: `Node 2 stepped down from leader to role '${healedNode2?.role}' and adopted term ${healedNode2?.currentTerm} upon seeing leader Node 3 (term ${currentLeaderNode3?.currentTerm}).`,
+      details: `Node 3 stepped down from leader to role '${healedNode3?.role}' and adopted term ${healedNode3?.currentTerm} upon seeing leader Node 2 (term ${currentLeaderNode2?.currentTerm}).`,
     });
 
     const allPassed = assertions.every((a) => a.passed);

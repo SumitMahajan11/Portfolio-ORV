@@ -134,6 +134,16 @@ export function NinjaNodeSvg({
           </span>
         )}
 
+        {/* Candidate Badge */}
+        {isCandidate && (
+          <span
+            className="absolute -top-3 px-1.5 py-0.2 bg-[#D4B15F] text-void font-mono text-[9px] font-bold rounded-sm tracking-wider uppercase shadow-md"
+            title="Candidate"
+          >
+            CANDIDATE
+          </span>
+        )}
+
         {/* Minority tag */}
         {isMinority && (
           <span className="absolute -bottom-2.5 px-1 py-0.2 bg-void/90 border border-line text-mist font-mono text-[8px] uppercase">
@@ -172,8 +182,13 @@ export function RaftStaticDiagram() {
             [VILLAGE_OF_3_NODES &bull; STATIC_SEQUENCE]
           </span>
         </div>
-        <div className="px-2.5 py-1 rounded border border-[#F28C28]/40 bg-[#F28C28]/10 text-[#F28C28] font-mono text-[10px] sm:text-xs uppercase tracking-wider font-semibold">
-          illustrative visualization, not the Ratify code
+        <div className="flex flex-col sm:items-end gap-1">
+          <div className="px-2.5 py-1 rounded border border-[#F28C28]/40 bg-[#F28C28]/10 text-[#F28C28] font-mono text-[10px] sm:text-xs uppercase tracking-wider font-semibold">
+            illustrative visualization, not the Ratify code
+          </div>
+          <div className="text-[10px] font-mono text-mist/70 italic text-right max-w-md">
+            Simplified 3-node teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
+          </div>
         </div>
       </div>
 
@@ -202,7 +217,7 @@ export function RaftStaticDiagram() {
               <div className="relative py-2 flex flex-col items-center justify-center space-y-2 min-h-[140px]">
                 {/* Partition Wall visual for Frame 4 (stepIndex: 3) */}
                 {step.partitionActive && (
-                  <div className="absolute inset-y-0 left-1/3 w-[2px] bg-red-500/70 border-l border-dashed border-red-400 z-10">
+                  <div className="absolute inset-y-0 left-2/3 w-[2px] bg-red-500/70 border-l border-dashed border-red-400 z-10">
                     <span className="absolute top-1 -left-12 font-mono text-[8px] text-red-400 bg-ink px-1 rounded border border-red-500/40 uppercase whitespace-nowrap">
                       Partition Wall
                     </span>
@@ -222,8 +237,34 @@ export function RaftStaticDiagram() {
                   ))}
                 </div>
 
+                {/* Log Scrolls Summary: Committed (solid) vs Pending (dashed/dimmed) */}
+                <div className="w-full flex items-center justify-center gap-1 flex-wrap pt-1">
+                  {step.nodes.map((node) => (
+                    <div key={node.id} className="flex items-center gap-0.5">
+                      {node.logs.map((log) => {
+                        const isCommitted = log.committed;
+                        return (
+                          <span
+                            key={log.index}
+                            className={`px-1 py-0.5 rounded font-mono text-[8px] flex items-center gap-0.5 ${
+                              isCommitted
+                                ? "border border-[#F1E4C3]/40 bg-[#F1E4C3]/10 text-[#F1E4C3]"
+                                : "border border-dashed border-[#F1E4C3]/30 bg-[#F1E4C3]/5 text-[#F1E4C3]/50 opacity-60"
+                            }`}
+                            title={`Node ${node.id} Log #${log.index} (${isCommitted ? "Committed" : "Pending"})`}
+                          >
+                            <span>📜</span>
+                            <span>N{node.id}:#{log.index}</span>
+                            {!isCommitted && <span className="text-[7px] italic">(pend)</span>}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+
                 {/* Flares / Scrolls Summary */}
-                <div className="w-full pt-2 flex items-center justify-center gap-1.5 flex-wrap">
+                <div className="w-full pt-1 flex items-center justify-center gap-1.5 flex-wrap">
                   {step.flares.length > 0 ? (
                     step.flares.map((flare) => (
                       <span
@@ -254,10 +295,14 @@ export function RaftStaticDiagram() {
 
       {/* Footer Legend */}
       <div className="pt-3 border-t border-line/40 flex flex-wrap items-center justify-between gap-3 font-mono text-[11px] text-mist">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#F28C28]" />
             <span>Leader (Hokage)</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#D4B15F]" />
+            <span>Candidate</span>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#3E8E41]" />
@@ -267,9 +312,17 @@ export function RaftStaticDiagram() {
             <span className="h-2 w-2 rounded-full bg-red-400" />
             <span>Partition Barrier</span>
           </span>
+          <span className="flex items-center gap-1.5">
+            <span className="px-1 border border-[#F1E4C3]/40 bg-[#F1E4C3]/10 text-[#F1E4C3] rounded text-[9px]">📜 #1</span>
+            <span>Committed</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="px-1 border border-dashed border-[#F1E4C3]/30 bg-[#F1E4C3]/5 text-[#F1E4C3]/50 opacity-60 rounded text-[9px]">📜 #2</span>
+            <span>Pending</span>
+          </span>
         </div>
         <div className="text-[#F28C28]">
-          INVARIANTS (A-F) DETERMINISTICALLY ASSERTED
+          INVARIANTS (1-9) DETERMINISTICALLY ASSERTED
         </div>
       </div>
     </div>
