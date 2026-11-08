@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
@@ -37,6 +37,16 @@ export interface RaftWorldProps {
 export function RaftWorld({ className = "" }: RaftWorldProps) {
   const { reducedMotion, mode } = useMode();
   const [scenarioCleared, setScenarioCleared] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(true);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Retrieve Ratify project data from content
   const project = projects.find((p) => p.id === "ratify") || {
@@ -47,7 +57,11 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     oneLiner: "From-scratch Rust Raft implementation.",
     claims: [],
     limits: ["3-node, correctness project, not a performance benchmark."],
-    links: { repo: null, demo: null, benchmark: null },
+    links: {
+      repo: "https://github.com/SumitMahajan11/Ratify",
+      demo: "https://github.com/SumitMahajan11/Ratify/blob/main/artifacts/demo_recording.cast",
+      benchmark: null,
+    },
     costume: "leaf headband",
     worldReady: true,
   };
@@ -63,7 +77,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     }
   };
 
-  const isStaticMode = reducedMotion || mode === "light";
+  const isStaticMode = reducedMotion || mode === "light" || isMobile;
 
   return (
     <section
@@ -198,7 +212,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
                       rel="noopener noreferrer"
                       className="text-[#F28C28] hover:text-feather underline transition-colors"
                     >
-                      {url}
+                      Recorded demo (asciicast)
                     </a>
                   ))}
                 </div>

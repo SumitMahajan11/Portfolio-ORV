@@ -45,6 +45,7 @@ export interface RaftEventRecord {
   args: Record<string, unknown>;
   description: string;
   success: boolean;
+  snapshot?: RaftSnapshot;
 }
 
 export interface RaftSnapshot {
@@ -108,12 +109,14 @@ export class RaftModel {
     description: string,
     success: boolean
   ): void {
+    const snapshot = this.snapshot(this.currentStep);
     this.eventLog.push({
       step: this.currentStep,
       event,
       args,
       description,
       success,
+      snapshot,
     });
   }
 

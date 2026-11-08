@@ -18,6 +18,7 @@ import {
   runRaftScenario,
   type RaftSnapshot,
   type RaftRole as ModelRole,
+  type RaftEventRecord,
 } from "./raft-model";
 
 export type RaftRole = "leader" | "candidate" | "follower" | "crashed";
@@ -48,6 +49,24 @@ export interface SignalFlare {
   to: number;
   type: "heartbeat" | "vote_request" | "vote_grant" | "replicate";
   label: string;
+  dropped?: boolean;
+  dropReason?: "partition" | "down_node";
+}
+
+export type FlareAnimation = SignalFlare;
+
+export interface RaftEventFrame {
+  eventIndex: number;
+  totalEvents: number;
+  event: RaftEventRecord;
+  nodes: RaftNodeState[];
+  term: number;
+  partitionActive: boolean;
+  partitionMinorityNodeId: number | null;
+  activeLeaderId: number | null;
+  flares: FlareAnimation[];
+  statusMessage: string;
+  formattedLog: string;
 }
 
 export interface RaftScenarioStep {
@@ -62,6 +81,8 @@ export interface RaftScenarioStep {
   partitionMinorityNodeId: number | null;
   nodes: RaftNodeState[];
   flares: SignalFlare[];
+  events: RaftEventRecord[];
+  eventFrames: RaftEventFrame[];
 }
 
 interface BeatMetadata {
@@ -154,17 +175,73 @@ function determineExpression(
   return "attentive";
 }
 
-function mapSnapshotToScenarioStep(
-  snapshot: RaftSnapshot,
-  meta: BeatMetadata
-): RaftScenarioStep {
+export function createFlaresForEvent(
+  event: RaftEventRecord,
+  beat: number,
+  eventIdx: number
+): FlareAnimation[] {
+  const flares: FlareAnimation[] = [];
+  const ev = event.event;
+
+  if (ev === "requestVote") {
+    const from = (event.args.from as number) || 1;
+    const to = (event.args.to as number) || 2;
+    if (event.success) {
+      flares.push({
+        id: `flare-rv-grant-${beat}-${eventIdx}`,
+        from: to,
+        to: from,
+        type: "vote_grant",
+        label: `Vote Granted (N${to} → N${from})`,
+      });
+    } else {
+      flares.push({
+        id: `flare-rv-drop-${beat}-${eventIdx}`,
+        from,
+        to,
+        type: "vote_request",
+        label: `Vote Request (N${from} → N${to}) [DROPPED]`,
+        dropped: true,
+        dropReason: event.description.includes("partition") ? "partition" : "down_node",
+      });
+    }
+  } else if (ev === "appendEntries") {
+    const leaderId = (event.args.leaderId as number) || (event.args.from as number) || 1;
+    const toId = (event.args.toId as number) || (event.args.to as number) || 2;
+    if (event.success) {
+      const isReplication = event.description.includes("synced log");
+      flares.push({
+        id: `flare-ae-${beat}-${eventIdx}`,
+        from: leaderId,
+        to: toId,
+        type: isReplication ? "replicate" : "heartbeat",
+        label: isReplication
+          ? `AppendEntries (N${leaderId} → N${toId})`
+          : `Heartbeat (N${leaderId} → N${toId})`,
+      });
+    } else {
+      flares.push({
+        id: `flare-ae-drop-${beat}-${eventIdx}`,
+        from: leaderId,
+        to: toId,
+        type: "replicate",
+        label: `AppendEntries (N${leaderId} → N${toId}) [DROPPED]`,
+        dropped: true,
+        dropReason: event.description.includes("partition") ? "partition" : "down_node",
+      });
+    }
+  }
+
+  return flares;
+}
+
+export function mapSnapshotToNodes(snapshot: RaftSnapshot): RaftNodeState[] {
   const isPartitionActive = snapshot.partitionGroups.length > 1;
   const minorityGroup = isPartitionActive
     ? snapshot.partitionGroups.find((g) => g.length < 2) ?? null
     : null;
-  const minorityNodeId = minorityGroup ? minorityGroup[0] : null;
 
-  const nodes: RaftNodeState[] = snapshot.nodes.map((node) => {
+  return snapshot.nodes.map((node) => {
     const isMinority = isPartitionActive && minorityGroup?.includes(node.id) === true;
     const mappedRole: RaftRole = node.role === "down" ? "crashed" : node.role;
 
@@ -188,30 +265,67 @@ function mapSnapshotToScenarioStep(
       commitIndex: node.commitIndex,
     };
   });
-
-  return {
-    stepIndex: snapshot.stepIndex,
-    id: meta.id,
-    beatTitle: meta.beatTitle,
-    eraName: meta.eraName,
-    term: snapshot.highestTerm,
-    caption: meta.caption,
-    details: meta.details,
-    partitionActive: isPartitionActive,
-    partitionMinorityNodeId: minorityNodeId,
-    nodes,
-    flares: meta.flares,
-  };
 }
 
 /**
  * Real mini Raft state machine generates the scenario frames dynamically.
  */
 export function buildRaftScenarioSteps(): RaftScenarioStep[] {
-  const { snapshots } = runRaftScenario();
-  return snapshots.map((snapshot, idx) =>
-    mapSnapshotToScenarioStep(snapshot, BEAT_METADATA[idx])
-  );
+  const { snapshots, eventsByBeat } = runRaftScenario();
+  return snapshots.map((snapshot, idx) => {
+    const beatNum = idx + 1;
+    const events = eventsByBeat.get(beatNum) || [];
+    const eventFrames: RaftEventFrame[] = events.map((event, eventIdx) => {
+      const snap = event.snapshot || snapshot;
+      const isPartitionActive = snap.partitionGroups.length > 1;
+      const minorityGroup = isPartitionActive
+        ? snap.partitionGroups.find((g) => g.length < 2) ?? null
+        : null;
+      const minorityNodeId = minorityGroup ? minorityGroup[0] : null;
+
+      const nodes = mapSnapshotToNodes(snap);
+      const flares = createFlaresForEvent(event, beatNum, eventIdx);
+      const statusIcon = event.success ? "✓" : "✗";
+      const formattedLog = `[${statusIcon}] [${event.event.toUpperCase()}] ${event.description}`;
+
+      return {
+        eventIndex: eventIdx,
+        totalEvents: events.length,
+        event,
+        nodes,
+        term: snap.highestTerm,
+        partitionActive: isPartitionActive,
+        partitionMinorityNodeId: minorityNodeId,
+        activeLeaderId: snap.activeLeaderId,
+        flares,
+        statusMessage: event.description,
+        formattedLog,
+      };
+    });
+
+    const isPartitionActive = snapshot.partitionGroups.length > 1;
+    const minorityGroup = isPartitionActive
+      ? snapshot.partitionGroups.find((g) => g.length < 2) ?? null
+      : null;
+    const minorityNodeId = minorityGroup ? minorityGroup[0] : null;
+    const meta = BEAT_METADATA[idx];
+
+    return {
+      stepIndex: snapshot.stepIndex,
+      id: meta.id,
+      beatTitle: meta.beatTitle,
+      eraName: meta.eraName,
+      term: snapshot.highestTerm,
+      caption: meta.caption,
+      details: meta.details,
+      partitionActive: isPartitionActive,
+      partitionMinorityNodeId: minorityNodeId,
+      nodes: mapSnapshotToNodes(snapshot),
+      flares: meta.flares,
+      events,
+      eventFrames,
+    };
+  });
 }
 
 /**

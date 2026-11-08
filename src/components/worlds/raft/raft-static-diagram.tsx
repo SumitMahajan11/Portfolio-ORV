@@ -182,12 +182,9 @@ export function RaftStaticDiagram() {
             [VILLAGE_OF_3_NODES &bull; STATIC_SEQUENCE]
           </span>
         </div>
-        <div className="flex flex-col sm:items-end gap-1">
+        <div className="flex items-center">
           <div className="px-2.5 py-1 rounded border border-[#F28C28]/40 bg-[#F28C28]/10 text-[#F28C28] font-mono text-[10px] sm:text-xs uppercase tracking-wider font-semibold">
             illustrative visualization, not the Ratify code
-          </div>
-          <div className="text-[10px] font-mono text-mist/70 italic text-right max-w-md">
-            Simplified 3-node teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
           </div>
         </div>
       </div>
@@ -288,6 +285,30 @@ export function RaftStaticDiagram() {
                 <p className="text-feather/90">{step.caption}</p>
                 <p className="text-[10px] text-mist italic">{step.details}</p>
               </div>
+
+              {/* Event Log per Beat */}
+              <div
+                className="pt-2 border-t border-line/40 space-y-1.5"
+                role="region"
+                aria-label={`Beat ${idx + 1} Event Log`}
+              >
+                <div className="font-mono text-[10px] text-[#F28C28] uppercase font-bold tracking-wider">
+                  Event Log ({step.events.length} events):
+                </div>
+                <ol
+                  className="space-y-1 font-mono text-[9px] text-mist/90 list-decimal list-inside"
+                  aria-label={`Beat ${idx + 1} model events`}
+                >
+                  {step.events.map((ev, eIdx) => {
+                    const statusIcon = ev.success ? "✓" : "✗";
+                    return (
+                      <li key={eIdx} className="leading-snug break-words">
+                        [{statusIcon}] [{ev.event.toUpperCase()}] {ev.description}
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
             </article>
           );
         })}
@@ -322,7 +343,7 @@ export function RaftStaticDiagram() {
           </span>
         </div>
         <div className="text-[#F28C28]">
-          INVARIANTS (1-9) DETERMINISTICALLY ASSERTED
+          INVARIANT CHECKS (1-9) DETERMINISTICALLY ASSERTED
         </div>
       </div>
     </div>

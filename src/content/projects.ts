@@ -65,8 +65,8 @@ export const projects: Project[] = [
       "3-node, correctness project, not a performance benchmark.",
     ],
     links: {
-      repo: null, // [FILL]
-      demo: null, // [FILL]
+      repo: "https://github.com/SumitMahajan11/Ratify",
+      demo: "https://github.com/SumitMahajan11/Ratify/blob/main/artifacts/demo_recording.cast",
       benchmark: null,
     },
     costume: "leaf headband",

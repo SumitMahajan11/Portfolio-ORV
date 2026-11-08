@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-11-08T12:29:03.809Z",
+  "targetUrl": "http://localhost:3000/",
+  "rawRuns": [
+    {
+      "run": 1,
+      "perf": 82,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4490,
+      "cls": 0,
+      "tbt": 163,
+      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\raft-r2-lighthouse-run1.json"
+    },
+    {
+      "run": 2,
+      "perf": 81,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4514,
+      "cls": 0,
+      "tbt": 197,
+      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\raft-r2-lighthouse-run2.json"
+    },
+    {
+      "run": 3,
+      "perf": 83,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4484,
+      "cls": 0,
+      "tbt": 128,
+      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\raft-r2-lighthouse-run3.json"
+    }
+  ],
+  "medians": {
+    "performance": 82,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "lcp_ms": 4490,
+    "cls": 0,
+    "tbt_ms": 163
+  }
+}

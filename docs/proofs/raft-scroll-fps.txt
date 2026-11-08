@@ -1,0 +1,20 @@
+================================================================
+RAFT SECTION SCROLL FPS BENCHMARK REPORT
+================================================================
+Timestamp: 2026-11-08T12:25:29.359Z
+Target: http://localhost:3000/#ratify
+
+1. Desktop Unthrottled (1440x900, 1x CPU):
+  Run 1: 60 FPS (avg: 16.67ms, frames: 202, >20ms: 0, >33ms: 0)
+  Run 2: 58.2 FPS (avg: 17.17ms, frames: 197, >20ms: 5, >33ms: 4)
+  Run 3: 57.9 FPS (avg: 17.26ms, frames: 197, >20ms: 7, >33ms: 7)
+  -> Median Desktop Scroll FPS: 58.2 FPS
+
+2. Mobile 4x CPU Throttled (390x844, 4x CPU Throttle):
+  Run 1: 28.7 FPS (avg: 34.85ms, frames: 275, >20ms: 43, >33ms: 36)
+  Run 2: 59.6 FPS (avg: 16.79ms, frames: 266, >20ms: 2, >33ms: 1)
+  Run 3: 59.8 FPS (avg: 16.73ms, frames: 258, >20ms: 1, >33ms: 0)
+  -> Median Mobile 4x Throttled Scroll FPS: 59.6 FPS
+
+Status: PASS (Target >= 50.0 FPS maintained)
+================================================================

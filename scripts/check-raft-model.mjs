@@ -40,7 +40,7 @@ function runChecks() {
   }
 
   console.log('\n----------------------------------------------------------------');
-  console.log(' INVARIANT AUDIT SUITE (9 FORMAL INVARIANTS)');
+  console.log(' INVARIANT AUDIT SUITE (9 INVARIANT CHECKS)');
   console.log('----------------------------------------------------------------\n');
 
   const errors = [];
@@ -409,3 +409,4 @@ function runChecks() {
 }
 
 runChecks();
+
