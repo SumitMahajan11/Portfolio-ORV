@@ -1,0 +1,134 @@
+﻿# Cloud3 Commit: 6ed26e409270f296a2ecb7a1b3d01e0689ade954
+# Date: 2026-11-08
+# Command 1: python -m cli.main verify fixtures/phase3/chained_escalation.tf
+# Command 2: python -m cli.main verify fixtures/phase3/chained_escalation.tf --json
+
+=== CLI Human Output ===
+[Tier A Merge] Merged aws_iam_role_policy.jump_policy into aws_iam_role.jump_role via structural reference aws_iam_role.jump_role.id
+[Tier A Merge] Merged aws_iam_role_policy.target_policy into aws_iam_role.target_role via structural reference aws_iam_role.target_role.id
+=== Verification Report: fixtures/phase3/chained_escalation.tf ===
+[SAT] aws_iam_role.jump_role: IAM resource 'aws_iam_role.jump_role' grants wildcard permissions
+[SAT] aws_iam_role.target_role: IAM resource 'aws_iam_role.target_role' grants wildcard permissions
+[SAT] aws_iam_role.target_role: Privilege escalation path found from 'account:111122223333' to 'aws_iam_role.target_role' in 2 hop(s)
+Not modeled: none
+
+=== CLI JSON Output ===
+[Tier A Merge] Merged aws_iam_role_policy.jump_policy into aws_iam_role.jump_role via structural reference aws_iam_role.jump_role.id
+[Tier A Merge] Merged aws_iam_role_policy.target_policy into aws_iam_role.target_role via structural reference aws_iam_role.target_role.id
+{
+  "target": "fixtures/phase3/chained_escalation.tf",
+  "total_verifications": 3,
+  "not_modeled": [],
+  "results": [
+    {
+      "status": "SAT",
+      "resource_address": "aws_iam_role.jump_role",
+      "pattern": "IAM_WILDCARD_ALLOW",
+      "message": "IAM resource 'aws_iam_role.jump_role' grants wildcard permissions",
+      "witness": {
+        "resource": "aws_iam_role.jump_role",
+        "smt_counterexample_action": "sts:AssumeRole",
+        "smt_counterexample_resource": "",
+        "wildcard_statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "sts:AssumeRole"
+            ],
+            "resources": []
+          }
+        ]
+      },
+      "unsat_core": null,
+      "z3_proof_sexpr": null
+    },
+    {
+      "status": "SAT",
+      "resource_address": "aws_iam_role.target_role",
+      "pattern": "IAM_WILDCARD_ALLOW",
+      "message": "IAM resource 'aws_iam_role.target_role' grants wildcard permissions",
+      "witness": {
+        "resource": "aws_iam_role.target_role",
+        "smt_counterexample_action": "",
+        "smt_counterexample_resource": "",
+        "wildcard_statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "sts:AssumeRole"
+            ],
+            "resources": []
+          },
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      },
+      "unsat_core": null,
+      "z3_proof_sexpr": null
+    },
+    {
+      "status": "SAT",
+      "resource_address": "aws_iam_role.target_role",
+      "pattern": "PRIVILEGE_ESCALATION_REACHABILITY",
+      "message": "Privilege escalation path found from 'account:111122223333' to 'aws_iam_role.target_role' in 2 hop(s)",
+      "witness": {
+        "entry_point": "account:111122223333",
+        "target_resource": "aws_iam_role.target_role",
+        "path_length": 2,
+        "hops": [
+          {
+            "from": "account:111122223333",
+            "to": "aws_iam_role.jump_role",
+            "trust_statement": {
+              "effect": "Allow",
+              "actions": [
+                "sts:AssumeRole"
+              ],
+              "resources": [],
+              "principal": {
+                "AWS": "arn:aws:iam::111122223333:root"
+              }
+            },
+            "identity_statement": null
+          },
+          {
+            "from": "aws_iam_role.jump_role",
+            "to": "aws_iam_role.target_role",
+            "trust_statement": {
+              "effect": "Allow",
+              "actions": [
+                "sts:AssumeRole"
+              ],
+              "resources": [],
+              "principal": {
+                "AWS": "arn:aws:iam::111122223333:role/jump_role"
+              }
+            },
+            "identity_statement": {
+              "effect": "Allow",
+              "actions": [
+                "s3:GetObject",
+                "sts:AssumeRole"
+              ],
+              "resources": [
+                "arn:aws:s3:::my-bucket/*",
+                "arn:aws:iam::111122223333:role/target_role"
+              ],
+              "principal": null
+            }
+          }
+        ]
+      },
+      "unsat_core": null,
+      "z3_proof_sexpr": null
+    }
+  ]
+}
+

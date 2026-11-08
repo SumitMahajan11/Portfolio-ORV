@@ -396,7 +396,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                   </p>
                 </div>
                 <div className="pt-2 border-t border-line/60 flex items-center justify-between text-[10px] font-mono text-mist">
-                  <span>TEST SUITE: 103 PASSING</span>
+                  <span>TEST SUITE: 276 PASSING</span>
                   <span className="text-emerald-400">STATUS: PROVED</span>
                 </div>
               </div>

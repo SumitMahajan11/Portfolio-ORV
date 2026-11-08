@@ -1,0 +1,139 @@
+﻿# Cloud3 Commit: 6ed26e409270f296a2ecb7a1b3d01e0689ade954
+# Date: 2026-11-08
+# Command 1: python -m cli.main repair fixtures/phase6/multi_rule_vulnerability.tf --resource aws_security_group.multi_rule_sg --pattern SG_OVER_EXPOSURE
+# Command 2: python -m cli.main repair fixtures/phase6/multi_rule_vulnerability.tf --resource aws_security_group.multi_rule_sg --pattern SG_OVER_EXPOSURE --json
+
+=== CLI Human Output ===
+=== Auto-Repair Report ===
+Resource: aws_security_group.multi_rule_sg
+Pattern:  SG_OVER_EXPOSURE
+Status:   REMEDIATED_MINIMAL
+Message:  Successfully remediated 'aws_security_group.multi_rule_sg' via minimal deletion of 2 rule(s).
+Deleted Rules (2):
+  - [aws_security_group.multi_rule_sg] Index 0: SecurityGroupRule
+  - [aws_security_group.multi_rule_sg] Index 1: SecurityGroupRule
+
+=== Unified Diff Patch (Human-in-the-Loop Review) ===
+--- a/multi_rule_vulnerability.tf
++++ b/multi_rule_vulnerability.tf
+@@ -7,17 +7,5 @@
+   name        = "multi-rule-vulnerable-sg"
+   description = "Contains two redundant open SSH ingress blocks"
+ 
+-  ingress {
+-    from_port   = 22
+-    to_port     = 22
+-    protocol    = "tcp"
+-    cidr_blocks = ["0.0.0.0/0"]
+-  }
+ 
+-  ingress {
+-    from_port   = 22
+-    to_port     = 22
+-    protocol    = "tcp"
+-    cidr_blocks = ["0.0.0.0/0"]
+-  }
+ }
+
+=== CLI JSON Output ===
+{
+  "status": "REMEDIATED_MINIMAL",
+  "resource_address": "aws_security_group.multi_rule_sg",
+  "pattern": "SG_OVER_EXPOSURE",
+  "deleted_rules": [
+    {
+      "resource_address": "aws_security_group.multi_rule_sg",
+      "statement_index": 0,
+      "rule_type": "SecurityGroupRule",
+      "rule_details": "SecurityGroupRule(direction='ingress', protocol='tcp', from_port=22, to_port=22, cidr_blocks=['0.0.0.0/0'], referenced_security_group_id=None)"
+    },
+    {
+      "resource_address": "aws_security_group.multi_rule_sg",
+      "statement_index": 1,
+      "rule_type": "SecurityGroupRule",
+      "rule_details": "SecurityGroupRule(direction='ingress', protocol='tcp', from_port=22, to_port=22, cidr_blocks=['0.0.0.0/0'], referenced_security_group_id=None)"
+    }
+  ],
+  "reverified_status": "UNSAT",
+  "initial_certificate": {
+    "certificate_type": "SAT_WITNESS_TRACE",
+    "status": "SAT",
+    "pattern": "SG_OVER_EXPOSURE",
+    "resource_address": "aws_security_group.multi_rule_sg",
+    "timestamp": "2026-11-08T18:21:07.579499+00:00",
+    "solver_info": {
+      "engine": "Z3 SMT Solver (VerificationEngine)",
+      "z3_version": "5.1.0"
+    },
+    "witness": {
+      "resource": "aws_security_group.multi_rule_sg",
+      "sensitive_ports": [
+        3306,
+        21,
+        22,
+        23,
+        5432,
+        1433,
+        3389,
+        445
+      ],
+      "smt_counterexample_ip": "11.192.0.0",
+      "violating_rules": [
+        {
+          "direction": "ingress",
+          "from_port": 22,
+          "to_port": 22,
+          "cidr_blocks": [
+            "0.0.0.0/0"
+          ]
+        },
+        {
+          "direction": "ingress",
+          "from_port": 22,
+          "to_port": 22,
+          "cidr_blocks": [
+            "0.0.0.0/0"
+          ]
+        }
+      ]
+    }
+  },
+  "reverified_certificate": {
+    "certificate_type": "UNSAT_PROOF_CERTIFICATE",
+    "status": "UNSAT",
+    "pattern": "SG_OVER_EXPOSURE",
+    "resource_address": "aws_security_group.multi_rule_sg",
+    "timestamp": "2026-11-08T18:21:07.594145+00:00",
+    "solver_info": {
+      "engine": "Z3 SMT Solver (VerificationEngine)",
+      "z3_version": "5.1.0",
+      "hop_bound_k": null,
+      "is_complete_proof": true
+    },
+    "unsat_proof": {
+      "unsat_core_literals": [
+        "track__aws_security_group.multi_rule_sg__0",
+        "track__aws_security_group.multi_rule_sg__1"
+      ],
+      "tracked_rule_mappings": [
+        {
+          "literal": "track__aws_security_group.multi_rule_sg__0",
+          "resource_id": "aws_security_group.multi_rule_sg",
+          "statement_index": 0,
+          "rule_type": "SecurityGroupRule"
+        },
+        {
+          "literal": "track__aws_security_group.multi_rule_sg__1",
+          "resource_id": "aws_security_group.multi_rule_sg",
+          "statement_index": 1,
+          "rule_type": "SecurityGroupRule"
+        }
+      ],
+      "z3_proof_object_sexpr": "(asserted false)",
+      "unreachability_invariant": "Deletion of rules [('aws_security_group.multi_rule_sg', 0), ('aws_security_group.multi_rule_sg', 1)] restores UNSAT safety invariant."
+    }
+  },
+  "patch": "--- a/multi_rule_vulnerability.tf\n+++ b/multi_rule_vulnerability.tf\n@@ -7,17 +7,5 @@\n   name        = \"multi-rule-vulnerable-sg\"\n   description = \"Contains two redundant open SSH ingress blocks\"\n \n-  ingress {\n-    from_port   = 22\n-    to_port     = 22\n-    protocol    = \"tcp\"\n-    cidr_blocks = [\"0.0.0.0/0\"]\n-  }\n \n-  ingress {\n-    from_port   = 22\n-    to_port     = 22\n-    protocol    = \"tcp\"\n-    cidr_blocks = [\"0.0.0.0/0\"]\n-  }\n }",
+  "message": "Successfully remediated 'aws_security_group.multi_rule_sg' via minimal deletion of 2 rule(s)."
+}
+

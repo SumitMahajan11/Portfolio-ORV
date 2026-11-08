@@ -223,7 +223,7 @@ export function Z3StaticDiagram() {
           </span>
         </div>
         <div className="text-[#34D399] font-semibold">
-          FINDINGS: PRIVILEGE ESCALATION DISCOVERED &bull; ZERO CHECKS MISSED
+          FINDINGS: PRIVILEGE ESCALATION DISCOVERED
         </div>
       </div>
     </div>

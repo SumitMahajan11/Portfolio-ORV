@@ -329,7 +329,7 @@ export const Z3_SCENARIO_STEPS: Z3ScenarioStep[] = [
     chainBroken: true,
     proofCertified: true,
     caption:
-      "Proof certificate stamped with solver trace hash. 103 passing verification tests confirm auto-repair correctness and invariant safety.",
+      "Proof certificate stamped with solver trace hash. 276 passing verification tests confirm auto-repair correctness and invariant safety.",
     details:
       "The certificate guarantees that no sequence of network packets or IAM role assumptions can elevate unauthorized ingress to administrator access.",
   },

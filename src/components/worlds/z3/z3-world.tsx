@@ -45,8 +45,15 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     world: "z3",
     oneLiner: "Z3-based reachability proofs on Terraform IAM and network graphs.",
     claims: [],
-    limits: ["Pre-launch TODO: clean repo root (tfsec.exe, scratch/, loose checkov_*.json)."],
-    links: { repo: null, demo: null, benchmark: null },
+    limits: [
+      "Auto-repair covers AWS (Security Groups and IAM policies) and Azure NSG only; unsupported for GCP resources, ARM JSON templates, and Azure Governance Policies.",
+      "On independent TerraGoat GCP baseline: 1 flagged, 1 modeled but missed before fix, and 9 resources not modeled by the SMT engine.",
+      "All 5 resource-bearing TerraGoat GCP files are UNRESOLVABLE at graph level (reason undiagnosed).",
+      "Public IAM exposure is a rule-based check tuned post-hoc, not a formal SMT proof.",
+      "GCP corpus is a hand-authored regression dataset for specification conformance, not an independent benchmark.",
+      "Solver timeout or incompleteness returns UNKNOWN, which fails closed and is never treated as safe.",
+    ],
+    links: { repo: "https://github.com/SumitMahajan11/iac-verifier", demo: null, benchmark: null },
     costume: "chain bracelet",
     worldReady: true,
   };
@@ -157,6 +164,23 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                   </div>
                 )}
               </div>
+
+              {/* Verified Limitations (FACTS.md) */}
+              {project.limits && project.limits.length > 0 && (
+                <div data-testid="z3-limitations-block" className="space-y-3 pt-4 border-t border-line/60">
+                  <span className="font-mono text-[11px] text-mist uppercase tracking-wider">
+                    VERIFIED LIMITATIONS (docs/sources/z3/FACTS.md):
+                  </span>
+                  <ul className="space-y-2 font-mono text-xs text-feather/90">
+                    {project.limits.map((limit, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
+                        <span className="text-[#EF4444] font-bold">&bull;</span>
+                        <span>{limit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Links */}
               <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
