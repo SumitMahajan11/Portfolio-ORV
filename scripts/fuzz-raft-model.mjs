@@ -358,7 +358,7 @@ class RaftModelNoElectionRestriction extends RaftModel {
       const reachableVotes = Array.from(candidate.votesReceived).filter(
         (v) => v === from || this.canCommunicate(from, v)
       ).length;
-      if (reachableVotes >= 2) {
+      if (reachableVotes >= 2 && candidate.role !== 'leader') {
         candidate.role = 'leader';
         this.electionHistory.push({
           term: candidate.currentTerm,
@@ -454,7 +454,7 @@ class RaftModelVoteTwice extends RaftModel {
     const reachableVotes = Array.from(candidate.votesReceived).filter(
       (v) => v === from || this.canCommunicate(from, v)
     ).length;
-    if (reachableVotes >= 2) {
+    if (reachableVotes >= 2 && candidate.role !== 'leader') {
       candidate.role = 'leader';
       this.electionHistory.push({
         term: candidate.currentTerm,
@@ -467,10 +467,10 @@ class RaftModelVoteTwice extends RaftModel {
 }
 
 // -------------------------------------------------------------
-// Action sequence minimizer
+// Action sequence minimizer with target invariant filtering
 // -------------------------------------------------------------
-function minimizeActionList(mutantClass, actions) {
-  // Test if a sequence reproduces failure
+function minimizeActionList(mutantClass, actions, targetInvariant) {
+  // Test if a sequence reproduces target failure
   function fails(seq) {
     try {
       const m = new mutantClass([1, 2, 3]);
@@ -479,20 +479,25 @@ function minimizeActionList(mutantClass, actions) {
         assertAllInvariants(m, `during minimization`);
       }
       return false;
-    } catch {
+    } catch (err) {
+      if (targetInvariant) {
+        return err.message.includes(targetInvariant);
+      }
       return true;
     }
   }
 
   let current = [...actions];
-  // Greedy 1-by-1 removal
-  let i = 0;
-  while (i < current.length) {
-    const candidate = current.filter((_, idx) => idx !== i);
-    if (fails(candidate)) {
-      current = candidate;
-    } else {
-      i++;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let i = 0; i < current.length; i++) {
+      const candidate = current.filter((_, idx) => idx !== i);
+      if (fails(candidate)) {
+        current = candidate;
+        changed = true;
+        break;
+      }
     }
   }
   return current;
@@ -534,7 +539,7 @@ export function runFuzz() {
       }
     }
     if (caught) {
-      const minList = minimizeActionList(RaftModelNoElectionRestriction, caught.actions);
+      const minList = minimizeActionList(RaftModelNoElectionRestriction, caught.actions, 'Invariant 10');
       const rep = `NEGATIVE CONTROL (a) [Remove election restriction]:
   - Result: FAILED as expected on seed ${caught.seed}
   - Invariant Violated: ${caught.err}
@@ -564,7 +569,7 @@ ${minList.map((a, i) => `    ${i + 1}. ${a.type}${a.node ? `(Node ${a.node})` : 
       }
     }
     if (caught) {
-      const minList = minimizeActionList(RaftModelCommitOneReplica, caught.actions);
+      const minList = minimizeActionList(RaftModelCommitOneReplica, caught.actions, 'Invariant 5');
       const rep = `NEGATIVE CONTROL (b) [Commit with 1 replica]:
   - Result: FAILED as expected on seed ${caught.seed}
   - Invariant Violated: ${caught.err}
@@ -594,7 +599,7 @@ ${minList.map((a, i) => `    ${i + 1}. ${a.type}${a.node ? `(Node ${a.node})` : 
       }
     }
     if (caught) {
-      const minList = minimizeActionList(RaftModelVoteTwice, caught.actions);
+      const minList = minimizeActionList(RaftModelVoteTwice, caught.actions, 'Invariant 1');
       const rep = `NEGATIVE CONTROL (c) [Vote twice in a term]:
   - Result: FAILED as expected on seed ${caught.seed}
   - Invariant Violated: ${caught.err}
@@ -613,6 +618,8 @@ ${minList.map((a, i) => `    ${i + 1}. ${a.type}${a.node ? `(Node ${a.node})` : 
   console.log('----------------------------------------------------------------\n');
 
   const startMs = Date.now();
+  let duration1k = 0;
+  let duration2k = 0;
   let totalActions = 0;
   let violationsFound = 0;
   const violationDetails = [];
@@ -634,26 +641,73 @@ ${minList.map((a, i) => `    ${i + 1}. ${a.type}${a.node ? `(Node ${a.node})` : 
       }
     }
 
-    if (seed % 500 === 0) {
-      console.log(`  Completed ${seed}/2000 seeds (${totalActions} actions executed, ${violationsFound} violations)...`);
+    if (seed === 1000) {
+      duration1k = Date.now() - startMs;
+      console.log(`  Completed Seeds 1..1000 in ${(duration1k / 1000).toFixed(2)}s (${totalActions} actions)...`);
+    } else if (seed === 2000) {
+      duration2k = Date.now() - startMs - duration1k;
+      console.log(`  Completed Seeds 1001..2000 in ${(duration2k / 1000).toFixed(2)}s (${totalActions} actions)...`);
+    } else if (seed % 500 === 0) {
+      console.log(`  Progress: ${seed}/2000 seeds completed (${totalActions} actions)...`);
     }
   }
 
   const durationMs = Date.now() - startMs;
+
+  // --- PART 3: ACTION TRACE FOR SEED 777 ---
+  console.log('\n----------------------------------------------------------------');
+  console.log(' PART 3: DETAILED ACTION TRACE FOR SEED 777');
+  console.log(' Tracing each action and the resulting term/role/log of all nodes');
+  console.log('----------------------------------------------------------------\n');
+
+  const traceModel = new RaftModel([1, 2, 3]);
+  const seed777Actions = generateActionSequence(777, 40);
+  console.log(`Seed 777 Total Actions: ${seed777Actions.length}\n`);
+
+  for (let step = 0; step < seed777Actions.length; step++) {
+    const act = seed777Actions[step];
+    executeAction(traceModel, act);
+    assertAllInvariants(traceModel, `[Seed 777, Step ${step + 1}: ${act.type}]`);
+
+    const n1 = traceModel.nodes.get(1);
+    const n2 = traceModel.nodes.get(2);
+    const n3 = traceModel.nodes.get(3);
+
+    const formatNode = (n) =>
+      `N${n.id}[T${n.currentTerm}, ${n.role}${!n.alive ? ' (down)' : ''}, commit=${n.commitIndex}, log=(${n.log.length})[${n.log.map((e) => `T${e.term}:"${e.label}"`).join(',')}]`;
+
+    const actDesc = act.type + (act.node ? `(N${act.node})` : '') + (act.entryLabel ? `("${act.entryLabel}")` : '');
+    console.log(`Step ${(step + 1).toString().padStart(2, ' ')}: ${actDesc.padEnd(24, ' ')}`);
+    console.log(`         ${formatNode(n1)}`);
+    console.log(`         ${formatNode(n2)}`);
+    console.log(`         ${formatNode(n3)}`);
+  }
+
   console.log('\n================================================================');
-  console.log(' FUZZ RUN RESULTS');
+  console.log(' FUZZ RUN TIMING & AUDIT SUMMARY');
   console.log('================================================================');
-  console.log(` Seeds evaluated:     1..2000 (2000 seeds)`);
-  console.log(` Total actions run:   ${totalActions}`);
-  console.log(` Invariant checks:    ${totalActions * 11} checks evaluated`);
-  console.log(` Violations found:    ${violationsFound}`);
-  console.log(` Execution duration:  ${(durationMs / 1000).toFixed(2)}s`);
+  console.log(` Seeds evaluated:         1..2000 (2000 seeds)`);
+  console.log(` Total actions executed:  ${totalActions}`);
+  console.log(` Invariant checks:        ${totalActions * 11} checks evaluated`);
+  console.log(` Violations found:        ${violationsFound}`);
+  console.log(` In-script wall duration: ${(durationMs / 1000).toFixed(2)}s`);
+  console.log(`   - Seeds 1..1000 timing:    ${(duration1k / 1000).toFixed(2)}s (${(duration1k / 1000 / 1000 * 1000).toFixed(2)}ms/seed avg)`);
+  console.log(`   - Seeds 1001..2000 timing: ${(duration2k / 1000).toFixed(2)}s (${(duration2k / 1000 / 1000 * 1000).toFixed(2)}ms/seed avg)`);
+  console.log(` Seed 777 trace:          ${seed777Actions.length} actions verified`);
   console.log('================================================================');
 
   if (violationsFound === 0) {
     console.log(' STATUS: ALL INVARIANTS HELD ACROSS ALL 2000 SEEDS. PASS.');
     console.log('================================================================\n');
-    return { success: true, totalActions, violationsFound, negativeControlReports };
+    return {
+      success: true,
+      totalActions,
+      violationsFound,
+      durationMs,
+      duration1k,
+      duration2k,
+      negativeControlReports,
+    };
   } else {
     console.error(` STATUS: FAILED WITH ${violationsFound} VIOLATIONS:`);
     for (const v of violationDetails.slice(0, 10)) {

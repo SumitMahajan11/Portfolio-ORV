@@ -135,17 +135,18 @@ async function captureScreens() {
     const shotA = await send('Page.captureScreenshot', { format: 'png' });
     fs.writeFileSync(path.join(screensDir, 'raft-sandbox-normal.png'), Buffer.from(shotA.data, 'base64'));
 
-    // Settle first to elect Node 1 as leader, then crash Node 1 mid-election or after election
-    console.log('Triggering Settle then Crashing leader Node 1...');
+    // Settle first to elect Node 1 as leader (Term 1)
+    console.log('Triggering Settle to elect leader Node 1 (Term 1)...');
     await send('Runtime.evaluate', {
       expression: `(() => {
         const settleBtn = document.querySelector('button[aria-label="Trigger deterministic settle reaction"]');
         if (settleBtn) settleBtn.click();
       })()`,
     });
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 2800));
 
     // Crash leader (Node 1)
+    console.log('Crashing leader Node 1...');
     await send('Runtime.evaluate', {
       expression: `(() => {
         const crashBtn = document.querySelector('button[aria-label="Crash Node 1"]');
@@ -154,10 +155,25 @@ async function captureScreens() {
     });
     await new Promise((r) => setTimeout(r, 800));
 
-    // Screenshot (b): After crashing leader
-    console.log('Capturing Screenshot (b): After crashing leader mid-election...');
+    // Now trigger election in Term 2 where Node 2 times out
+    console.log('Triggering Settle: Node 2 times out into Term 2 as CANDIDATE...');
+    await send('Runtime.evaluate', {
+      expression: `(() => {
+        const settleBtn = document.querySelector('button[aria-label="Trigger deterministic settle reaction"]');
+        if (settleBtn) settleBtn.click();
+      })()`,
+    });
+    // Wait 150ms into the 600ms timeout event animation
+    await new Promise((r) => setTimeout(r, 150));
+
+    // Screenshot (b): Leader crashed, mid-election with gold CANDIDATE badge visible
+    console.log('Capturing Screenshot (b): Leader crashed, Node 2 gold candidate mid-election...');
     const shotB = await send('Page.captureScreenshot', { format: 'png' });
     fs.writeFileSync(path.join(screensDir, 'raft-sandbox-crash-leader.png'), Buffer.from(shotB.data, 'base64'));
+    fs.writeFileSync(path.join(screensDir, 'raft-sandbox-candidate-mid-election.png'), Buffer.from(shotB.data, 'base64'));
+
+    // Wait for election to complete before proceeding to no-quorum test
+    await new Promise((r) => setTimeout(r, 2500));
 
     // Trigger No-Quorum state: Crash Node 2 as well, then attempt Settle
     console.log('Crashing Node 2 and attempting Settle (No-Quorum state)...');

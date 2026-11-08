@@ -1,29 +1,78 @@
-MOBILE JS CHUNK REQUESTS AT 390x844 (/#ratify)
-Timestamp: 2026-11-08T13:00:03.533Z
-Total Requests: 21
-Raft Canvas Requested: false
-Raft Sandbox Requested: false
-Decision relies on hydration-time state: false (media-query gate via useSyncExternalStore)
+CHUNK POSITIVE & NEGATIVE CONTROL VERIFICATION REPORT
+Timestamp: 2026-11-08T14:12:53.573Z
+Build ID: r3aQCZUz9-PG_anssUSRS
 
-Chunk Request List:
-1. [Stylesheet] http://localhost:3000/_next/static/chunks/3gc00_c7zflnf.css
-2. [Script] http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js
-3. [Script] http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js
-4. [Script] http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js
-5. [Script] http://localhost:3000/_next/static/chunks/107i8ab907rvg.js
-6. [Script] http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js
-7. [Script] http://localhost:3000/_next/static/chunks/0w261-ckst3sm.js
-8. [Script] http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js
-9. [Script] http://localhost:3000/_next/static/chunks/1tcsets7izg1q.js
-10. [Script] http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js
-11. [Script] http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js
-12. [Script] http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js
-13. [Script] http://localhost:3000/_next/static/chunks/44cf4p0cdbkbq.js
-14. [Script] http://localhost:3000/_next/static/chunks/1k7i6zpwq5s4g.js
-15. [Script] http://localhost:3000/_next/static/chunks/1vhqw8x8s--64.js
-16. [Script] http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js
-17. [Script] http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js
-18. [Script] http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js
-19. [Script] http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js
-20. [Script] http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js
-21. [Script] http://localhost:3000/_next/static/chunks/0jmgu7b13mw7z.js
+CHUNK IDENTIFICATION METHODOLOGY:
+- Methodology: Scan .next/static/chunks/*.js for unique isolated component AST token signatures:
+  * Raft Canvas Chunk: identified by isolated canvas token 'NARUTO_HIDDEN_LEAF' -> 417ikp3yapgr7.js
+  * Raft Sandbox Chunk: identified by isolated sandbox token 'INTERACTIVE_RAFT_SANDBOX' -> 1ghju1hs0z985.js
+
+TEST (a): MOBILE 390x844 (Negative Control)
+- Viewport: 390x844 (dpr: 2, mobile: true)
+- Target: /#ratify
+- Section Element '#ratify' Exists: true
+- Section Element '#ratify' Intersecting: true
+- Total Chunk Requests: 21
+- Canvas Chunk (417ikp3yapgr7.js) Requested: false (EXPECTED: false)
+- Sandbox Chunk (1ghju1hs0z985.js) Requested: false (EXPECTED: false)
+- Result: PASS (Neither canvas nor sandbox chunk requested on mobile)
+
+Mobile Chunk Request List:
+1. [Stylesheet] 3gc00_c7zflnf.css -> http://localhost:3000/_next/static/chunks/3gc00_c7zflnf.css
+2. [Script] 310vm2bl3xxpt.js -> http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js
+3. [Script] 2uy6962aj_g7c.js -> http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js
+4. [Script] 2-3bcc782c_pu.js -> http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js
+5. [Script] 107i8ab907rvg.js -> http://localhost:3000/_next/static/chunks/107i8ab907rvg.js
+6. [Script] turbopack-077hmtqrhcoji.js -> http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js
+7. [Script] 0w261-ckst3sm.js -> http://localhost:3000/_next/static/chunks/0w261-ckst3sm.js
+8. [Script] 3cwwyj_hcpnu5.js -> http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js
+9. [Script] 1x-n59uztasb5.js -> http://localhost:3000/_next/static/chunks/1x-n59uztasb5.js
+10. [Script] 40-_z3cpqrlug.js -> http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js
+11. [Script] 0wj0noag-9_fs.js -> http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js
+12. [Script] 2921s0yvpjrtv.js -> http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js
+13. [Script] 44cf4p0cdbkbq.js -> http://localhost:3000/_next/static/chunks/44cf4p0cdbkbq.js
+14. [Script] 14ufyu4dga04y.js -> http://localhost:3000/_next/static/chunks/14ufyu4dga04y.js
+15. [Script] 1vhqw8x8s--64.js -> http://localhost:3000/_next/static/chunks/1vhqw8x8s--64.js
+16. [Script] 23_h4cotvuqfz.js -> http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js
+17. [Script] 3dhpt5d9-39nr.js -> http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js
+18. [Script] 1lum-cgjybu2s.js -> http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js
+19. [Script] 1z-koprwcgr0h.js -> http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js
+20. [Script] 3srmhsp9bconi.js -> http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js
+21. [Script] 0jmgu7b13mw7z.js -> http://localhost:3000/_next/static/chunks/0jmgu7b13mw7z.js
+
+TEST (b): DESKTOP 1440x900 (Positive Control)
+- Viewport: 1440x900 (dpr: 1, mobile: false)
+- Target: /#ratify
+- Section Element '#ratify' Exists: true
+- Section Element '#ratify' Intersecting: true
+- Pre-Click Canvas Chunk (417ikp3yapgr7.js) Requested: true (EXPECTED: true)
+- Pre-Click Sandbox Chunk (1ghju1hs0z985.js) Requested: false (EXPECTED: false)
+- Action: Click "Open sandbox"
+- Sandbox Container Mounted: true
+- Post-Click Sandbox Chunk (1ghju1hs0z985.js) Requested: true (EXPECTED: true)
+- Result: PASS (Canvas loaded on scroll, Sandbox lazy-loaded on button click)
+
+Desktop Chunk Request List (Post-Click):
+1. [Stylesheet] 3gc00_c7zflnf.css -> http://localhost:3000/_next/static/chunks/3gc00_c7zflnf.css
+2. [Script] 310vm2bl3xxpt.js -> http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js
+3. [Script] 2uy6962aj_g7c.js -> http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js
+4. [Script] 2-3bcc782c_pu.js -> http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js
+5. [Script] 107i8ab907rvg.js -> http://localhost:3000/_next/static/chunks/107i8ab907rvg.js
+6. [Script] turbopack-077hmtqrhcoji.js -> http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js
+7. [Script] 0w261-ckst3sm.js -> http://localhost:3000/_next/static/chunks/0w261-ckst3sm.js
+8. [Script] 3cwwyj_hcpnu5.js -> http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js
+9. [Script] 1x-n59uztasb5.js -> http://localhost:3000/_next/static/chunks/1x-n59uztasb5.js
+10. [Script] 40-_z3cpqrlug.js -> http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js
+11. [Script] 0wj0noag-9_fs.js -> http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js
+12. [Script] 2921s0yvpjrtv.js -> http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js
+13. [Script] 44cf4p0cdbkbq.js -> http://localhost:3000/_next/static/chunks/44cf4p0cdbkbq.js
+14. [Script] 14ufyu4dga04y.js -> http://localhost:3000/_next/static/chunks/14ufyu4dga04y.js
+15. [Script] 1vhqw8x8s--64.js -> http://localhost:3000/_next/static/chunks/1vhqw8x8s--64.js
+16. [Script] 23_h4cotvuqfz.js -> http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js
+17. [Script] 3dhpt5d9-39nr.js -> http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js
+18. [Script] 1lum-cgjybu2s.js -> http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js
+19. [Script] 1z-koprwcgr0h.js -> http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js
+20. [Script] 3srmhsp9bconi.js -> http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js
+21. [Script] 417ikp3yapgr7.js -> http://localhost:3000/_next/static/chunks/417ikp3yapgr7.js
+22. [Script] 0jmgu7b13mw7z.js -> http://localhost:3000/_next/static/chunks/0jmgu7b13mw7z.js
+23. [Script] 1ghju1hs0z985.js -> http://localhost:3000/_next/static/chunks/1ghju1hs0z985.js
