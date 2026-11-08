@@ -1,0 +1,38 @@
+﻿D:\Projects\Portfolio-ORV-main\docs\sources\z3\FACTS.md:10: - **Real Test Count**: 276 tests collected. | Source: command `pytest --collect-only -q` executed in temp copy `%TEMP%\z3-run` -> literal output summary line: `276 tests collected in 1.08s` (and `276 tests collected in 6.50s` on cold run).
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\FACTS.md:11: - **Test Pass Verdict**: All 276 tests pass with 0 failures and 1 deprecation warning. | Source: command `pytest -q` executed in temp copy `%TEMP%\z3-run` -> literal output tail: `276 passed, 1 warning in 8.47s` (warning: `D:\Projects\Cloud3\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using 'httpx' with 'starlette.testclient' is deprecated; install 'httpx2' instead.`).
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\FACTS.md:12: - **Owner's Claim of 276 Tests (Hypothesis Check)**: Confirmed. The suite contains exactly 276 tests, and all 276 tests pass. | Source: `pytest --collect-only -q` and `pytest -q` runs in `%TEMP%\z3-run`.
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\NORMALIZATION.md:7: Raw run outputs captured inside `%TEMP%\z3-run` contain machine-specific temporary directories and username references.
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\NORMALIZATION.md:12:    - Target: `C:\Users\SUMIT\AppData\Local\Temp\z3-run\` (or `C:/Users/SUMIT/AppData/Local/Temp/z3-run/`)
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\NORMALIZATION.md:14:    - Target without trailing slash: `C:\Users\SUMIT\AppData\Local\Temp\z3-run`
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\patch.diff:45: +    links: { repo: "https://github.com/SumitMahajan11/iac-verifier", demo: null, benchmark: null },
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\patch.diff:100: +      repo: "https://github.com/SumitMahajan11/iac-verifier",
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\runs\run-3-unsat-certificate.txt:3: # Command: python -m cli.main verify fixtures/phase2/sg_restricted_ssh.tf --export-certificate C:\Users\SUMIT\AppData\Local\Temp\z3-run\proof_cert_sg_restricted.json
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\runs\run-3-unsat-certificate.txt:9: Exported 1 proof certificate(s) to 'C:\Users\SUMIT\AppData\Local\Temp\z3-run\proof_cert_sg_restricted.json'
+D:\Projects\Portfolio-ORV-main\docs\sources\z3\runs\run-4-unresolvable-unknown.txt:58: rootdir: C:\Users\SUMIT\AppData\Local\Temp\z3-run
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:40:     default: "Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:41:     template: "%s | Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:44:     "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune. Graduating March 2028. Targeting: GSoC 2027 (CNCF / Kubeflow / KubeVirt).",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:53:     title: "Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:55:       "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune. Graduating March 2028. Targeting: GSoC 2027 (CNCF / Kubeflow / KubeVirt).",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:57:     siteName: "Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:65:         alt: "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:71:     title: "Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:73:       "Sumit Mahajan — 3rd-year CSE undergrad, Pimpri Chinchwad University, Pune. Graduating March 2028. Targeting: GSoC 2027 (CNCF / Kubeflow / KubeVirt).",
+D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:152:                   SUMIT MAHAJAN
+D:\Projects\Portfolio-ORV-main\src\app\page.tsx:21:         <h1 className="sr-only">Sumit Mahajan — Distributed Systems &amp; Correctness</h1>
+D:\Projects\Portfolio-ORV-main\src\app\dev\mode\page.tsx:5:   title: "DEV: Device Mode Inspector | Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\app\skip\page.tsx:9:     "Accessible, plain-text story-portfolio for Sumit Mahajan — Distributed Systems & Correctness.",
+D:\Projects\Portfolio-ORV-main\src\components\finale\ContactForm.tsx:173:               Your inquiry has been delivered directly to Sumit&apos;s private inbox.
+D:\Projects\Portfolio-ORV-main\src\components\finale\ContactForm.tsx:363:             Your message is emailed to Sumit. Nothing else is stored.
+D:\Projects\Portfolio-ORV-main\src\components\worlds\raft\raft-world.tsx:82:       repo: "https://github.com/SumitMahajan11/Ratify",
+D:\Projects\Portfolio-ORV-main\src\components\worlds\raft\raft-world.tsx:83:       demo: "https://github.com/SumitMahajan11/Ratify/blob/main/artifacts/demo_recording.cast",
+D:\Projects\Portfolio-ORV-main\src\components\worlds\z3\z3-world.tsx:56:     links: { repo: "https://github.com/SumitMahajan11/iac-verifier", demo: null, benchmark: null },
+D:\Projects\Portfolio-ORV-main\src\content\art-alt.ts:334:     alt: "Sumit Mahajan distributed systems and correctness portfolio preview card",
+D:\Projects\Portfolio-ORV-main\src\content\identity.ts:4:   name: "Sumit Mahajan",
+D:\Projects\Portfolio-ORV-main\src\content\identity.ts:5:   github: "SumitMahajan11",
+D:\Projects\Portfolio-ORV-main\src\content\identity.ts:14:     github: "https://github.com/SumitMahajan11",
+D:\Projects\Portfolio-ORV-main\src\content\projects.ts:68:       repo: "https://github.com/SumitMahajan11/Ratify",
+D:\Projects\Portfolio-ORV-main\src\content\projects.ts:69:       demo: "https://github.com/SumitMahajan11/Ratify/blob/main/artifacts/demo_recording.cast",
+D:\Projects\Portfolio-ORV-main\src\content\projects.ts:113:       repo: "https://github.com/SumitMahajan11/iac-verifier",
+D:\Projects\Portfolio-ORV-main\src\content\templates\project.template.ts:41:     repo: "https://github.com/SumitMahajan11/[FILL: repo-slug]",
+D:\Projects\Portfolio-ORV-main\src\content\templates\project.template.ts:79:     repo: "https://github.com/SumitMahajan11/[FILL: repo-slug]", // Required for flagships

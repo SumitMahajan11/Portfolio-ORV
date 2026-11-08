@@ -103,7 +103,7 @@ export const projects: Project[] = [
     ],
     limits: [
       "Auto-repair covers AWS (Security Groups and IAM policies) and Azure NSG only; unsupported for GCP resources, ARM JSON templates, and Azure Governance Policies.",
-      "On independent TerraGoat GCP baseline: 1 flagged, 1 modeled but missed before fix, and 9 resources not modeled by the SMT engine.",
+      "On independent TerraGoat GCP baseline: 1 flagged, 1 modeled but missed before fix, and 9 resources not modeled by the SMT engine (Azure TerraGoat test cases passed; GCP baseline has gaps).",
       "All 5 resource-bearing TerraGoat GCP files are UNRESOLVABLE at graph level (reason undiagnosed).",
       "Public IAM exposure is a rule-based check tuned post-hoc, not a formal SMT proof.",
       "GCP corpus is a hand-authored regression dataset for specification conformance, not an independent benchmark.",

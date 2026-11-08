@@ -1,0 +1,44 @@
+{
+  "medianPerf": 81,
+  "medianA11y": 100,
+  "medianBP": 96,
+  "medianSEO": 100,
+  "medianLCP": 4406,
+  "medianCLS": 0,
+  "medianTBT": 210,
+  "runs": [
+    {
+      "run": 1,
+      "perf": 81,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4452,
+      "cls": 0,
+      "tbt": 210,
+      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\z3-lighthouse-run1.json"
+    },
+    {
+      "run": 2,
+      "perf": 81,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4406,
+      "cls": 0,
+      "tbt": 206,
+      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\z3-lighthouse-run2.json"
+    },
+    {
+      "run": 3,
+      "perf": 81,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4406,
+      "cls": 0,
+      "tbt": 228,
+      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\z3-lighthouse-run3.json"
+    }
+  ]
+}

@@ -109,3 +109,4 @@ Format: each entry is a verified fact paired with its exact source (file:line in
   `python -m cli.main repair <path> --resource <resource_address> --pattern <SG_OVER_EXPOSURE|IAM_WILDCARD_ALLOW|PRIVILEGE_ESCALATION_PATH>` | Source: `cli/main.py:183-195, 219-224, 230-232`.
 - **Auto-Repair with Structured JSON (Initial/Reverified Certificates and Patch)**:
   `python -m cli.main repair <path> --resource <resource_address> --pattern <pattern> --json` | Source: `cli/main.py:180-182, 223`.
+

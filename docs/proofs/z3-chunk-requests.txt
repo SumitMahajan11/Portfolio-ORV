@@ -1,0 +1,64 @@
+================================================================
+ Z3 CHUNK AUDIT SUMMARY
+================================================================
+Canvas Chunk:              0c4iukr_ykp35.js
+Identification Method:     Scanned .next/static/chunks/*.js for unique symbols '5_BEATS_INTERACTIVE' and 'Z3VizCanvas'
+
+Mobile Viewport:           390x844
+Mobile Section In View:    true
+Mobile View Mounted:       hasStaticView=true, hasInteractiveView=false
+Mobile Canvas Requested:   false (PASS: 0 dynamic canvas chunks loaded)
+
+Desktop Viewport:          1440x900
+Desktop Section In View:   true
+Desktop View Mounted:      hasStaticView=false, hasInteractiveView=true
+Desktop Canvas Requested:  true (PASS: positive control verified)
+================================================================
+ ALL CHUNK PROTOCOL CHECKS PASSED
+================================================================
+
+--- MOBILE CHUNK REQUESTS ---
+0crjc15u9_-tx.css (http://localhost:3000/_next/static/chunks/0crjc15u9_-tx.css)
+310vm2bl3xxpt.js (http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js)
+2uy6962aj_g7c.js (http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js)
+2-3bcc782c_pu.js (http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js)
+107i8ab907rvg.js (http://localhost:3000/_next/static/chunks/107i8ab907rvg.js)
+turbopack-077hmtqrhcoji.js (http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js)
+0w261-ckst3sm.js (http://localhost:3000/_next/static/chunks/0w261-ckst3sm.js)
+3cwwyj_hcpnu5.js (http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js)
+3j8ettg20nu-1.js (http://localhost:3000/_next/static/chunks/3j8ettg20nu-1.js)
+40-_z3cpqrlug.js (http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js)
+0wj0noag-9_fs.js (http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js)
+2921s0yvpjrtv.js (http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js)
+44cf4p0cdbkbq.js (http://localhost:3000/_next/static/chunks/44cf4p0cdbkbq.js)
+14ufyu4dga04y.js (http://localhost:3000/_next/static/chunks/14ufyu4dga04y.js)
+0rcq9cs7kef2c.js (http://localhost:3000/_next/static/chunks/0rcq9cs7kef2c.js)
+23_h4cotvuqfz.js (http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js)
+3dhpt5d9-39nr.js (http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js)
+1lum-cgjybu2s.js (http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js)
+1z-koprwcgr0h.js (http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js)
+3srmhsp9bconi.js (http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js)
+
+--- DESKTOP CHUNK REQUESTS ---
+0crjc15u9_-tx.css (http://localhost:3000/_next/static/chunks/0crjc15u9_-tx.css)
+310vm2bl3xxpt.js (http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js)
+2uy6962aj_g7c.js (http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js)
+2-3bcc782c_pu.js (http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js)
+107i8ab907rvg.js (http://localhost:3000/_next/static/chunks/107i8ab907rvg.js)
+turbopack-077hmtqrhcoji.js (http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js)
+0w261-ckst3sm.js (http://localhost:3000/_next/static/chunks/0w261-ckst3sm.js)
+3cwwyj_hcpnu5.js (http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js)
+3j8ettg20nu-1.js (http://localhost:3000/_next/static/chunks/3j8ettg20nu-1.js)
+40-_z3cpqrlug.js (http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js)
+0wj0noag-9_fs.js (http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js)
+2921s0yvpjrtv.js (http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js)
+44cf4p0cdbkbq.js (http://localhost:3000/_next/static/chunks/44cf4p0cdbkbq.js)
+14ufyu4dga04y.js (http://localhost:3000/_next/static/chunks/14ufyu4dga04y.js)
+0rcq9cs7kef2c.js (http://localhost:3000/_next/static/chunks/0rcq9cs7kef2c.js)
+23_h4cotvuqfz.js (http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js)
+3dhpt5d9-39nr.js (http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js)
+1lum-cgjybu2s.js (http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js)
+1z-koprwcgr0h.js (http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js)
+3srmhsp9bconi.js (http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js)
+417ikp3yapgr7.js (http://localhost:3000/_next/static/chunks/417ikp3yapgr7.js)
+0c4iukr_ykp35.js (http://localhost:3000/_next/static/chunks/0c4iukr_ykp35.js)
