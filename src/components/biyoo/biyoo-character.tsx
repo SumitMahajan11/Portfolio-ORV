@@ -328,23 +328,13 @@ export function Biyoo({
               <picture className="absolute inset-0 w-full h-full pointer-events-none">
                 <source
                   type="image/avif"
-                  media="(max-width: 639px)"
-                  srcSet="/art/biyoo/biyoo-calm-360.avif"
-                />
-                <source
-                  type="image/avif"
-                  media="(min-width: 640px)"
-                  srcSet="/art/biyoo/biyoo-calm-360.avif 1x, /art/biyoo/biyoo-calm-720.avif 2x"
+                  srcSet="/art/biyoo/biyoo-calm-360.avif 360w, /art/biyoo/biyoo-calm-720.avif 720w"
+                  sizes="(max-width: 639px) 72px, 108px"
                 />
                 <source
                   type="image/webp"
-                  media="(max-width: 639px)"
-                  srcSet="/art/biyoo/biyoo-calm-360.webp"
-                />
-                <source
-                  type="image/webp"
-                  media="(min-width: 640px)"
-                  srcSet="/art/biyoo/biyoo-calm-360.webp 1x, /art/biyoo/biyoo-calm-720.webp 2x"
+                  srcSet="/art/biyoo/biyoo-calm-360.webp 360w, /art/biyoo/biyoo-calm-720.webp 720w"
+                  sizes="(max-width: 639px) 72px, 108px"
                 />
                 <img
                   ref={calmImgRef}
@@ -352,7 +342,7 @@ export function Biyoo({
                   alt={ART_ALT_REGISTRY.biyoo_calm.alt}
                   width={100}
                   height={89}
-                  decoding="sync"
+                  decoding="async"
                   loading="eager"
                   fetchPriority="high"
                   className="biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none"

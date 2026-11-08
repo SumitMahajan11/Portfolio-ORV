@@ -1,0 +1,49 @@
+================================================================================
+STEP 1: ROOT-CAUSE DIAGNOSIS (Commit 88761ee)
+================================================================================
+
+1(a) RAW SERVER HTML SNIPPETS (Built and served with Next.js production server)
+--------------------------------------------------------------------------------
+Neither element is missing from the server HTML; both are present in the server HTML.
+
+Preload <link> tags in <head>:
+<link rel="preload" href="/art/biyoo/biyoo-calm-360.avif" as="image" type="image/avif" media="(max-width: 639px)"/>
+<link rel="preload" href="/art/biyoo/biyoo-calm-720.avif" as="image" type="image/avif" media="(min-width: 640px)"/>
+<link rel="preload" as="image" type="image/avif" href="/art/biyoo/biyoo-calm-360.avif" media="(max-width: 639px)"/>
+<link rel="preload" as="image" type="image/avif" href="/art/biyoo/biyoo-calm-720.avif" media="(min-width: 640px)"/>
+
+Biyoo calm pose <img> tag in HTML:
+<img src="/art/biyoo/biyoo-calm-360.webp" alt="Biyoo, a fluffy spherical cotton mascot with two striped amber horns floating in a calm, cheerful pose" width="100" height="89" decoding="sync" loading="eager" fetchPriority="high" class="biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none" style="opacity:1"/>
+
+Root-cause issues identified in server HTML:
+1. The preload <link> lacked fetchPriority="high", causing Chrome to dispatch the initial request at priority "Low" (flagged by Lighthouse lcp-discovery-insight: priorityHinted = false).
+2. The preload <link> used href and media rather than matching imageSrcSet and imageSizes to dedupe with the <picture> source.
+3. The calm pose <img> had decoding="sync" instead of decoding="async".
+
+
+1(b) LIGHTHOUSE JSON EXTRACTION (docs/proofs/lighthouse-b1-run1.json)
+--------------------------------------------------------------------------------
+LCP Element Selector:
+div.biyoo-bounce-target > div.biyoo-art-wrapper > picture.absolute > img.biyoo-pose-calm
+
+LCP Element Snippet:
+<img src="http://localhost:3000/art/biyoo/biyoo-calm-360.avif" alt="Biyoo, a fluffy spherical cotton mascot with two striped amber horns float…" width="100" height="89" decoding="sync" loading="eager" fetchpriority="high" class="biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-even…" style="opacity:1">
+
+LCP Subparts (Observed via lcp-breakdown-insight):
+- Time to first byte (TTFB):        9.20 ms
+- Resource load delay:             11.87 ms
+- Resource load duration (time):   20.81 ms
+- Element render delay:           396.74 ms
+Total Observed Duration:          438.62 ms
+
+Simulated vs Observed Metrics (audits.metrics):
+- Simulated Largest Contentful Paint (LCP): 4359 ms
+- Observed Largest Contentful Paint (LCP):  439 ms
+- Simulated Time to First Byte (TTFB):      456 ms
+- Observed Time to First Byte (TTFB):       9.20 ms
+- Simulated LCP Load Delay:                   0 ms
+- Observed Resource Load Delay:            11.87 ms
+- Simulated LCP Load Duration:                0 ms
+- Observed Resource Load Duration:         20.81 ms
+- Observed Element Render Delay:          396.74 ms
+================================================================================

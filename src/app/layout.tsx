@@ -115,15 +115,9 @@ export default function RootLayout({
           rel="preload"
           as="image"
           type="image/avif"
-          href="/art/biyoo/biyoo-calm-360.avif"
-          media="(max-width: 639px)"
-        />
-        <link
-          rel="preload"
-          as="image"
-          type="image/avif"
-          href="/art/biyoo/biyoo-calm-720.avif"
-          media="(min-width: 640px)"
+          imageSrcSet="/art/biyoo/biyoo-calm-360.avif 360w, /art/biyoo/biyoo-calm-720.avif 720w"
+          imageSizes="(max-width: 639px) 72px, 108px"
+          fetchPriority="high"
         />
       </head>
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">

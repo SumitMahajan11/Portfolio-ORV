@@ -2,17 +2,17 @@
 MOBILE LIGHTHOUSE 3-RUN SUMMARY (B-1 Real Art)
 ==============================================
 Target URL: http://localhost:3000/
-Timestamp: 2026-11-07T19:46:58.462Z
+Timestamp: 2026-11-08T02:20:08.122Z
 
 RAW RUNS:
-Run 1: Perf=81, A11y=100, BP=96, SEO=100, LCP=4359ms, CLS=0, TBT=224ms
-Run 2: Perf=81, A11y=100, BP=96, SEO=100, LCP=4330ms, CLS=0, TBT=226ms
-Run 3: Perf=80, A11y=100, BP=96, SEO=100, LCP=4408ms, CLS=0, TBT=232ms
+Run 1: Perf=79, A11y=100, BP=96, SEO=100, LCP=4589ms, CLS=0, TBT=253ms
+Run 2: Perf=80, A11y=100, BP=96, SEO=100, LCP=4549ms, CLS=0, TBT=231ms
+Run 3: Perf=81, A11y=100, BP=96, SEO=100, LCP=4545ms, CLS=0, TBT=196ms
 
 MEDIANS:
-- Performance:    81 (target: >= 95)
-- Total Blocking: 226 ms (target: <= 200 ms)
-- LCP:            4359 ms
+- Performance:    80 (target: >= 95)
+- Total Blocking: 231 ms (target: <= 200 ms)
+- LCP:            4549 ms
 - CLS:            0
 - Accessibility:  100
 - Best Practices: 96
