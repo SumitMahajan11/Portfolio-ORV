@@ -153,11 +153,17 @@ async function measureBiyooFps() {
   console.log(' Target: 390x844 Viewport, 4x CPU Throttle, Floor 50');
   console.log('====================================================');
 
+  console.log('Cooling down 60s idle after Lighthouse before running FPS...');
+  await new Promise((r) => setTimeout(r, 60000));
+
   const runs = [];
   for (let i = 1; i <= 3; i++) {
     const data = await runSingleFpsRun(i);
     runs.push(data);
-    await new Promise((r) => setTimeout(r, 1500));
+    if (i < 3) {
+      console.log('Waiting 60s idle before next FPS run...');
+      await new Promise((r) => setTimeout(r, 60000));
+    }
   }
 
   const fpsValues = runs.map((r) => r.effectiveFps);

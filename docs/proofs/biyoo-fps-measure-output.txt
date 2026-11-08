@@ -1,14 +1,14 @@
 ====================================================
 THROTTLED MOBILE SCROLL FPS REPORT (B-1 Real Art)
 ====================================================
-Timestamp: 2026-11-08T02:21:09.292Z
+Timestamp: 2026-11-08T02:51:19.138Z
 Target: 390x844 Viewport, 4x CPU Throttle
 Floor Target: >= 50.0 FPS
 
 RUN RESULTS:
-Run 1: 55.5 FPS (avg: 18.03ms, frames: 318, >20ms: 18, >33ms: 14)
-Run 2: 47.1 FPS (avg: 21.24ms, frames: 350, >20ms: 91, >33ms: 68)
-Run 3: 42 FPS (avg: 23.81ms, frames: 343, >20ms: 124, >33ms: 92)
+Run 1: 56.4 FPS (avg: 17.73ms, frames: 314, >20ms: 15, >33ms: 11)
+Run 2: 58.4 FPS (avg: 17.13ms, frames: 320, >20ms: 9, >33ms: 8)
+Run 3: 56.9 FPS (avg: 17.57ms, frames: 315, >20ms: 11, >33ms: 8)
 
-MEDIAN FPS: 47.1 FPS
-VERDICT: FAIL (< 50.0 FPS)
+MEDIAN FPS: 56.9 FPS
+VERDICT: PASS (>= 50.0 FPS)

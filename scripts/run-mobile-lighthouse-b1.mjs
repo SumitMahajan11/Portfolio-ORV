@@ -58,6 +58,11 @@ for (let i = 1; i <= runs; i++) {
 
   rawRuns.push({ run: i, perf, a11y, bp, seo, lcp: Math.round(lcp), cls: Number(cls.toFixed(3)), tbt: Math.round(tbt), outputPath });
   console.log(`Run ${i} completed: Perf=${perf}, A11y=${a11y}, BP=${bp}, SEO=${seo}, LCP=${(lcp / 1000).toFixed(2)}s, CLS=${cls.toFixed(3)}, TBT=${Math.round(tbt)}ms\n`);
+
+  if (i < runs) {
+    console.log(`Waiting 60s idle before run ${i + 1}...`);
+    execSync('node -e "setTimeout(() => {}, 60000)"');
+  }
 }
 
 const summary = {
