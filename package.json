@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check:raft-model": "node --experimental-strip-types --no-warnings scripts/check-raft-model.mjs",
+    "fuzz:raft-model": "node --experimental-strip-types --no-warnings scripts/fuzz-raft-model.mjs",
     "check:content": "node --experimental-strip-types scripts/check-content.ts",
     "walls:build": "node scripts/optimize-walls.mjs",
     "art:check": "node scripts/optimize-art.mjs",

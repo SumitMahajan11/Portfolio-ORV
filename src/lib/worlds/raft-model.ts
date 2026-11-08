@@ -56,6 +56,49 @@ export interface RaftSnapshot {
   highestTerm: number;
 }
 
+export interface RaftVoteRecord {
+  term: number;
+  voterId: number;
+  candidateId: number;
+  candLastTerm: number;
+  candLogLength: number;
+  voterLastTerm: number;
+  voterLogLength: number;
+}
+
+export interface SettleResult {
+  settled: boolean;
+  noQuorum: boolean;
+  message: string;
+  leaderId: number | null;
+  term?: number;
+}
+
+/**
+ * Raft §5.4.1 Election Restriction:
+ * A voter denies its vote if the candidate's log is less up-to-date than its own.
+ * Compares last entry term first; on tie, compares log length.
+ */
+export function isLogUpToDate(candLog: RaftLogEntry[], voterLog: RaftLogEntry[]): boolean {
+  const candLastTerm = candLog.length > 0 ? candLog[candLog.length - 1].term : 0;
+  const voterLastTerm = voterLog.length > 0 ? voterLog[voterLog.length - 1].term : 0;
+  return (
+    candLastTerm > voterLastTerm ||
+    (candLastTerm === voterLastTerm && candLog.length >= voterLog.length)
+  );
+}
+
+/**
+ * Compares two logs to determine which is strictly more up-to-date.
+ */
+export function isLogMoreUpToDate(aLog: RaftLogEntry[], bLog: RaftLogEntry[]): boolean {
+  const aLastTerm = aLog.length > 0 ? aLog[aLog.length - 1].term : 0;
+  const bLastTerm = bLog.length > 0 ? bLog[bLog.length - 1].term : 0;
+  if (aLastTerm > bLastTerm) return true;
+  if (aLastTerm < bLastTerm) return false;
+  return aLog.length > bLog.length;
+}
+
 export class RaftModel {
   readonly nodes: Map<
     number,
@@ -78,7 +121,8 @@ export class RaftModel {
   preCrashLogs: Map<number, RaftLogEntry[]>;
   recoveredInitialLogs: Map<number, RaftLogEntry[]>;
   electionHistory: Array<{ term: number; leaderId: number; votes: number[] }>;
-  votingHistory: Array<{ term: number; voterId: number; candidateId: number }>;
+  votingHistory: Array<RaftVoteRecord>;
+  committedRegistry: Map<number, RaftLogEntry>;
 
   constructor(nodeIds: number[] = [1, 2, 3]) {
     this.nodes = new Map();
@@ -101,6 +145,7 @@ export class RaftModel {
     this.recoveredInitialLogs = new Map();
     this.electionHistory = [];
     this.votingHistory = [];
+    this.committedRegistry = new Map();
   }
 
   private recordEvent(
@@ -153,6 +198,7 @@ export class RaftModel {
       n,
       node.log.map((e) => ({ ...e }))
     );
+    this.recoveredInitialLogs.delete(n);
 
     node.alive = false;
     node.role = "down";
@@ -214,7 +260,17 @@ export class RaftModel {
     node.votedFor = n;
     node.votesReceived = new Set([n]);
 
-    this.votingHistory.push({ term: node.currentTerm, voterId: n, candidateId: n });
+    const selfLastTerm =
+      node.log.length > 0 ? node.log[node.log.length - 1].term : 0;
+    this.votingHistory.push({
+      term: node.currentTerm,
+      voterId: n,
+      candidateId: n,
+      candLastTerm: selfLastTerm,
+      candLogLength: node.log.length,
+      voterLastTerm: selfLastTerm,
+      voterLogLength: node.log.length,
+    });
 
     this.recordEvent(
       "timeout",
@@ -318,9 +374,7 @@ export class RaftModel {
       candidate.log.length > 0 ? candidate.log[candidate.log.length - 1].term : 0;
     const voterLastTerm =
       voter.log.length > 0 ? voter.log[voter.log.length - 1].term : 0;
-    const logUpToDate =
-      candLastTerm > voterLastTerm ||
-      (candLastTerm === voterLastTerm && candidate.log.length >= voter.log.length);
+    const logUpToDate = isLogUpToDate(candidate.log, voter.log);
 
     if (canGrantVote && logUpToDate) {
       voter.votedFor = from;
@@ -329,6 +383,10 @@ export class RaftModel {
         term: candidate.currentTerm,
         voterId: to,
         candidateId: from,
+        candLastTerm,
+        candLogLength: candidate.log.length,
+        voterLastTerm,
+        voterLogLength: voter.log.length,
       });
 
       this.recordEvent(
@@ -438,6 +496,11 @@ export class RaftModel {
           follower.log[i].term !== leaderEntry.term ||
           follower.log[i].label !== leaderEntry.label
         ) {
+          if (i + 1 <= follower.commitIndex) {
+            throw new Error(
+              `Invariant 11 Violation: Attempted to overwrite committed entry on follower at index ${i + 1}`
+            );
+          }
           // Overwrite conflicting entry and truncate follower log
           follower.log = follower.log.slice(0, i);
           follower.log.push({ ...leaderEntry });
@@ -450,6 +513,11 @@ export class RaftModel {
 
     // If follower had extra entries beyond leader, truncate them
     if (follower.log.length > leader.log.length) {
+      if (leader.log.length < follower.commitIndex) {
+        throw new Error(
+          `Invariant 11 Violation: Attempted to truncate committed entries on follower`
+        );
+      }
       follower.log = follower.log.slice(0, leader.log.length);
       conflictFound = true;
     }
@@ -472,12 +540,16 @@ export class RaftModel {
         }
         if (replicas >= 2) {
           leader.commitIndex = entryIdx;
+          this.recordCommittedEntry(entryIdx, entry);
         }
       }
     }
 
     // Follower adopts leader's commitIndex up to its log length
     follower.commitIndex = Math.min(leader.commitIndex, follower.log.length);
+    for (let i = 1; i <= follower.commitIndex; i++) {
+      this.recordCommittedEntry(i, follower.log[i - 1]);
+    }
 
     this.recordEvent(
       "appendEntries",
@@ -511,6 +583,15 @@ export class RaftModel {
   }
 
   /**
+   * isolate(n):
+   * Isolates node n from all other nodes: [[n], peers].
+   */
+  isolate(n: number): void {
+    const peers = Array.from(this.nodes.keys()).filter((id) => id !== n);
+    this.partition([[n], peers]);
+  }
+
+  /**
    * heal():
    * Restores unified network where all alive nodes can communicate.
    */
@@ -523,6 +604,151 @@ export class RaftModel {
       `Partition healed: village network unified [${allIds.join(", ")}]`,
       true
     );
+  }
+
+  /**
+   * Records committed entries to ensure they are never overwritten or lost.
+   */
+  private recordCommittedEntry(index: number, entry: RaftLogEntry): void {
+    if (this.committedRegistry.has(index)) {
+      const existing = this.committedRegistry.get(index)!;
+      if (existing.term !== entry.term || existing.label !== entry.label) {
+        throw new Error(
+          `Invariant 11 Violation: Committed entry at index ${index} changed from term ${existing.term} "${existing.label}" to term ${entry.term} "${entry.label}"`
+        );
+      }
+    } else {
+      this.committedRegistry.set(index, { ...entry });
+    }
+  }
+
+  /**
+   * settle():
+   * Deterministic reaction layer on top of the model.
+   * Rule:
+   * - If an alive node group that can reach a majority has no live leader with the current term,
+   *   the alive node with the most up-to-date log (lowest id on tie) times out and runs a normal election;
+   * - leaders send appendEntries to reachable nodes;
+   * - stale leaders step down on contact.
+   * - If fewer than 2 nodes are alive and mutually reachable, settle() does nothing
+   *   and reports "No quorum: cannot elect or commit".
+   */
+  settle(): SettleResult {
+    // 1. Identify mutually reachable alive node groups
+    let majorityGroup: number[] | null = null;
+    for (const group of this.partitionGroups) {
+      const aliveInGroup = group.filter((id) => this.nodes.get(id)?.alive);
+      if (aliveInGroup.length >= 2) {
+        majorityGroup = aliveInGroup.sort((a, b) => a - b);
+        break;
+      }
+    }
+
+    if (!majorityGroup) {
+      const msg = "No quorum: cannot elect or commit";
+      this.recordEvent("settle", {}, msg, false);
+      return {
+        settled: false,
+        noQuorum: true,
+        message: msg,
+        leaderId: null,
+      };
+    }
+
+    // Step A: Active leaders in majority group send appendEntries to reachable peers.
+    // Stale leaders step down on contact with higher-term peers.
+    const activeLeaders = majorityGroup.filter(
+      (id) => this.nodes.get(id)?.role === "leader"
+    );
+    for (const leaderId of activeLeaders) {
+      for (const peerId of majorityGroup) {
+        if (peerId !== leaderId) {
+          this.appendEntries(leaderId, peerId);
+        }
+      }
+    }
+
+    // Step B: Check if there is an active live leader in majorityGroup with current highest term
+    const maxTerm = Math.max(
+      ...majorityGroup.map((id) => this.nodes.get(id)!.currentTerm)
+    );
+    let currentLeader = majorityGroup
+      .map((id) => this.nodes.get(id)!)
+      .find((n) => n.role === "leader" && n.currentTerm === maxTerm && n.alive);
+
+    if (!currentLeader) {
+      // Alive node with most up-to-date log (lowest id on tie) times out and runs normal election
+      let winnerId = majorityGroup[0];
+      for (let i = 1; i < majorityGroup.length; i++) {
+        const candId = majorityGroup[i];
+        const candLog = this.nodes.get(candId)!.log;
+        const winnerLog = this.nodes.get(winnerId)!.log;
+        if (isLogMoreUpToDate(candLog, winnerLog)) {
+          winnerId = candId;
+        }
+      }
+
+      this.timeout(winnerId);
+
+      for (const peerId of majorityGroup) {
+        if (peerId !== winnerId) {
+          this.requestVote(winnerId, peerId);
+        }
+      }
+
+      const winnerNode = this.nodes.get(winnerId)!;
+      if (winnerNode.role === "leader") {
+        currentLeader = winnerNode;
+        for (const peerId of majorityGroup) {
+          if (peerId !== winnerId) {
+            this.appendEntries(winnerId, peerId);
+          }
+        }
+      }
+    } else {
+      // Current leader sends appendEntries to reachable nodes
+      for (const peerId of majorityGroup) {
+        if (peerId !== currentLeader.id) {
+          this.appendEntries(currentLeader.id, peerId);
+        }
+      }
+    }
+
+    if (currentLeader) {
+      // Propagation pass for commitIndex
+      for (const peerId of majorityGroup) {
+        if (
+          peerId !== currentLeader.id &&
+          this.nodes.get(peerId)!.commitIndex < currentLeader.commitIndex
+        ) {
+          this.appendEntries(currentLeader.id, peerId);
+        }
+      }
+
+      const msg = `Cluster settled with leader Node ${currentLeader.id} (term ${currentLeader.currentTerm})`;
+      this.recordEvent(
+        "settle",
+        { leaderId: currentLeader.id, term: currentLeader.currentTerm },
+        msg,
+        true
+      );
+      return {
+        settled: true,
+        noQuorum: false,
+        message: msg,
+        leaderId: currentLeader.id,
+        term: currentLeader.currentTerm,
+      };
+    }
+
+    const msg = "Election completed but leader not established";
+    this.recordEvent("settle", {}, msg, false);
+    return {
+      settled: false,
+      noQuorum: false,
+      message: msg,
+      leaderId: null,
+    };
   }
 
   /**

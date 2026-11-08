@@ -40,7 +40,7 @@ function runChecks() {
   }
 
   console.log('\n----------------------------------------------------------------');
-  console.log(' INVARIANT AUDIT SUITE (9 INVARIANT CHECKS)');
+  console.log(' INVARIANT AUDIT SUITE (11 INVARIANT CHECKS)');
   console.log('----------------------------------------------------------------\n');
 
   const errors = [];
@@ -391,9 +391,95 @@ function runChecks() {
     errors.push(`Invariant 9 Exception: ${err.message}`);
   }
 
+  // -------------------------------------------------------------
+  // Invariant 10: No vote is granted to a candidate with a less up-to-date log (Raft §5.4.1)
+  // -------------------------------------------------------------
+  try {
+    let inv10Passed = true;
+    for (const vote of model.votingHistory) {
+      const upToDate =
+        vote.candLastTerm > vote.voterLastTerm ||
+        (vote.candLastTerm === vote.voterLastTerm && vote.candLogLength >= vote.voterLogLength);
+      if (!upToDate) {
+        inv10Passed = false;
+        errors.push(
+          `Invariant 10 Violation: Node ${vote.voterId} granted vote to Node ${vote.candidateId} in term ${vote.term} with less up-to-date log: candidate(lastTerm=${vote.candLastTerm}, len=${vote.candLogLength}) < voter(lastTerm=${vote.voterLastTerm}, len=${vote.voterLogLength})`
+        );
+      }
+    }
+
+    if (inv10Passed) {
+      console.log(
+        `[PASS] Invariant 10: No vote is granted to a candidate with a less up-to-date log (${model.votingHistory.length} votes audited, all satisfied §5.4.1)`
+      );
+    } else {
+      console.log(`[FAIL] Invariant 10: No vote is granted to a candidate with a less up-to-date log`);
+    }
+  } catch (err) {
+    errors.push(`Invariant 10 Exception: ${err.message}`);
+  }
+
+  // -------------------------------------------------------------
+  // Invariant 11: No committed entry is ever lost or overwritten (Leader Completeness §5.4.3)
+  // -------------------------------------------------------------
+  try {
+    let inv11Passed = true;
+    if (model.committedRegistry.size === 0) {
+      inv11Passed = false;
+      errors.push(`Invariant 11 Violation: No committed entries recorded in committedRegistry`);
+    }
+
+    // Verify across every snapshot and every node that any entry at or below commitIndex matches the registry
+    for (const snap of snapshots) {
+      for (const node of snap.nodes) {
+        for (let idx = 1; idx <= node.commitIndex; idx++) {
+          const committed = model.committedRegistry.get(idx);
+          if (!committed) {
+            inv11Passed = false;
+            errors.push(`Invariant 11 Violation: Step ${snap.stepIndex} Node ${node.id} committed index ${idx} not in committedRegistry`);
+            continue;
+          }
+          const actual = node.log[idx - 1];
+          if (!actual || actual.term !== committed.term || actual.label !== committed.label) {
+            inv11Passed = false;
+            errors.push(
+              `Invariant 11 Violation: Step ${snap.stepIndex} Node ${node.id} committed entry at index ${idx} mismatch. Expected term ${committed.term} "${committed.label}", got ${actual ? `term ${actual.term} "${actual.label}"` : "missing"}`
+            );
+          }
+        }
+      }
+    }
+
+    // Also verify monotonic persistence of committed entries across sequential snapshots
+    for (let s = 1; s < snapshots.length; s++) {
+      const prevSnap = snapshots[s - 1];
+      const currSnap = snapshots[s];
+      for (const currNode of currSnap.nodes) {
+        const prevNode = prevSnap.nodes.find((n) => n.id === currNode.id);
+        if (prevNode && prevNode.commitIndex > 0) {
+          // If node was committed in prev, its commitIndex must never regress
+          if (currNode.alive && currNode.commitIndex < prevNode.commitIndex) {
+            inv11Passed = false;
+            errors.push(`Invariant 11 Violation: Node ${currNode.id} commitIndex regressed from ${prevNode.commitIndex} to ${currNode.commitIndex} in step ${s}`);
+          }
+        }
+      }
+    }
+
+    if (inv11Passed) {
+      console.log(
+        `[PASS] Invariant 11: No committed entry is ever lost or overwritten (${model.committedRegistry.size} committed entries verified invariant across all snapshots)`
+      );
+    } else {
+      console.log(`[FAIL] Invariant 11: No committed entry is ever lost or overwritten`);
+    }
+  } catch (err) {
+    errors.push(`Invariant 11 Exception: ${err.message}`);
+  }
+
   console.log('\n================================================================');
   if (errors.length === 0) {
-    console.log(' ALL 9 INVARIANTS SATISFIED DETERMINISTICALLY. 0 ERRORS.');
+    console.log(' ALL 11 INVARIANTS SATISFIED DETERMINISTICALLY. 0 ERRORS.');
     console.log(' STATUS: PASS');
     console.log('================================================================');
     process.exit(0);

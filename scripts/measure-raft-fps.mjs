@@ -219,6 +219,7 @@ Status: PASS (Target >= 50.0 FPS maintained)
 
   console.log('\n' + report);
   fs.writeFileSync(OUTPUT_FILE, report, 'utf8');
+  fs.writeFileSync(path.resolve('docs/proofs/raft-r3-scroll-fps.txt'), report, 'utf8');
   console.log(`Saved benchmark report to: ${OUTPUT_FILE}`);
 }
 

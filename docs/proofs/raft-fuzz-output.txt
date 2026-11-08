@@ -1,0 +1,55 @@
+> sumit-portfolio@0.1.0 fuzz:raft-model
+> node --experimental-strip-types --no-warnings scripts/fuzz-raft-model.mjs
+
+================================================================
+ RAFT MODEL FUZZ VERIFICATION SUITE
+ 2000 Seeded Random Action Runs (length 15-40)
+ Actions: crash, recover, isolate, heal, clientEntry, settle
+ Auditing Invariants 1-11 + Log Matching after EVERY action
+================================================================
+
+----------------------------------------------------------------
+ PART 1: NEGATIVE CONTROLS (MUTATION AUDIT)
+ Demonstrating that fuzzer catches rule violations & minimizes actions
+----------------------------------------------------------------
+
+NEGATIVE CONTROL (a) [Remove election restriction]:
+  - Result: FAILED as expected on seed 1
+  - Invariant Violated: Invariant 10 Violation (Election Restriction §5.4.1): Node 1 granted vote to Node 2 in term 2 with less up-to-date log: cand(term=1, len=1) < voter(term=1, len=3) [Seed 1, Action 18: settle]
+  - Minimal Reproducing Action List (1 actions):
+    1. settle
+
+NEGATIVE CONTROL (b) [Commit with 1 replica]:
+  - Result: FAILED as expected on seed 1
+  - Invariant Violated: Invariant 5 Violation (Commit Majority): Node 1 has committed entry at index 1 with only 1 replica (< 2 required) [Seed 1, Action 4: clientEntry]
+  - Minimal Reproducing Action List (2 actions):
+    1. settle
+    2. clientEntry("Entry #5")
+
+NEGATIVE CONTROL (c) [Vote twice in a term]:
+  - Result: FAILED as expected on seed 1
+  - Invariant Violated: Invariant 1 Violation (Leader Uniqueness): Term 1 has multiple leaders: [1, 3] [Seed 1, Action 2: settle]
+  - Minimal Reproducing Action List (1 actions):
+    1. settle
+
+----------------------------------------------------------------
+ PART 2: REAL MODEL FUZZ RUN (SEEDS 1..2000)
+----------------------------------------------------------------
+
+  Completed 500/2000 seeds (13676 actions executed, 0 violations)...
+  Completed 1000/2000 seeds (27446 actions executed, 0 violations)...
+  Completed 1500/2000 seeds (41141 actions executed, 0 violations)...
+  Completed 2000/2000 seeds (54813 actions executed, 0 violations)...
+
+================================================================
+ FUZZ RUN RESULTS
+================================================================
+ Seeds evaluated:     1..2000 (2000 seeds)
+ Total actions run:   54813
+ Invariant checks:    602943 checks evaluated
+ Violations found:    0
+ Execution duration:  0.16s
+================================================================
+ STATUS: ALL INVARIANTS HELD ACROSS ALL 2000 SEEDS. PASS.
+================================================================
+
