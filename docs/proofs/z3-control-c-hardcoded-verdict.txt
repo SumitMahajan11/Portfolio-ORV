@@ -1,0 +1,16 @@
+=== Z3 RECORDED PROVENANCE & TRUTHFULNESS AUDIT ===
+
+[PASS] SHA256 matches for chained_escalation.tf (fcded8d74b44f5486b36e69f044713f25b0e148c0a81663f9c9f02ab908b4bf1)
+[PASS] SHA256 matches for run-1-privilege-escalation-sat.txt (b832c590b4ebbb4c519c763c1309ef33c9477605efdee0ec087a9db18731471c)
+[PASS] SHA256 matches for run-2-multirule-sg-repair.txt (b38f5d7e0ca5354725613cc634539de31791abcef5e6f984633d0a4fcd76ab42)
+[PASS] SHA256 matches for run-3-unsat-certificate.txt (9775bf2affdf74255f6431c693e3fc15f1678ef6f46cff30fca35a3c97918a89)
+[PASS] SHA256 matches for run-4-unresolvable-unknown.txt (f9e45c55c85ab1834061c4b63b049bed028ac2547210ea77b48f75a4800e62c3)
+[PASS] Item 1 (RECORDED_CONFIG_EXCERPT) excerpt matches chained_escalation.tf lines 1-32 exactly
+[PASS] Item 2 (RECORDED_SAT_WITNESS) excerpt matches run-1-privilege-escalation-sat.txt lines 81-128 exactly
+[PASS] Item 3 (RECORDED_AUTO_REPAIR) excerpt matches run-2-multirule-sg-repair.txt lines 7-36 exactly
+[PASS] Item 4 (RECORDED_FAIL_CLOSED) excerpt matches run-4-unresolvable-unknown.txt lines 9-13 exactly
+[PASS] Item 5 (RECORDED_PROOF_CERTIFICATE) proof certificate truncated excerpt verified against run-3
+[FAIL] File z3-static-diagram-c.tsx contains banned unverified/mock string: "UNSATISFIABLE"
+
+>>> Z3 PROVENANCE CHECK FAILED: 1 error(s) detected <<<
+ - File z3-static-diagram-c.tsx contains banned unverified/mock string: "UNSATISFIABLE"

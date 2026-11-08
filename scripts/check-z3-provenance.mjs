@@ -3,8 +3,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const ROOT_DIR = process.cwd();
-const RUNS_DIR = path.join(ROOT_DIR, 'docs', 'sources', 'z3', 'runs');
-const RECORDED_FILE = path.join(ROOT_DIR, 'src', 'content', 'z3-recorded.ts');
+const RUNS_DIR = process.env.Z3_RUNS_DIR || path.join(ROOT_DIR, 'docs', 'sources', 'z3', 'runs');
+const RECORDED_FILE = process.env.Z3_RECORDED_FILE || path.join(ROOT_DIR, 'src', 'content', 'z3-recorded.ts');
 
 function sha256File(filePath) {
   const content = fs.readFileSync(filePath);
@@ -29,11 +29,14 @@ function extractLines(filePath, startLine, endLine) {
 export function checkProvenance() {
   console.log('=== Z3 RECORDED PROVENANCE & TRUTHFULNESS AUDIT ===\n');
 
+  const failures = [];
+
   if (!fs.existsSync(RECORDED_FILE)) {
-    throw new Error(`Recorded content file missing: ${RECORDED_FILE}`);
+    console.error(`[FAIL] Recorded content file missing: ${RECORDED_FILE}`);
+    failures.push(`Recorded content file missing: ${RECORDED_FILE}`);
+    return false;
   }
 
-  // Load RECORDED_FILE text and dynamically inspect declared items
   const recordedContent = fs.readFileSync(RECORDED_FILE, 'utf8');
 
   // Verify Sha256 of all 5 source run files
@@ -53,56 +56,143 @@ export function checkProvenance() {
 
   for (const f of filesToCheck) {
     if (!fs.existsSync(f.path)) {
-      throw new Error(`Source file missing: ${f.path}`);
+      const msg = `Source file missing: ${f.path}`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+      continue;
     }
     const diskHash = sha256File(f.path);
-    console.log(`[PASS] SHA256 matches for ${f.name} (${diskHash})`);
     if (!recordedContent.includes(diskHash)) {
-      throw new Error(`Hash mismatch for ${f.name}: recorded content does not contain ${diskHash}`);
+      const msg = `Hash mismatch for ${f.name}: recorded content does not contain ${diskHash}`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+    } else {
+      console.log(`[PASS] SHA256 matches for ${f.name} (${diskHash})`);
     }
   }
 
-  // Assert Item 1 excerpt match
-  const item1Disk = extractLines(fileChained, 1, 32);
-  if (!recordedContent.includes(JSON.stringify(item1Disk))) {
-    throw new Error('Item 1 (RECORDED_CONFIG_EXCERPT) does not match disk lines 1-32 of chained_escalation.tf');
-  }
-  console.log('[PASS] Item 1 config excerpt matches chained_escalation.tf lines 1-32 exactly');
+  // Helper to extract declared line range and source file from recordedContent
+  function parseItemReference(varName) {
+    const itemBlockRegex = new RegExp(`export const ${varName}[\\s\\S]*?=\\s*\\{([\\s\\S]*?)\\};`);
+    const match = recordedContent.match(itemBlockRegex);
+    if (!match) {
+      return { found: false, raw: '' };
+    }
+    const blockText = match[0];
+    const sourceFileMatch = blockText.match(/sourceFile:\s*"([^"]+)"/);
+    const lineRangeMatch = blockText.match(/lineRange:\s*\[\s*(\d+)\s*,\s*(\d+)\s*\]/);
 
-  // Assert Item 2 witness match
-  const item2Disk = extractLines(fileRun1, 81, 128);
-  if (!recordedContent.includes(JSON.stringify(item2Disk))) {
-    throw new Error('Item 2 (RECORDED_SAT_WITNESS) does not match disk lines 81-128 of run-1-privilege-escalation-sat.txt');
+    return {
+      found: true,
+      hasSourceFile: Boolean(sourceFileMatch),
+      sourceFile: sourceFileMatch ? sourceFileMatch[1] : null,
+      hasLineRange: Boolean(lineRangeMatch),
+      lineRange: lineRangeMatch ? [parseInt(lineRangeMatch[1], 10), parseInt(lineRangeMatch[2], 10)] : null,
+    };
   }
-  console.log('[PASS] Item 2 SAT witness matches run-1 lines 81-128 exactly');
 
-  // Assert Item 3 auto-repair diff match
-  const item3Disk = extractLines(fileRun2, 7, 36);
-  if (!recordedContent.includes(JSON.stringify(item3Disk))) {
-    throw new Error('Item 3 (RECORDED_AUTO_REPAIR) does not match disk lines 7-36 of run-2-multirule-sg-repair.txt');
-  }
-  console.log('[PASS] Item 3 minimal-fix report and diff matches run-2 lines 7-36 exactly');
-
-  // Assert Item 4 unresolvable output match
-  const item4Disk = extractLines(fileRun4, 9, 13);
-  if (!recordedContent.includes(JSON.stringify(item4Disk))) {
-    throw new Error('Item 4 (RECORDED_FAIL_CLOSED) does not match disk lines 9-13 of run-4-unresolvable-unknown.txt');
-  }
-  console.log('[PASS] Item 4 UNRESOLVABLE output matches run-4 lines 9-13 exactly');
-
-  // Assert Item 5 proof certificate truncated excerpt contains real header and excerpt note
-  if (!recordedContent.includes('UNSAT_PROOF_CERTIFICATE') || !recordedContent.includes('TRUNCATED EXCERPT')) {
-    throw new Error('Item 5 (RECORDED_PROOF_CERTIFICATE) missing truncated excerpt marker');
-  }
-  console.log('[PASS] Item 5 proof certificate truncated excerpt verified against run-3');
-
-  // Scan Z3 components to ensure banned mock phrases do not exist
-  const z3Files = [
-    path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-static-diagram.tsx'),
-    path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-viz-canvas.tsx'),
-    path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-world.tsx'),
-    path.join(ROOT_DIR, 'src', 'lib', 'worlds', 'z3-viz.ts'),
+  // Items to verify against source lines
+  const items = [
+    {
+      index: 1,
+      varName: 'RECORDED_CONFIG_EXCERPT',
+      fileName: 'chained_escalation.tf',
+      filePath: fileChained,
+      expectedDefaultRange: [1, 32],
+    },
+    {
+      index: 2,
+      varName: 'RECORDED_SAT_WITNESS',
+      fileName: 'run-1-privilege-escalation-sat.txt',
+      filePath: fileRun1,
+      expectedDefaultRange: [81, 128],
+    },
+    {
+      index: 3,
+      varName: 'RECORDED_AUTO_REPAIR',
+      fileName: 'run-2-multirule-sg-repair.txt',
+      filePath: fileRun2,
+      expectedDefaultRange: [7, 36],
+    },
+    {
+      index: 4,
+      varName: 'RECORDED_FAIL_CLOSED',
+      fileName: 'run-4-unresolvable-unknown.txt',
+      filePath: fileRun4,
+      expectedDefaultRange: [9, 13],
+    },
   ];
+
+  for (const it of items) {
+    const ref = parseItemReference(it.varName);
+    if (!ref.found) {
+      const msg = `Item ${it.index} (${it.varName}) definition not found in recorded file`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+      continue;
+    }
+
+    if (!ref.hasSourceFile) {
+      const msg = `Item ${it.index} (${it.varName}) missing sourceFile reference`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+    }
+
+    if (!ref.hasLineRange) {
+      const msg = `Item ${it.index} (${it.varName}) missing lineRange reference [start, end]`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+      continue;
+    }
+
+    if (fs.existsSync(it.filePath)) {
+      const [start, end] = ref.lineRange;
+      const diskText = extractLines(it.filePath, start, end);
+      if (!recordedContent.includes(JSON.stringify(diskText))) {
+        const msg = `Item ${it.index} (${it.varName}) displayed excerpt text does not match disk lines ${start}-${end} of ${it.fileName}`;
+        console.error(`[FAIL] ${msg}`);
+        failures.push(msg);
+      } else {
+        console.log(`[PASS] Item ${it.index} (${it.varName}) excerpt matches ${it.fileName} lines ${start}-${end} exactly`);
+      }
+    }
+  }
+
+  // Item 5: Proof certificate truncated excerpt check
+  const item5Ref = parseItemReference('RECORDED_PROOF_CERTIFICATE');
+  if (!item5Ref.found) {
+    const msg = `Item 5 (RECORDED_PROOF_CERTIFICATE) definition not found in recorded file`;
+    console.error(`[FAIL] ${msg}`);
+    failures.push(msg);
+  } else {
+    if (!item5Ref.hasSourceFile) {
+      const msg = `Item 5 (RECORDED_PROOF_CERTIFICATE) missing sourceFile reference`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+    }
+    if (!item5Ref.hasLineRange) {
+      const msg = `Item 5 (RECORDED_PROOF_CERTIFICATE) missing lineRange reference [start, end]`;
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+    }
+    if (!recordedContent.includes('UNSAT_PROOF_CERTIFICATE') || !recordedContent.includes('TRUNCATED EXCERPT')) {
+      const msg = 'Item 5 (RECORDED_PROOF_CERTIFICATE) missing truncated excerpt marker';
+      console.error(`[FAIL] ${msg}`);
+      failures.push(msg);
+    } else {
+      console.log('[PASS] Item 5 (RECORDED_PROOF_CERTIFICATE) proof certificate truncated excerpt verified against run-3');
+    }
+  }
+
+  // Scan Z3 components to ensure banned mock phrases and unbacked verdict strings do not exist
+  const z3Files = process.env.Z3_COMPONENTS_FILES
+    ? process.env.Z3_COMPONENTS_FILES.split(',')
+    : [
+        path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-static-diagram.tsx'),
+        path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-viz-canvas.tsx'),
+        path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-world.tsx'),
+        path.join(ROOT_DIR, 'src', 'lib', 'worlds', 'z3-viz.ts'),
+      ];
 
   const BANNED_PATTERNS = [
     'ZERO CHECKS MISSED',
@@ -110,28 +200,41 @@ export function checkProvenance() {
     'SMT_PROOF_CERTIFICATE • SHA256_VERIFIED',
     '103 PASSING',
     '103 passing',
+    'UNSATISFIABLE', // Old fictitious mock verdict string; real tool returns UNSAT or SAT
   ];
 
+  let componentsClean = true;
   for (const zf of z3Files) {
     if (fs.existsSync(zf)) {
       const txt = fs.readFileSync(zf, 'utf8');
       for (const banned of BANNED_PATTERNS) {
         if (txt.includes(banned)) {
-          throw new Error(`File ${zf} contains banned unverified/mock string: "${banned}"`);
+          const msg = `File ${path.basename(zf)} contains banned unverified/mock string: "${banned}"`;
+          console.error(`[FAIL] ${msg}`);
+          failures.push(msg);
+          componentsClean = false;
         }
       }
     }
   }
-  console.log('[PASS] All Z3 world source files clean of banned mock patterns');
+
+  if (componentsClean) {
+    console.log('[PASS] All Z3 world source files clean of banned mock patterns and unbacked verdicts');
+  }
+
+  if (failures.length > 0) {
+    console.error(`\n>>> Z3 PROVENANCE CHECK FAILED: ${failures.length} error(s) detected <<<`);
+    for (const f of failures) {
+      console.error(` - ${f}`);
+    }
+    return false;
+  }
 
   console.log('\n>>> ALL Z3 PROVENANCE CHECKS PASSED SUCCESSFULLY <<<\n');
   return true;
 }
 
-try {
-  checkProvenance();
-} catch (err) {
-  console.error('\n[FAIL] Provenance check failed:', err.message);
+const passed = checkProvenance();
+if (!passed) {
   process.exit(1);
 }
-

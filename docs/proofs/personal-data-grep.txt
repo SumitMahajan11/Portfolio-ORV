@@ -1,0 +1,43 @@
+docs/20-HERO-BIYOO-STRUCTURE.md:276: | [Sticky Header: SUMIT MAHAJAN             Mode Sound Skip]  |  Y = 52px
+docs/proofs/device-matrix.md:81:   On screens 360px wide, the branding title `SUMIT MAHAJAN` together with the Motion Toggle, Sound Toggle, and Skip link exceeds 360px by 16px.
+docs/proofs/lighthouse-fbcda1e-mobile.json:5168:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-fbcda1e-run1.json:5175:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-fbcda1e-run2.json:5161:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-fbcda1e-run3.json:5223:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-fixed-run1.json:5245:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-fixed-run2.json:5200:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-fixed-run3.json:5206:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-head-run1.json:5218:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-head-run2.json:5185:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-head-run3.json:5238:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-mobile-this-commit.json:5084:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-w3-run1.json:5084:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-w3-run2.json:5211:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-w3-run3.json:5202:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/lighthouse-wall-w2-mobile.json:5189:             "nodeLabel": "SUMIT MAHAJAN"
+docs/proofs/matrix.md:98: - **Measurement**: Initial mobile overflow check failed with `body.scrollWidth: 548px` on a 360px viewport. The persistent header flex container contained 6 non-wrapping items (`SUMIT MAHAJAN`, `MotionToggle`, `SoundToggle`, `Bounty board`, `Skip to contact &rarr;`, `Skip to plain version &rarr;`).
+docs/proofs/p5-6-verification-results.json:25:         "text": "SUMIT MAHAJAN",
+docs/proofs/phase5.md:131: | **2** | Site Identity | `<A>` | `"SUMIT MAHAJAN"` | Focus ring visible; links to `/` | **PASS** |
+docs/proofs/raft-fuzz-negative-controls.txt:6: [Setup] Created temporary directory for mutant copies: C:\Users\SUMIT\AppData\Local\Temp\raft-mutants-1794147323255
+docs/proofs/raft-fuzz-negative-controls.txt:107: [Cleanup] Removed temporary mutant directory C:\Users\SUMIT\AppData\Local\Temp\raft-mutants-1794147323255.
+docs/proofs/task1-privacy-grep.txt:5: D:\Projects\Portfolio-ORV-main\docs\sources\z3\NORMALIZATION.md:12:    - Target: `C:\Users\SUMIT\AppData\Local\Temp\z3-run\` (or `C:/Users/SUMIT/AppData/Local/Temp/z3-run/`)
+docs/proofs/task1-privacy-grep.txt:6: D:\Projects\Portfolio-ORV-main\docs\sources\z3\NORMALIZATION.md:14:    - Target without trailing slash: `C:\Users\SUMIT\AppData\Local\Temp\z3-run`
+docs/proofs/task1-privacy-grep.txt:9: D:\Projects\Portfolio-ORV-main\docs\sources\z3\runs\run-3-unsat-certificate.txt:3: # Command: python -m cli.main verify fixtures/phase2/sg_restricted_ssh.tf --export-certificate C:\Users\SUMIT\AppData\Local\Temp\z3-run\proof_cert_sg_restricted.json
+docs/proofs/task1-privacy-grep.txt:10: D:\Projects\Portfolio-ORV-main\docs\sources\z3\runs\run-3-unsat-certificate.txt:9: Exported 1 proof certificate(s) to 'C:\Users\SUMIT\AppData\Local\Temp\z3-run\proof_cert_sg_restricted.json'
+docs/proofs/task1-privacy-grep.txt:11: D:\Projects\Portfolio-ORV-main\docs\sources\z3\runs\run-4-unresolvable-unknown.txt:58: rootdir: C:\Users\SUMIT\AppData\Local\Temp\z3-run
+docs/proofs/task1-privacy-grep.txt:21: D:\Projects\Portfolio-ORV-main\src\app\layout.tsx:152:                   SUMIT MAHAJAN
+docs/sources/z3/NORMALIZATION.md:12:    - Target: `C:\Users\SUMIT\AppData\Local\Temp\z3-run\` (or `C:/Users/SUMIT/AppData/Local/Temp/z3-run/`)
+docs/sources/z3/NORMALIZATION.md:14:    - Target without trailing slash: `C:\Users\SUMIT\AppData\Local\Temp\z3-run`
+docs/sources/z3/runs/run-3-unsat-certificate.txt:3: # Command: python -m cli.main verify fixtures/phase2/sg_restricted_ssh.tf --export-certificate C:\Users\SUMIT\AppData\Local\Temp\z3-run\proof_cert_sg_restricted.json
+docs/sources/z3/runs/run-3-unsat-certificate.txt:9: Exported 1 proof certificate(s) to 'C:\Users\SUMIT\AppData\Local\Temp\z3-run\proof_cert_sg_restricted.json'
+docs/sources/z3/runs/run-4-unresolvable-unknown.txt:58: rootdir: C:\Users\SUMIT\AppData\Local\Temp\z3-run
+scripts/build-z3-recorded.mjs:16:     .replaceAll('C:\\Users\\SUMIT\\AppData\\Local\\Temp\\z3-run\\', '<repo>/')
+scripts/build-z3-recorded.mjs:17:     .replaceAll('C:/Users/SUMIT/AppData/Local/Temp/z3-run/', '<repo>/')
+scripts/build-z3-recorded.mjs:18:     .replaceAll('C:\\Users\\SUMIT\\AppData\\Local\\Temp\\z3-run', '<repo>')
+scripts/build-z3-recorded.mjs:19:     .replaceAll('C:/Users/SUMIT/AppData/Local/Temp/z3-run', '<repo>');
+scripts/check-z3-provenance.mjs:16:     .replaceAll('C:\\Users\\SUMIT\\AppData\\Local\\Temp\\z3-run\\', '<repo>/')
+scripts/check-z3-provenance.mjs:17:     .replaceAll('C:/Users/SUMIT/AppData/Local/Temp/z3-run/', '<repo>/')
+scripts/check-z3-provenance.mjs:18:     .replaceAll('C:\\Users\\SUMIT\\AppData\\Local\\Temp\\z3-run', '<repo>')
+scripts/check-z3-provenance.mjs:19:     .replaceAll('C:/Users/SUMIT/AppData/Local/Temp/z3-run', '<repo>');
+scripts/regress.mjs:90:   console.log('            SUMIT MAHAJAN PORTFOLIO — REGRESSION SUITE          ');
+src/app/layout.tsx:152:                   SUMIT MAHAJAN
