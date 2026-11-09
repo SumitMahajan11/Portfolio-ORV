@@ -2,6 +2,7 @@ import { execSync } from 'node:child_process';
 import cp from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 const runs = 3;
 const targetUrl = 'http://localhost:3000/';
@@ -93,7 +94,21 @@ async function runAudit() {
       metrics.cls.push(cls);
       metrics.tbt.push(tbt);
 
-      rawRuns.push({ run: i, perf, a11y, bp, seo, lcp: Math.round(lcp), cls: Number(cls.toFixed(3)), tbt: Math.round(tbt), outputPath });
+      const rawBuffer = fs.readFileSync(outputPath);
+      const rawSha256 = crypto.createHash('sha256').update(rawBuffer).digest('hex');
+
+      rawRuns.push({
+        run: i,
+        perf,
+        a11y,
+        bp,
+        seo,
+        lcp: Math.round(lcp),
+        cls: Number(cls.toFixed(3)),
+        tbt: Math.round(tbt),
+        outputPath: `docs/proofs/z3-lighthouse-run${i}.json`,
+        rawSha256,
+      });
       console.log(`Run ${i} completed: Perf=${perf}, A11y=${a11y}, BP=${bp}, SEO=${seo}, LCP=${(lcp / 1000).toFixed(2)}s, CLS=${cls.toFixed(3)}, TBT=${Math.round(tbt)}ms\n`);
 
       if (i < runs) {

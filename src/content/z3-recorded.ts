@@ -17,6 +17,18 @@ export interface HopTrace {
   resourceCondition: string;
 }
 
+export const Z3_RECORDED_TESTS = {
+  count: 276,
+  date: "2026-11-08",
+  line: "Test suite: 276 passed (pytest run, 2026-11-08)",
+  summary: "Test suite: 276 passed (pytest run, 2026-11-08)",
+  claimText: "276 passing tests.",
+  sourceFile: "docs/sources/z3/runs/pytest-run.txt",
+  sourceFileSha256: "892f004a71c83cd98c5e9caff0335545a62e0bdc8f30eea5d1a17d2e734ac53b",
+} as const;
+
+export const Z3_TEST_SUITE = Z3_RECORDED_TESTS;
+
 export const Z3_RECORDED_METADATA = {
   tool: "iac-verifier",
   commit: "6ed26e409270f296a2ecb7a1b3d01e0689ade954",

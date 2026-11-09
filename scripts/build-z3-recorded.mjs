@@ -35,12 +35,30 @@ export function buildZ3Recorded() {
   const fileRun2 = path.join(RUNS_DIR, 'run-2-multirule-sg-repair.txt');
   const fileRun3 = path.join(RUNS_DIR, 'run-3-unsat-certificate.txt');
   const fileRun4 = path.join(RUNS_DIR, 'run-4-unresolvable-unknown.txt');
+  const filePytestRun = path.join(RUNS_DIR, 'pytest-run.txt');
 
   const shaChained = sha256File(fileChained);
   const shaRun1 = sha256File(fileRun1);
   const shaRun2 = sha256File(fileRun2);
   const shaRun3 = sha256File(fileRun3);
   const shaRun4 = sha256File(fileRun4);
+  const shaPytestRun = sha256File(filePytestRun);
+
+  // Parse test count and date from pytest-run.txt
+  const pytestRunRaw = fs.readFileSync(filePytestRun, 'utf8');
+  const pytestDateMatch = pytestRunRaw.match(/^# Date:\s*([0-9-]+)/m);
+  if (!pytestDateMatch) {
+    throw new Error('Failed to parse date from pytest-run.txt');
+  }
+  const pytestDate = pytestDateMatch[1].trim();
+
+  const pytestCountMatch = pytestRunRaw.match(/(\d+)\s+passed/);
+  if (!pytestCountMatch) {
+    throw new Error('Failed to parse passed test count from pytest-run.txt');
+  }
+  const pytestTestCount = parseInt(pytestCountMatch[1], 10);
+  const pytestSuiteLine = `Test suite: ${pytestTestCount} passed (pytest run, ${pytestDate})`;
+  const pytestClaimText = `${pytestTestCount} passing tests.`;
 
   // Item 1: Real fixture config excerpt for privilege escalation
   // Extract lines 1-32 (Jump role and assume-role policy) from chained_escalation.tf
@@ -109,12 +127,24 @@ export interface HopTrace {
   resourceCondition: string;
 }
 
+export const Z3_RECORDED_TESTS = {
+  count: ${pytestTestCount},
+  date: "${pytestDate}",
+  line: "${pytestSuiteLine}",
+  summary: "${pytestSuiteLine}",
+  claimText: "${pytestClaimText}",
+  sourceFile: "docs/sources/z3/runs/pytest-run.txt",
+  sourceFileSha256: "${shaPytestRun}",
+} as const;
+
+export const Z3_TEST_SUITE = Z3_RECORDED_TESTS;
+
 export const Z3_RECORDED_METADATA = {
   tool: "iac-verifier",
   commit: "6ed26e409270f296a2ecb7a1b3d01e0689ade954",
-  date: "2026-11-08",
-  testCount: 276,
-  label: "Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, 2026-11-08)",
+  date: "${pytestDate}",
+  testCount: ${pytestTestCount},
+  label: "Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, ${pytestDate})",
   honestyLine: "illustrative example, not real Z3 execution",
   browserHonesty: "Nothing is computed in the browser. All verdicts, traces, diffs, and proof certificates are recorded outputs from real Z3 execution on committed repository fixtures.",
 } as const;

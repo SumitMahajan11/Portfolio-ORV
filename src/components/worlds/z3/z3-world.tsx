@@ -6,6 +6,7 @@ import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
 import { SystemWindow } from "@/components/system-window";
 import { useMode } from "@/lib/flags";
+import { Z3_TEST_SUITE } from "@/lib/worlds/z3-viz";
 import { Z3StaticDiagram } from "./z3-static-diagram";
 
 // Lazy-load the interactive Z3 visualizer canvas
@@ -61,7 +62,13 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     status: "flagship",
     world: "z3",
     oneLiner: "Z3-based reachability proofs on Terraform IAM and network graphs.",
-    claims: [],
+    claims: [
+      {
+        text: Z3_TEST_SUITE.claimText,
+        evidence: "verified",
+        source: "README",
+      },
+    ],
     limits: [
       "Auto-repair covers AWS (Security Groups and IAM policies) and Azure NSG only; unsupported for GCP resources, ARM JSON templates, and Azure Governance Policies.",
       "On independent TerraGoat GCP baseline: 1 flagged, 1 modeled but missed before fix, and 9 resources not modeled by the SMT engine (Azure TerraGoat test cases passed; GCP baseline has gaps).",

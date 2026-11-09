@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import {
   Z3_RECORDED_METADATA,
+  Z3_TEST_SUITE,
   RECORDED_CONFIG_EXCERPT,
   RECORDED_SAT_WITNESS,
   RECORDED_AUTO_REPAIR,
@@ -64,9 +65,8 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
       </div>
 
       {/* Honest Browser Framing */}
-      <div className="p-2.5 rounded bg-ink-2/60 border border-line/40 text-[11px] text-mist flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="p-2.5 rounded bg-ink-2/60 border border-line/40 text-[11px] text-mist">
         <span className="italic">{Z3_RECORDED_METADATA.browserHonesty}</span>
-        <span className="text-feather font-semibold shrink-0">Tests: 276 passing</span>
       </div>
 
       {/* Stepper / Beat Navigation Tabs */}
@@ -387,7 +387,8 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
               {Z3_BEATS[4].summary}
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+            {/* Certificate Metadata */}
+            <div data-testid="z3-certificate-card" className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px] font-mono">
               <div className="p-2.5 rounded border border-line/60 bg-ink-2/60">
                 <span className="text-mist block">Type:</span>
                 <span className="text-feather font-semibold truncate block">{RECORDED_PROOF_CERTIFICATE.certificateType}</span>
@@ -400,10 +401,11 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                 <span className="text-mist block">Complete Proof:</span>
                 <span className="text-[#10B981] font-semibold truncate block">true</span>
               </div>
-              <div className="p-2.5 rounded border border-line/60 bg-ink-2/60">
-                <span className="text-mist block">Tests:</span>
-                <span className="text-feather font-semibold truncate block">276 passing</span>
-              </div>
+            </div>
+
+            {/* Test Suite Line outside Certificate Card */}
+            <div className="text-[11px] font-mono text-mist">
+              {Z3_TEST_SUITE.line}
             </div>
 
             <div className="space-y-1.5">

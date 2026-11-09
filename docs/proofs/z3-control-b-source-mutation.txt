@@ -4,11 +4,15 @@
 [PASS] SHA256 matches for run-2-multirule-sg-repair.txt (b38f5d7e0ca5354725613cc634539de31791abcef5e6f984633d0a4fcd76ab42)
 [PASS] SHA256 matches for run-3-unsat-certificate.txt (9775bf2affdf74255f6431c693e3fc15f1678ef6f46cff30fca35a3c97918a89)
 [PASS] SHA256 matches for run-4-unresolvable-unknown.txt (f9e45c55c85ab1834061c4b63b049bed028ac2547210ea77b48f75a4800e62c3)
+[PASS] SHA256 matches for pytest-run.txt (892f004a71c83cd98c5e9caff0335545a62e0bdc8f30eea5d1a17d2e734ac53b)
 [PASS] Item 1 (RECORDED_CONFIG_EXCERPT) excerpt matches chained_escalation.tf lines 1-32 exactly
 [PASS] Item 3 (RECORDED_AUTO_REPAIR) excerpt matches run-2-multirule-sg-repair.txt lines 7-36 exactly
 [PASS] Item 4 (RECORDED_FAIL_CLOSED) excerpt matches run-4-unresolvable-unknown.txt lines 9-13 exactly
 [PASS] Item 5 (RECORDED_PROOF_CERTIFICATE) proof certificate truncated excerpt verified against run-3
 [PASS] All Z3 world source files clean of banned mock patterns and unbacked verdicts
+
+--- Checking Certificate Card Purity & Test-Count Provenance ---
+[INFO] Provenance baseline: 276 tests passed on 2026-11-08 (from pytest-run.txt)
 [FAIL] Hash mismatch for run-1-privilege-escalation-sat.txt: recorded content does not contain c8fbf417029789bb0acc95420a060134bb38dc9d56eb044a2cb04c0f8ca1a976
 [FAIL] Item 2 (RECORDED_SAT_WITNESS) displayed excerpt text does not match disk lines 81-128 of run-1-privilege-escalation-sat.txt
 

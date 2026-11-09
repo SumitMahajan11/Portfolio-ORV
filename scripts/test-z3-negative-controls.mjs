@@ -125,6 +125,50 @@ async function main() {
     console.log('[PASS] Control (d) failed as expected naming broken item RECORDED_CONFIG_EXCERPT lineRange.\n');
 
     // -------------------------------------------------------------
+    // Negative Control (e): Mutate displayed test count in a temp copy (change 276 to 277)
+    // -------------------------------------------------------------
+    console.log('Testing Control (e): Mutate displayed test count in temp copy (276 -> 277)...');
+    const tempRecordedE = path.join(tmpBase, 'z3-recorded-e.ts');
+    const mutatedE = originalRecorded
+      .replace('count: 276,', 'count: 277,')
+      .replace('276 passed', '277 passed');
+    fs.writeFileSync(tempRecordedE, mutatedE, 'utf8');
+
+    const resE = runChecker({ Z3_RECORDED_FILE: tempRecordedE });
+    console.log(`Control (e) Exit Code: ${resE.exitCode} (Expected: 1)`);
+    console.log(resE.output);
+
+    fs.writeFileSync(path.join(PROOFS_DIR, 'z3-control-e-count-discrepancy.txt'), resE.output, 'utf8');
+
+    if (resE.success || (!resE.output.includes('Test count discrepancy') && !resE.output.includes('Z3_RECORDED_TESTS declared count (277) does not match expected (276)'))) {
+      throw new Error('Control (e) did not fail or did not report test count discrepancy!');
+    }
+    console.log('[PASS] Control (e) failed as expected detecting test count discrepancy 277 vs 276.\n');
+
+    // -------------------------------------------------------------
+    // Negative Control (f): Insert "Tests" field back into certificate card in a temp component copy
+    // -------------------------------------------------------------
+    console.log('Testing Control (f): Mutate certificate card to include "Tests" field...');
+    const originalStatic = fs.readFileSync(path.join(ROOT_DIR, 'src', 'components', 'worlds', 'z3', 'z3-static-diagram.tsx'), 'utf8');
+    const tempComponentF = path.join(tmpBase, 'z3-static-diagram-f.tsx');
+    const mutatedF = originalStatic.replace(
+      'data-testid="z3-certificate-card"',
+      'data-testid="z3-certificate-card">\n          <div><span>Tests:</span><span>276 passing</span></div'
+    );
+    fs.writeFileSync(tempComponentF, mutatedF, 'utf8');
+
+    const resF = runChecker({ Z3_CARD_FILES: tempComponentF });
+    console.log(`Control (f) Exit Code: ${resF.exitCode} (Expected: 1)`);
+    console.log(resF.output);
+
+    fs.writeFileSync(path.join(PROOFS_DIR, 'z3-control-f-card-impurity.txt'), resF.output, 'utf8');
+
+    if (resF.success || !resF.output.includes('Certificate card purity violation')) {
+      throw new Error('Control (f) did not fail or did not report certificate card purity violation!');
+    }
+    console.log('[PASS] Control (f) failed as expected detecting certificate card purity violation.\n');
+
+    // -------------------------------------------------------------
     // Clean Pass: Verify normal unmodified working tree passes cleanly
     // -------------------------------------------------------------
     console.log('Testing Clean Pass: Verifying unmodified working tree...');
@@ -140,7 +184,7 @@ async function main() {
     console.log('[PASS] Clean working tree passed all provenance checks with code 0.\n');
 
     console.log('================================================================');
-    console.log(' ALL 4 NEGATIVE CONTROLS AND CLEAN PASS VERIFIED SUCCESSFULLY');
+    console.log(' ALL 6 NEGATIVE CONTROLS AND CLEAN PASS VERIFIED SUCCESSFULLY');
     console.log('================================================================');
   } finally {
     fs.rmSync(tmpBase, { recursive: true, force: true });
@@ -151,3 +195,4 @@ main().catch((err) => {
   console.error('[ERROR]', err);
   process.exit(1);
 });
+

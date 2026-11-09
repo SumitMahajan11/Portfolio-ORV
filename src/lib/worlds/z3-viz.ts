@@ -6,6 +6,8 @@
 
 import {
   Z3_RECORDED_METADATA,
+  Z3_RECORDED_TESTS,
+  Z3_TEST_SUITE,
   RECORDED_CONFIG_EXCERPT,
   RECORDED_SAT_WITNESS,
   RECORDED_AUTO_REPAIR,
@@ -91,7 +93,7 @@ export const Z3_BEATS: Z3BeatInfo[] = [
     verdictLabel: "UNSAT (SAFE)",
     verdictColor: "#10B981",
     summary:
-      "Safe invariant proven by genuine Z3 proof object. Verified against 276 passing tests with full transparent disclosure of TerraGoat GCP and multi-cloud validation boundaries.",
+      "Safe invariant proven by genuine Z3 proof object: UNSAT verdict confirms aws_security_group.restricted_ssh is safe from sensitive port over-exposure.",
     sourceRef: RECORDED_PROOF_CERTIFICATE.sourceFile,
   },
 ];
@@ -151,6 +153,8 @@ export const WITNESS_GRAPH_EDGES: WitnessGraphEdge[] = [
 
 export {
   Z3_RECORDED_METADATA,
+  Z3_RECORDED_TESTS,
+  Z3_TEST_SUITE,
   RECORDED_CONFIG_EXCERPT,
   RECORDED_SAT_WITNESS,
   RECORDED_AUTO_REPAIR,

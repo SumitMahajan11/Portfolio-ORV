@@ -1,4 +1,5 @@
 import type { Project } from "./types";
+import { Z3_TEST_SUITE } from "./z3-recorded";
 
 export const projects: Project[] = [
   {
@@ -91,7 +92,7 @@ export const projects: Project[] = [
         source: "README",
       },
       {
-        text: "276 passing tests.",
+        text: Z3_TEST_SUITE.claimText,
         evidence: "verified",
         source: "README",
       },

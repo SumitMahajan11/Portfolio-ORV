@@ -3,6 +3,7 @@
 import React from "react";
 import {
   Z3_RECORDED_METADATA,
+  Z3_TEST_SUITE,
   RECORDED_CONFIG_EXCERPT,
   RECORDED_SAT_WITNESS,
   RECORDED_AUTO_REPAIR,
@@ -345,7 +346,7 @@ export function Z3StaticDiagram() {
         </p>
 
         {/* Certificate Metadata */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+        <div data-testid="z3-certificate-card" className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px] font-mono">
           <div className="p-2 rounded border border-line/60 bg-ink-2/60">
             <span className="text-mist block">Type:</span>
             <span className="text-feather font-semibold truncate block">{RECORDED_PROOF_CERTIFICATE.certificateType}</span>
@@ -358,10 +359,11 @@ export function Z3StaticDiagram() {
             <span className="text-mist block">Complete Proof:</span>
             <span className="text-[#10B981] font-semibold truncate block">true</span>
           </div>
-          <div className="p-2 rounded border border-line/60 bg-ink-2/60">
-            <span className="text-mist block">Tests:</span>
-            <span className="text-feather font-semibold truncate block">276 passing</span>
-          </div>
+        </div>
+
+        {/* Test Suite Line outside Certificate Card */}
+        <div className="text-[11px] font-mono text-mist">
+          {Z3_TEST_SUITE.line}
         </div>
 
         {/* Excerpt Proof Object */}

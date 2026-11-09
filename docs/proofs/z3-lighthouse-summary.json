@@ -16,7 +16,8 @@
       "lcp": 4452,
       "cls": 0,
       "tbt": 210,
-      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\z3-lighthouse-run1.json"
+      "outputPath": "docs/proofs/z3-lighthouse-run1.json",
+      "rawSha256": "36bc936e04e3597967ec42b63d4c423ab4f37d271ee7f2683452788ad0db5c94"
     },
     {
       "run": 2,
@@ -27,7 +28,8 @@
       "lcp": 4406,
       "cls": 0,
       "tbt": 206,
-      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\z3-lighthouse-run2.json"
+      "outputPath": "docs/proofs/z3-lighthouse-run2.json",
+      "rawSha256": "a2b8f5cf3d577e2ce753af1593843c723c04e1b9527fd7e454495cf5f86d95dd"
     },
     {
       "run": 3,
@@ -38,7 +40,8 @@
       "lcp": 4406,
       "cls": 0,
       "tbt": 228,
-      "outputPath": "D:\\Projects\\Portfolio-ORV-main\\docs\\proofs\\z3-lighthouse-run3.json"
+      "outputPath": "docs/proofs/z3-lighthouse-run3.json",
+      "rawSha256": "21a4210e486181f23b8d078d644993c4b8c536a98b6020a18f91bfd3d3a9e682"
     }
   ]
 }

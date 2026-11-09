@@ -72,3 +72,7 @@ public/resume/*
 docs/proofs/screens/
 .lighthouse-results/
 
+# Lighthouse raw runs (summaries and raw sha256 committed, raw json not committed)
+docs/proofs/*lighthouse*run*.json
+docs/proofs/*-run[0-9]*.json
+
