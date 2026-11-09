@@ -1,26 +1,72 @@
-====================================================
- MEASURING SCROLL FPS ON THROTTLED MOBILE (4x CPU) 
- Target: 390x844 Viewport, 4x CPU Throttle, Plain Alpha Gradients
-====================================================
+=== SCROLL FPS PERFORMANCE SUMMARY ===
 
-Navigating to http://localhost:3000/...
-Starting scroll FPS probe through all section tints (down and up)...
-FPS Measurement Summary:
-┌───────────────────────┬───────────────────────────────┐
-│ (index)               │ Values                        │
-├───────────────────────┼───────────────────────────────┤
-│ Device Viewport       │ '390x844 (Mobile)'            │
-│ CPU Throttle Rate     │ '4x Slowdown'                 │
-│ Effective FPS         │ '54 fps'                    │
-│ Avg Frame Time        │ '18.51 ms'                    │
-│ Min Frame Time        │ '16.5 ms'                     │
-│ Max Frame Time        │ '150 ms'                    │
-│ Total Frames Recorded │ 334                           │
-│ Frames > 20ms         │ 29                            │
-│ Frames > 33ms         │ 25                            │
-│ Blend Mode Tested     │ 'plain-alpha'                 │
-│ Threshold             │ '>= 55 fps'                   │
-│ Status                │ 'FAIL' │
-└───────────────────────┴───────────────────────────────┘
+Desktop 1440x900 (Unthrottled, Pointer Moving):
+  Runs: 60, 60, 60 fps
+  Median: 60 fps (Floor: 58 fps) -> PASS
 
-WARNING: Effective FPS (54) is below 55 threshold.
+Mobile 390x844 (4x CPU Throttled):
+  Runs: 53.5, 58.3, 55.8 fps
+  Median: 55.8 fps (Floor: 50 fps) -> PASS
+
+{
+  "desktop": {
+    "runs": [
+      {
+        "totalFrames": 211,
+        "totalDurationMs": 3517,
+        "effectiveFps": 60,
+        "avgFrameMs": 16.67,
+        "slowOver18ms": 0,
+        "slowOver33ms": 0
+      },
+      {
+        "totalFrames": 212,
+        "totalDurationMs": 3533,
+        "effectiveFps": 60,
+        "avgFrameMs": 16.67,
+        "slowOver18ms": 0,
+        "slowOver33ms": 0
+      },
+      {
+        "totalFrames": 212,
+        "totalDurationMs": 3533,
+        "effectiveFps": 60,
+        "avgFrameMs": 16.67,
+        "slowOver18ms": 0,
+        "slowOver33ms": 0
+      }
+    ],
+    "medianFps": 60,
+    "pass": true
+  },
+  "mobile4x": {
+    "runs": [
+      {
+        "totalFrames": 307,
+        "totalDurationMs": 5733,
+        "effectiveFps": 53.5,
+        "avgFrameMs": 18.67,
+        "slowOver18ms": 7,
+        "slowOver33ms": 6
+      },
+      {
+        "totalFrames": 316,
+        "totalDurationMs": 5417,
+        "effectiveFps": 58.3,
+        "avgFrameMs": 17.14,
+        "slowOver18ms": 9,
+        "slowOver33ms": 8
+      },
+      {
+        "totalFrames": 356,
+        "totalDurationMs": 6383,
+        "effectiveFps": 55.8,
+        "avgFrameMs": 17.93,
+        "slowOver18ms": 25,
+        "slowOver33ms": 17
+      }
+    ],
+    "medianFps": 55.8,
+    "pass": true
+  }
+}

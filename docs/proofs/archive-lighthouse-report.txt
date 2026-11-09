@@ -1,0 +1,15 @@
+================================================================
+ MOBILE LIGHTHOUSE AUDIT REPORT (3 RUNS, 60S IDLE)
+================================================================
+Target URL: http://localhost:3000/
+Timestamp: 2026-11-09T12:55:43.745Z
+Runs: 3
+
+Run 1: Perf=85 | LCP=4.34s | CLS=0.000 | TBT=106ms | sha256=e01955abd1c56b4fdb31b71fdd7df5cacc4eb2df9558a9474d5918e69df4ef82
+Run 2: Perf=82 | LCP=4.56s | CLS=0.000 | TBT=157ms | sha256=ffbec8b450edd649bbd9e38a10113644c5c3207bb74a385c1ce2e08d4832ccc2
+Run 3: Perf=84 | LCP=4.37s | CLS=0.000 | TBT=133ms | sha256=1db7b1de9650f4f25c730932a7eff6e5bd8ae5b3e312fad0c40fb3fc70c420eb
+
+Median Performance: 84
+Target Requirement: >= 77
+Verdict: PASS (>= 77)
+================================================================

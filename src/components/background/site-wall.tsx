@@ -51,11 +51,10 @@ interface PaperSpriteProps {
 }
 
 /**
- * Original inline SVG paper shape:
+ * Original inline SVG paper shape (retired per Task 4, preserved in file):
  * Slightly bent rectangle manuscript paper, faint text lines, 1px cyan edge glow.
- * NO blur, NO filters.
  */
-function PaperSprite({ className = '', width = 56, height = 76 }: PaperSpriteProps) {
+export function PaperSprite({ className = '', width = 56, height = 76 }: PaperSpriteProps) {
   return (
     <svg
       width={width}
@@ -85,8 +84,9 @@ function PaperSprite({ className = '', width = 56, height = 76 }: PaperSpritePro
 
 /**
  * LivingWall:
- * Single global living wall background (wall-01) with GSAP ScrollTrigger
- * scrubbing a subtle zoom/drift toward the light, idle breathing loop (desktop full mode),
+ * Single global living archive wall background with GSAP ScrollTrigger
+ * scrubbing a subtle zoom/drift toward the top-right light (transform-origin 100% 0%),
+ * idle breathing loop (desktop full mode), dual-exposure pointer-following lantern reveal,
  * per-section color grading tint layers, and a fixed vignette/scrim layer for WCAG AA contrast.
  */
 export function LivingWall() {
@@ -115,13 +115,13 @@ export function LivingWall() {
 
   const zoomRef = useRef<HTMLDivElement>(null);
   const breathRef = useRef<HTMLDivElement>(null);
+  const brightZoomRef = useRef<HTMLDivElement>(null);
+  const brightBreathRef = useRef<HTMLDivElement>(null);
+  const lanternRef = useRef<HTMLDivElement>(null);
+  const lanternCounterRef = useRef<HTMLDivElement>(null);
+
   const tintRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const activeTintRef = useRef<TintId>('hub');
-  const lanternRef = useRef<HTMLDivElement>(null);
-  const papersContainerRef = useRef<HTMLDivElement>(null);
-  const paperFarRef = useRef<HTMLDivElement>(null);
-  const paperMidRef = useRef<HTMLDivElement>(null);
-  const paperNearRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isExcludedRoute || typeof window === 'undefined') return;
@@ -131,10 +131,16 @@ export function LivingWall() {
     const breathEl = breathRef.current;
     if (!zoomEl || !breathEl) return;
 
+    // Collect all zoom/breath elements (both base and bright reveal layer)
+    const zoomEls: HTMLElement[] = [zoomEl];
+    const breathEls: HTMLElement[] = [breathEl];
+    if (brightZoomRef.current) zoomEls.push(brightZoomRef.current);
+    if (brightBreathRef.current) breathEls.push(brightBreathRef.current);
+
     // Light mode and reduced motion: static wall at scale 1, no ScrollTrigger, no loops, no tints
     if (isInstant) {
-      gsap.set(zoomEl, { scale: 1, xPercent: 0, yPercent: 0, clearProps: 'transform' });
-      gsap.set(breathEl, { scale: 1, clearProps: 'transform' });
+      gsap.set(zoomEls, { scale: 1, xPercent: 0, yPercent: 0, clearProps: 'transform' });
+      gsap.set(breathEls, { scale: 1, clearProps: 'transform' });
       return;
     }
 
@@ -142,14 +148,9 @@ export function LivingWall() {
 
     // Desktop: Scroll zoom 1.00 -> 1.12 + translate drift toward the light (max ~1.5%) + idle breathing loop
     mm.add('(min-width: 769px)', () => {
-      // Scroll parallax for floating papers (3 depth layers: far, mid, near)
-      const farSetter = paperFarRef.current ? gsap.quickSetter(paperFarRef.current, 'y', 'px') : null;
-      const midSetter = paperMidRef.current ? gsap.quickSetter(paperMidRef.current, 'y', 'px') : null;
-      const nearSetter = paperNearRef.current ? gsap.quickSetter(paperNearRef.current, 'y', 'px') : null;
-
       // 1. One GSAP ScrollTrigger scrubbing the whole document scroll
       gsap.fromTo(
-        zoomEl,
+        zoomEls,
         { scale: 1.0, xPercent: 0, yPercent: 0 },
         {
           scale: 1.12,
@@ -165,11 +166,6 @@ export function LivingWall() {
             onUpdate: (self) => {
               const scrollY = self.scroll();
               syncTint(scrollY, 0.8);
-              if (farSetter && midSetter && nearSetter) {
-                farSetter(scrollY * -0.03);
-                midSetter(scrollY * -0.06);
-                nearSetter(scrollY * -0.10);
-              }
             },
           },
         }
@@ -177,7 +173,7 @@ export function LivingWall() {
 
       // 2. Desktop full mode only: very slow idle breathing (scale +-0.4%, ~14s sine loop)
       gsap.fromTo(
-        breathEl,
+        breathEls,
         { scale: 0.996 },
         {
           scale: 1.004,
@@ -362,13 +358,17 @@ export function LivingWall() {
       }
     };
 
-    // Cursor lantern & tab visibility handler (desktop full mode only)
-    let cleanupLanternAndPapers: (() => void) | null = null;
+    // Dual-Exposure Lantern: Pointer-following reveal with counter-transform (Desktop full mode only)
+    let cleanupLantern: (() => void) | null = null;
 
-    if (isDesktopFull && lanternRef.current) {
+    if (isDesktopFull && lanternRef.current && lanternCounterRef.current) {
       const lanternEl = lanternRef.current;
+      const counterEl = lanternCounterRef.current;
+
       const xTo = gsap.quickTo(lanternEl, 'x', { duration: 0.35, ease: 'power2.out' });
       const yTo = gsap.quickTo(lanternEl, 'y', { duration: 0.35, ease: 'power2.out' });
+      const counterXTo = gsap.quickTo(counterEl, 'x', { duration: 0.35, ease: 'power2.out' });
+      const counterYTo = gsap.quickTo(counterEl, 'y', { duration: 0.35, ease: 'power2.out' });
 
       let hasMoved = false;
 
@@ -376,10 +376,13 @@ export function LivingWall() {
         if (!hasMoved) {
           hasMoved = true;
           gsap.set(lanternEl, { x: e.clientX, y: e.clientY });
+          gsap.set(counterEl, { x: -e.clientX, y: -e.clientY });
           gsap.to(lanternEl, { opacity: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
         } else {
           xTo(e.clientX);
           yTo(e.clientY);
+          counterXTo(-e.clientX);
+          counterYTo(-e.clientY);
           if (Number(gsap.getProperty(lanternEl, 'opacity')) < 1) {
             gsap.to(lanternEl, { opacity: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
           }
@@ -396,13 +399,6 @@ export function LivingWall() {
           if (hasMoved) {
             gsap.to(lanternEl, { opacity: 0, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
           }
-          if (papersContainerRef.current) {
-            papersContainerRef.current.classList.add('is-paused');
-          }
-        } else {
-          if (papersContainerRef.current) {
-            papersContainerRef.current.classList.remove('is-paused');
-          }
         }
       };
 
@@ -411,7 +407,7 @@ export function LivingWall() {
       document.addEventListener('mouseleave', onPointerLeave);
       document.addEventListener('visibilitychange', onVisibilityChange);
 
-      cleanupLanternAndPapers = () => {
+      cleanupLantern = () => {
         window.removeEventListener('pointermove', onPointerMove);
         document.removeEventListener('pointerleave', onPointerLeave);
         document.removeEventListener('mouseleave', onPointerLeave);
@@ -445,7 +441,7 @@ export function LivingWall() {
       if (mutObserver) mutObserver.disconnect();
       window.removeEventListener('resize', debouncedRecompute);
       window.removeEventListener('scroll', handleScroll);
-      if (cleanupLanternAndPapers) cleanupLanternAndPapers();
+      if (cleanupLantern) cleanupLantern();
       mm.revert();
     };
   }, [isExcludedRoute, isInstant, isDesktopFull]);
@@ -487,12 +483,12 @@ export function LivingWall() {
           transform: 'translateZ(0)',
         }}
       >
-        {/* Base image oversized (about 112% of viewport, centered), transform-origin near the bright top-right corner (75% 20%) */}
+        {/* Base dark image oversized, transform-origin near the top-right light (100% 0%) */}
         <div
           ref={zoomRef}
           className="living-wall-zoom absolute -inset-[6%] w-[112%] h-[112%] pointer-events-none"
           style={{
-            transformOrigin: '75% 20%',
+            transformOrigin: '100% 0%',
             willChange: isInstant ? 'auto' : 'transform',
           }}
         >
@@ -500,7 +496,7 @@ export function LivingWall() {
             ref={breathRef}
             className="living-wall-breath w-full h-full pointer-events-none"
             style={{
-              transformOrigin: '75% 20%',
+              transformOrigin: '100% 0%',
               willChange: isInstant ? 'auto' : 'transform',
             }}
           >
@@ -542,6 +538,70 @@ export function LivingWall() {
           </div>
         </div>
 
+        {/* Dual-exposure lantern: ~520px pointer-following aperture revealing the derived bright layer (Desktop full only) */}
+        {isDesktopFull && (
+          <div
+            ref={lanternRef}
+            aria-hidden="true"
+            className="living-wall-lantern pointer-events-none fixed"
+            style={{
+              width: 520,
+              height: 520,
+              top: 0,
+              left: 0,
+              marginTop: -260,
+              marginLeft: -260,
+              maskImage: 'radial-gradient(circle 260px at center, black 0%, rgba(0, 0, 0, 0.5) 45%, transparent 70%)',
+              WebkitMaskImage: 'radial-gradient(circle 260px at center, black 0%, rgba(0, 0, 0, 0.5) 45%, transparent 70%)',
+              overflow: 'hidden',
+              opacity: 0,
+              willChange: 'transform, opacity',
+            }}
+          >
+            {/* Counter-transform container: keeps bright layer stationary at viewport (0,0) */}
+            <div
+              ref={lanternCounterRef}
+              className="living-wall-lantern-counter pointer-events-none absolute"
+              style={{
+                top: 260,
+                left: 260,
+                width: '100vw',
+                height: '100vh',
+                willChange: 'transform',
+              }}
+            >
+              <div
+                ref={brightZoomRef}
+                className="living-wall-zoom absolute -inset-[6%] w-[112%] h-[112%] pointer-events-none"
+                style={{
+                  transformOrigin: '100% 0%',
+                  willChange: 'transform',
+                }}
+              >
+                <div
+                  ref={brightBreathRef}
+                  className="living-wall-breath w-full h-full pointer-events-none"
+                  style={{
+                    transformOrigin: '100% 0%',
+                    willChange: 'transform',
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/art/wall/archive-desktop-bright.avif"
+                    alt=""
+                    width={2560}
+                    height={1440}
+                    decoding="async"
+                    loading="eager"
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tint Layer: One fixed layer above the wall and below the scrim; one stacked child per tint */}
         {!isInstant && (
           <div
@@ -570,129 +630,6 @@ export function LivingWall() {
           </div>
         )}
 
-        {/* Floating papers: placed between tint layer and scrim (Desktop full only) */}
-        {isDesktopFull && (
-          <div
-            ref={papersContainerRef}
-            aria-hidden="true"
-            className="living-wall-papers absolute inset-0 pointer-events-none overflow-hidden"
-          >
-            {/* Far depth layer (smaller + dimmer) */}
-            <div
-              ref={paperFarRef}
-              className="absolute inset-0 pointer-events-none"
-              style={{ willChange: 'transform' }}
-            >
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '16%',
-                  left: '12%',
-                  transform: 'rotate(-4deg)',
-                  opacity: 0.18,
-                }}
-              >
-                <PaperSprite
-                  width={38}
-                  height={52}
-                  className="living-wall-paper-sprite living-wall-paper-1"
-                />
-              </div>
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '64%',
-                  left: '78%',
-                  transform: 'rotate(6deg)',
-                  opacity: 0.16,
-                }}
-              >
-                <PaperSprite
-                  width={40}
-                  height={54}
-                  className="living-wall-paper-sprite living-wall-paper-2"
-                />
-              </div>
-            </div>
-
-            {/* Mid depth layer */}
-            <div
-              ref={paperMidRef}
-              className="absolute inset-0 pointer-events-none"
-              style={{ willChange: 'transform' }}
-            >
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '36%',
-                  left: '84%',
-                  transform: 'rotate(8deg)',
-                  opacity: 0.28,
-                }}
-              >
-                <PaperSprite
-                  width={48}
-                  height={66}
-                  className="living-wall-paper-sprite living-wall-paper-3"
-                />
-              </div>
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '78%',
-                  left: '20%',
-                  transform: 'rotate(-5deg)',
-                  opacity: 0.26,
-                }}
-              >
-                <PaperSprite
-                  width={50}
-                  height={68}
-                  className="living-wall-paper-sprite living-wall-paper-4"
-                />
-              </div>
-            </div>
-
-            {/* Near depth layer (larger + brighter) */}
-            <div
-              ref={paperNearRef}
-              className="absolute inset-0 pointer-events-none"
-              style={{ willChange: 'transform' }}
-            >
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '20%',
-                  left: '70%',
-                  transform: 'rotate(-7deg)',
-                  opacity: 0.42,
-                }}
-              >
-                <PaperSprite
-                  width={58}
-                  height={80}
-                  className="living-wall-paper-sprite living-wall-paper-5"
-                />
-              </div>
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '50%',
-                  left: '14%',
-                  transform: 'rotate(5deg)',
-                  opacity: 0.46,
-                }}
-              >
-                <PaperSprite
-                  width={64}
-                  height={88}
-                  className="living-wall-paper-sprite living-wall-paper-6"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Fixed scrim layer above the wall: vignette + soft dark gradient */}
         <div
           className="living-wall-scrim absolute inset-0 pointer-events-none"
@@ -703,28 +640,6 @@ export function LivingWall() {
             `,
           }}
         />
-
-        {/* Cursor lantern: fixed element above the scrim (Desktop full only) */}
-        {isDesktopFull && (
-          <div
-            ref={lanternRef}
-            aria-hidden="true"
-            className="living-wall-lantern pointer-events-none fixed"
-            style={{
-              width: 480,
-              height: 480,
-              top: 0,
-              left: 0,
-              marginTop: -240,
-              marginLeft: -240,
-              borderRadius: '50%',
-              background:
-                'radial-gradient(circle at center, rgba(94, 225, 230, 0.18) 0%, rgba(94, 225, 230, 0.08) 40%, rgba(94, 225, 230, 0) 70%)',
-              opacity: 0,
-              willChange: 'transform, opacity',
-            }}
-          />
-        )}
       </div>
     </>
   );

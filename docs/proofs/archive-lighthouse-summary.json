@@ -1,0 +1,45 @@
+{
+  "targetUrl": "http://localhost:3000/",
+  "medianPerf": 84,
+  "medianA11y": 100,
+  "medianBP": 96,
+  "medianSEO": 100,
+  "medianLCP": 4367,
+  "medianCLS": 0,
+  "medianTBT": 133,
+  "runs": [
+    {
+      "run": 1,
+      "perf": 85,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4335,
+      "cls": 0,
+      "tbt": 106,
+      "rawSha256": "e01955abd1c56b4fdb31b71fdd7df5cacc4eb2df9558a9474d5918e69df4ef82"
+    },
+    {
+      "run": 2,
+      "perf": 82,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4556,
+      "cls": 0,
+      "tbt": 157,
+      "rawSha256": "ffbec8b450edd649bbd9e38a10113644c5c3207bb74a385c1ce2e08d4832ccc2"
+    },
+    {
+      "run": 3,
+      "perf": 84,
+      "a11y": 100,
+      "bp": 96,
+      "seo": 100,
+      "lcp": 4367,
+      "cls": 0,
+      "tbt": 133,
+      "rawSha256": "1db7b1de9650f4f25c730932a7eff6e5bd8ae5b3e312fad0c40fb3fc70c420eb"
+    }
+  ]
+}

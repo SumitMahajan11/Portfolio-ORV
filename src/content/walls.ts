@@ -16,27 +16,27 @@ export interface WallDefinition {
 }
 
 export const WALL_DEFINITIONS: Record<WallId, WallDefinition> = {
-  'wall-01': {
-    id: 'wall-01',
+  archive: {
+    id: 'archive',
     label: 'Living Wall',
     role: 'living',
     desktop: {
-      avif: '/art/wall/wall-01-desktop.avif',
-      webp: '/art/wall/wall-01-desktop.webp',
+      avif: '/art/wall/archive-desktop.avif',
+      webp: '/art/wall/archive-desktop.webp',
     },
     portrait: {
-      avif: '/art/wall/wall-01-portrait.avif',
-      webp: '/art/wall/wall-01-portrait.webp',
+      avif: '/art/wall/archive-portrait.avif',
+      webp: '/art/wall/archive-portrait.webp',
     },
-    placeholder: WALL_PLACEHOLDERS['wall-01'],
+    placeholder: WALL_PLACEHOLDERS['archive'],
   },
 };
 
-export const DEFAULT_WALL_ID: WallId = 'wall-01';
+export const DEFAULT_WALL_ID: WallId = 'archive';
 
 /**
  * Returns which wall ID maps to a given section id.
- * With the single living wall architecture, wall-01 serves the entire site.
+ * With the single living wall architecture, archive serves the entire site.
  */
 export function getWallIdForSection(sectionId?: string): WallId {
   void sectionId;

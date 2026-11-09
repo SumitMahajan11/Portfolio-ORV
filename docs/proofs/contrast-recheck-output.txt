@@ -1,39 +1,44 @@
-=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY LANTERN (0.18 CYAN) ===
+=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY DUAL-EXPOSURE LANTERN ===
 
 [
   {
     "Tint State": "Hub (Untinted)",
-    "Composited RGB": "rgb(37,76,97)",
-    "With Lantern (0.18 Cyan)": "rgb(47,103,121)",
-    "Body Text (#F4F6FA)": "5.82:1 (PASS)",
+    "Bright Top 5% RGB": "rgb(79,150,191)",
+    "Tinted Bright RGB": "rgb(79,150,191)",
+    "With Lantern (Peak Bright + 0.55 Scrim)": "rgb(39,72,92)",
+    "Body Text (#F4F6FA)": "8.95:1 (PASS)",
     "WCAG AA Normal Text (>=4.5:1)": "PASS"
   },
   {
     "Tint State": "Edge Cloud",
-    "Composited RGB": "rgb(35,81,100)",
-    "With Lantern (0.18 Cyan)": "rgb(46,107,123)",
-    "Body Text (#F4F6FA)": "5.54:1 (PASS)",
+    "Bright Top 5% RGB": "rgb(79,150,191)",
+    "Tinted Bright RGB": "rgb(74,162,199)",
+    "With Lantern (Peak Bright + 0.55 Scrim)": "rgb(37,77,96)",
+    "Body Text (#F4F6FA)": "8.41:1 (PASS)",
     "WCAG AA Normal Text (>=4.5:1)": "PASS"
   },
   {
     "Tint State": "Ratify (Raft)",
-    "Composited RGB": "rgb(46,77,92)",
-    "With Lantern (0.18 Cyan)": "rgb(55,104,117)",
-    "Body Text (#F4F6FA)": "5.71:1 (PASS)",
+    "Bright Top 5% RGB": "rgb(79,150,191)",
+    "Tinted Bright RGB": "rgb(99,152,179)",
+    "With Lantern (Peak Bright + 0.55 Scrim)": "rgb(48,73,87)",
+    "Body Text (#F4F6FA)": "8.76:1 (PASS)",
     "WCAG AA Normal Text (>=4.5:1)": "PASS"
   },
   {
     "Tint State": "iac-verifier (Z3)",
-    "Composited RGB": "rgb(31,78,96)",
-    "With Lantern (0.18 Cyan)": "rgb(42,104,120)",
-    "Body Text (#F4F6FA)": "5.79:1 (PASS)",
+    "Bright Top 5% RGB": "rgb(79,150,191)",
+    "Tinted Bright RGB": "rgb(65,154,190)",
+    "With Lantern (Peak Bright + 0.55 Scrim)": "rgb(33,74,92)",
+    "Body Text (#F4F6FA)": "8.83:1 (PASS)",
     "WCAG AA Normal Text (>=4.5:1)": "PASS"
   },
   {
     "Tint State": "Backtrace",
-    "Composited RGB": "rgb(30,69,93)",
-    "With Lantern (0.18 Cyan)": "rgb(42,97,118)",
-    "Body Text (#F4F6FA)": "6.32:1 (PASS)",
+    "Bright Top 5% RGB": "rgb(79,150,191)",
+    "Tinted Bright RGB": "rgb(62,133,182)",
+    "With Lantern (Peak Bright + 0.55 Scrim)": "rgb(32,64,88)",
+    "Body Text (#F4F6FA)": "10.03:1 (PASS)",
     "WCAG AA Normal Text (>=4.5:1)": "PASS"
   }
 ]
@@ -41,52 +46,52 @@
 [
   {
     "Tint State": "Hub (Untinted)",
-    "Top 5% RGB": "rgb(74,160,202)",
-    "Tinted RGB": "rgb(74,160,202)",
-    "Composited RGB": "rgb(37,76,97)",
-    "Body (#F4F6FA)": "8.49:1 (PASS)",
-    "Cyan (#5EE1E6)": "5.86:1 (PASS)",
-    "Mist (#9AA7BD)": "3.78:1",
+    "Top 5% RGB": "rgb(47,122,162)",
+    "Tinted RGB": "rgb(47,122,162)",
+    "Composited RGB": "rgb(25,59,79)",
+    "Body (#F4F6FA)": "10.91:1 (PASS)",
+    "Cyan (#5EE1E6)": "7.52:1 (PASS)",
+    "Mist (#9AA7BD)": "4.85:1",
     "WCAG AA": "PASS"
   },
   {
     "Tint State": "Edge Cloud",
-    "Top 5% RGB": "rgb(74,160,202)",
-    "Tinted RGB": "rgb(69,171,209)",
-    "Composited RGB": "rgb(35,81,100)",
-    "Body (#F4F6FA)": "7.98:1 (PASS)",
-    "Cyan (#5EE1E6)": "5.50:1 (PASS)",
-    "Mist (#9AA7BD)": "3.55:1",
+    "Top 5% RGB": "rgb(47,122,162)",
+    "Tinted RGB": "rgb(43,137,174)",
+    "Composited RGB": "rgb(23,66,84)",
+    "Body (#F4F6FA)": "9.99:1 (PASS)",
+    "Cyan (#5EE1E6)": "6.89:1 (PASS)",
+    "Mist (#9AA7BD)": "4.44:1",
     "WCAG AA": "PASS"
   },
   {
     "Tint State": "Ratify (Raft)",
-    "Top 5% RGB": "rgb(74,160,202)",
-    "Tinted RGB": "rgb(94,161,192)",
-    "Composited RGB": "rgb(46,77,92)",
-    "Body (#F4F6FA)": "8.32:1 (PASS)",
-    "Cyan (#5EE1E6)": "5.74:1 (PASS)",
-    "Mist (#9AA7BD)": "3.70:1",
+    "Top 5% RGB": "rgb(47,122,162)",
+    "Tinted RGB": "rgb(67,124,148)",
+    "Composited RGB": "rgb(34,60,73)",
+    "Body (#F4F6FA)": "10.72:1 (PASS)",
+    "Cyan (#5EE1E6)": "7.39:1 (PASS)",
+    "Mist (#9AA7BD)": "4.77:1",
     "WCAG AA": "PASS"
   },
   {
     "Tint State": "iac-verifier (Z3)",
-    "Top 5% RGB": "rgb(74,160,202)",
-    "Tinted RGB": "rgb(60,164,201)",
-    "Composited RGB": "rgb(31,78,96)",
-    "Body (#F4F6FA)": "8.38:1 (PASS)",
-    "Cyan (#5EE1E6)": "5.78:1 (PASS)",
-    "Mist (#9AA7BD)": "3.73:1",
+    "Top 5% RGB": "rgb(47,122,162)",
+    "Tinted RGB": "rgb(37,127,161)",
+    "Composited RGB": "rgb(21,62,78)",
+    "Body (#F4F6FA)": "10.60:1 (PASS)",
+    "Cyan (#5EE1E6)": "7.31:1 (PASS)",
+    "Mist (#9AA7BD)": "4.72:1",
     "WCAG AA": "PASS"
   },
   {
     "Tint State": "Backtrace",
-    "Top 5% RGB": "rgb(74,160,202)",
-    "Tinted RGB": "rgb(58,144,194)",
-    "Composited RGB": "rgb(30,69,93)",
-    "Body (#F4F6FA)": "9.40:1 (PASS)",
-    "Cyan (#5EE1E6)": "6.49:1 (PASS)",
-    "Mist (#9AA7BD)": "4.18:1",
+    "Top 5% RGB": "rgb(47,122,162)",
+    "Tinted RGB": "rgb(35,104,151)",
+    "Composited RGB": "rgb(20,51,74)",
+    "Body (#F4F6FA)": "12.11:1 (PASS)",
+    "Cyan (#5EE1E6)": "8.36:1 (PASS)",
+    "Mist (#9AA7BD)": "5.39:1",
     "WCAG AA": "PASS"
   }
 ]

@@ -75,7 +75,7 @@ async function analyze() {
   const lumBody = getLuminance(TOKENS.feather.r, TOKENS.feather.g, TOKENS.feather.b);
   const lumCyan = getLuminance(TOKENS.star.r, TOKENS.star.g, TOKENS.star.b);
 
-  const src = path.resolve('docs/reference/walls/wall-01.png');
+  const src = path.resolve('docs/reference/walls/Cinematic_Teal_Archive_of_Aged_Pages.png');
   const { data, info } = await sharp(src)
     .resize(400, null, { withoutEnlargement: true })
     .raw()

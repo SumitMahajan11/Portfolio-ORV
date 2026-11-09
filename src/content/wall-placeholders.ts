@@ -4,7 +4,7 @@
  */
 
 export const WALL_PLACEHOLDERS: Record<string, string> = {
-  "wall-01": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoYAA4APzmYvlYvLCajsAgB4CcJQBOgDSv8uP8gPboAAP73eEkiuE9nciT9t8dPZWxMluRVP9L5qBZXeDkIFMwA"
+  "archive": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADQAQCdASoYAA4ABUB8JYwCdAFbyDCgAAD+7+MME3NacGdv8dJB2Vlhkw85+AAA"
 } as const;
 
-export type WallId = 'wall-01';
+export type WallId = 'archive';

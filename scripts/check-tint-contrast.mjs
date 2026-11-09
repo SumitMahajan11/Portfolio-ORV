@@ -32,10 +32,6 @@ function getContrast(lum1, lum2) {
   return (l1 + 0.05) / (l2 + 0.05);
 }
 
-// W3C Soft-light blend mode formula:
-// For blend color B and base color A (normalized 0..1):
-// If B <= 0.5: D = A - (1 - 2B) * A * (1 - A)
-// If B > 0.5:  D = A + (2B - 1) * (D_w3c(A) - A) where D_w3c(A) = A <= 0.25 ? ((16A - 12)A + 4)A : sqrt(A)
 function softLightChannel(baseNorm, blendNorm) {
   const A = baseNorm;
   const B = blendNorm;
@@ -52,7 +48,6 @@ function softLight(base, blendColor, opacity) {
   const gSoft = softLightChannel(base.g / 255, blendColor.g / 255);
   const bSoft = softLightChannel(base.b / 255, blendColor.b / 255);
 
-  // Interpolate by opacity
   return {
     r: Math.round(((1 - opacity) * (base.r / 255) + opacity * rSoft) * 255),
     g: Math.round(((1 - opacity) * (base.g / 255) + opacity * gSoft) * 255),
@@ -70,11 +65,11 @@ function alphaBlend(fg, bg, alpha) {
 
 async function runContrastVerification() {
   console.log('====================================================');
-  console.log(' CONTRAST RE-CHECK: TINTED STATES & BRIGHTEST REGION ');
+  console.log(' CONTRAST RE-CHECK: TINTED STATES & DUAL-EXPOSURE LANTERN ');
   console.log(' Sampling Brightest 5% Region with 0.35 Tint + 0.55 Scrim ');
   console.log('====================================================\n');
 
-  const src = path.resolve('docs/reference/walls/wall-01.png');
+  const src = path.resolve('docs/reference/walls/Cinematic_Teal_Archive_of_Aged_Pages.png');
   const { data, info } = await sharp(src)
     .resize(400, null, { withoutEnlargement: true })
     .raw()
@@ -92,7 +87,7 @@ async function runContrastVerification() {
     pixels.push({ r, g, b, lum });
   }
 
-  // Brightest 5%
+  // Brightest 5% of base image
   pixels.sort((a, b) => b.lum - a.lum);
   const top5Count = Math.max(1, Math.round(pixelCount * 0.05));
   let rSum = 0, gSum = 0, bSum = 0;
@@ -107,6 +102,36 @@ async function runContrastVerification() {
     b: Math.round(bSum / top5Count),
   };
 
+  // Brightest 5% of derived bright layer (at peak lantern reveal)
+  const brightBuf = await sharp(src)
+    .gamma(1.8)
+    .modulate({ brightness: 1.45, saturation: 1.22 })
+    .resize(400, null, { withoutEnlargement: true })
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const bPixels = [];
+  for (let i = 0; i < pixelCount; i++) {
+    const idx = i * brightBuf.info.channels;
+    const r = brightBuf.data[idx];
+    const g = brightBuf.data[idx + 1];
+    const b = brightBuf.data[idx + 2];
+    const lum = getLuminance(r, g, b);
+    bPixels.push({ r, g, b, lum });
+  }
+  bPixels.sort((a, b) => b.lum - a.lum);
+  let brSum = 0, bgSum = 0, bbSum = 0;
+  for (let i = 0; i < top5Count; i++) {
+    brSum += bPixels[i].r;
+    bgSum += bPixels[i].g;
+    bbSum += bPixels[i].b;
+  }
+  const avgBrightTop5 = {
+    r: Math.round(brSum / top5Count),
+    g: Math.round(bgSum / top5Count),
+    b: Math.round(bbSum / top5Count),
+  };
+
   const lumBody = getLuminance(TOKENS.feather.r, TOKENS.feather.g, TOKENS.feather.b);
   const lumMist = getLuminance(TOKENS.mist.r, TOKENS.mist.g, TOKENS.mist.b);
   const lumCyan = getLuminance(TOKENS.star.r, TOKENS.star.g, TOKENS.star.b);
@@ -118,7 +143,6 @@ async function runContrastVerification() {
   for (const tint of TINT_PALETTES) {
     let tintedBase = avgTop5;
     if (tint.primary) {
-      // Apply soft-light tint at max opacity 0.35
       tintedBase = softLight(avgTop5, tint.primary, 0.35);
     }
 
@@ -130,8 +154,8 @@ async function runContrastVerification() {
     const mistContrast = getContrast(lumMist, lumComp);
     const cyanContrast = getContrast(lumCyan, lumComp);
 
-    const passBody = bodyContrast >= 4.5; // WCAG AA normal text
-    const passCyan = cyanContrast >= 3.0; // WCAG AA large text / graphical UI
+    const passBody = bodyContrast >= 4.5;
+    const passCyan = cyanContrast >= 3.0;
     const pass = passBody && passCyan;
     if (!pass) anyFailed = true;
 
@@ -146,21 +170,22 @@ async function runContrastVerification() {
       'WCAG AA': pass ? 'PASS' : 'FAIL',
     });
 
-    // W-3: Cursor Lantern at peak opacity 0.18 cyan (#5EE1E6) above scrim
-    const withLantern = {
-      r: Math.round(composite.r * 0.82 + TOKENS.star.r * 0.18),
-      g: Math.round(composite.g * 0.82 + TOKENS.star.g * 0.18),
-      b: Math.round(composite.b * 0.82 + TOKENS.star.b * 0.18),
-    };
-    const lumLantern = getLuminance(withLantern.r, withLantern.g, withLantern.b);
-    const bodyLanternContrast = getContrast(lumBody, lumLantern);
+    // Dual-exposure lantern at peak: bright layer revealed under tint & scrim
+    let tintedBright = avgBrightTop5;
+    if (tint.primary) {
+      tintedBright = softLight(avgBrightTop5, tint.primary, 0.35);
+    }
+    const compositeBright = alphaBlend(tintedBright, TOKENS.void, 0.55);
+    const lumBrightComp = getLuminance(compositeBright.r, compositeBright.g, compositeBright.b);
+    const bodyLanternContrast = getContrast(lumBody, lumBrightComp);
     const passLantern = bodyLanternContrast >= 4.5;
     if (!passLantern) anyFailed = true;
 
     lanternReport.push({
       'Tint State': tint.label,
-      'Composited RGB': `rgb(${composite.r},${composite.g},${composite.b})`,
-      'With Lantern (0.18 Cyan)': `rgb(${withLantern.r},${withLantern.g},${withLantern.b})`,
+      'Bright Top 5% RGB': `rgb(${avgBrightTop5.r},${avgBrightTop5.g},${avgBrightTop5.b})`,
+      'Tinted Bright RGB': `rgb(${tintedBright.r},${tintedBright.g},${tintedBright.b})`,
+      'With Lantern (Peak Bright + 0.55 Scrim)': `rgb(${compositeBright.r},${compositeBright.g},${compositeBright.b})`,
       'Body Text (#F4F6FA)': `${bodyLanternContrast.toFixed(2)}:1 (${passLantern ? 'PASS' : 'FAIL'})`,
       'WCAG AA Normal Text (>=4.5:1)': passLantern ? 'PASS' : 'FAIL',
     });
@@ -169,14 +194,14 @@ async function runContrastVerification() {
   console.log('1. BASE TINT STATES (NO LANTERN):');
   console.table(report);
 
-  console.log('\n2. WITH CURSOR LANTERN AT PEAK OPACITY (0.18 CYAN #5EE1E6 ABOVE SCRIM):');
+  console.log('\n2. WITH CURSOR LANTERN AT PEAK REVEAL (DERIVED BRIGHT LAYER UNDER SCRIM):');
   console.table(lanternReport);
 
   const proofDir = path.resolve('docs/proofs');
   fs.mkdirSync(proofDir, { recursive: true });
   fs.writeFileSync(
     path.join(proofDir, 'contrast-recheck-output.txt'),
-    `=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY LANTERN (0.18 CYAN) ===\n\n` +
+    `=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY DUAL-EXPOSURE LANTERN ===\n\n` +
     JSON.stringify(lanternReport, null, 2) + '\n\n' +
     JSON.stringify(report, null, 2) + '\n'
   );

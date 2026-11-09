@@ -308,8 +308,8 @@ export const ART_ALT_REGISTRY: Record<string, ArtAssetMetadata> = {
   // =========================================================================
   // WALL BACKGROUNDS
   // =========================================================================
-  "wall-01": {
-    id: "wall-01",
+  "archive": {
+    id: "archive",
     category: "wall",
     alt: "Dark starlit cosmic void with ethereal blue nebula and floating pages",
     ariaHidden: false,
