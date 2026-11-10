@@ -1,0 +1,17 @@
+================================================================
+ TASK structure-S1: SCROLL FPS AUDIT (MOBILE 390x844, 4X THROTTLE)
+================================================================
+Target URL: http://localhost:3000/
+Timestamp: 2026-11-10T16:15:19.525Z
+CPU Throttle: 4x | Viewport: 390x844 (Mobile)
+
+Run 1: FPS = 54.9 | p50 = 13.90ms | p95 = 34.70ms | frames = 109
+Run 2: FPS = 56.3 | p50 = 13.90ms | p95 = 34.60ms | frames = 93
+Run 3: FPS = 71.9 | p50 = 7.00ms | p95 = 27.90ms | frames = 231
+
+Median FPS: 56.3
+Median p50: 13.90ms
+Median p95: 34.60ms
+Floor Requirement: >= 50 FPS
+Verdict: PASS (>= 50 FPS)
+================================================================

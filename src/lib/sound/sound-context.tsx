@@ -221,11 +221,17 @@ export function SoundProvider({ children }: SoundProviderProps) {
       }
     };
 
+    const handleShowPrompt = () => {
+      setPromptVisible(true);
+    };
+
     window.addEventListener("biyoo:sound", handleCustomSound);
     window.addEventListener("biyoo:sound-stop", handleCustomStop);
+    window.addEventListener("sound:show-prompt", handleShowPrompt);
     return () => {
       window.removeEventListener("biyoo:sound", handleCustomSound);
       window.removeEventListener("biyoo:sound-stop", handleCustomStop);
+      window.removeEventListener("sound:show-prompt", handleShowPrompt);
     };
   }, [playSound, stopSound, stopAllSounds]);
 

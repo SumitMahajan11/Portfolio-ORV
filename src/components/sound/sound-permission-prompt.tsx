@@ -40,12 +40,10 @@ export function SoundPermissionPrompt({ className = "" }: SoundPermissionPromptP
 
   return (
     <div
+      id="sound-permission-prompt"
       role="region"
       aria-label="Sound permission"
-      className={`fixed z-50 bottom-20 right-4 sm:right-6 max-w-sm w-[calc(100vw-2rem)] sm:w-auto p-4 rounded-xl border border-star/40 bg-ink/95 shadow-2xl backdrop-blur-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 ${className}`}
-      style={{
-        bottom: "calc(5.5rem + env(safe-area-inset-bottom, 0px))",
-      }}
+      className={`fixed z-50 right-4 sm:right-6 max-w-sm w-[calc(100vw-2rem)] sm:w-auto p-4 rounded-xl border border-star/40 bg-ink/95 shadow-2xl backdrop-blur-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 sound-permission-prompt-pos ${className}`}
     >
       <div className="flex items-start gap-3">
         {/* Biyoo mini avatar */}

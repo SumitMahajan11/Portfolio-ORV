@@ -398,3 +398,4 @@ In the same commit (`1c402f5`), the following lines were removed from `FinaleSec
 4. **Connect Unreferenced Sections**:
    - Add navigation jump anchors for `#side-quests`.
    - In `side-quest-card.tsx`, align card IDs or provide anchor aliasing so jumps like `#backtrace` find `#sidequest-backtrace`.
+

@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { Biyoo } from "@/components/biyoo";
 
 export interface ArchiveHeroProps {
   className?: string;
@@ -18,7 +17,7 @@ export interface ArchiveHeroProps {
  * - Facts line backed strictly by identity.ts and docs/03
  * - Two CTA buttons linking to existing sections (#scenario-select, #readers-record)
  * - CSS-only, reduced-motion safe scroll cue
- * - Biyoo autonomous companion mounted in bottom-left safe area
+ * - Companion Biyoo mounted as persistent global companion in layout
  */
 export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
   return (
@@ -79,18 +78,6 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
-      </div>
-
-      {/* Floating Companion Biyoo in Bottom-Left Safe Area */}
-      <div
-        id="hero-biyoo-companion"
-        className="pointer-events-auto absolute z-40 transition-transform duration-300"
-        style={{
-          left: "calc(16px + env(safe-area-inset-left))",
-          bottom: "calc(16px + env(safe-area-inset-bottom))",
-        }}
-      >
-        <Biyoo />
       </div>
     </section>
   );

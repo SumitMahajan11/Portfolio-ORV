@@ -110,14 +110,14 @@ export const TINT_DEFINITIONS = WALL_TINTS;
 
 /**
  * Section to tint mapping matching existing section IDs:
- * hero-scene-container, scenario-select = hub
+ * hero-scene, scenario-select = hub
  * edge-cloud = edge-cloud
  * ratify = raft
  * iac-verifier = z3
  * side-quests, readers-record, contact = hub
  */
 export const SECTION_TINT_MAP: Record<string, TintId> = {
-  'hero-scene-container': 'hub',
+  'hero-scene': 'hub',
   'scenario-select': 'hub',
   'edge-cloud': 'edge-cloud',
   'ratify': 'raft',
@@ -128,7 +128,7 @@ export const SECTION_TINT_MAP: Record<string, TintId> = {
 };
 
 export const MONITORED_SECTION_IDS: readonly string[] = [
-  'hero-scene-container',
+  'hero-scene',
   'scenario-select',
   'edge-cloud',
   'ratify',

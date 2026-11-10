@@ -1,0 +1,36 @@
+================================================================
+ TASK structure-S1: SOUND BANNER & BIYOO OVERLAP VERIFICATION
+================================================================
+Target URL: http://localhost:3000/
+Timestamp: 2026-11-10T16:12:21.806Z
+
+--- 1. DESKTOP VIEWPORT (1440 x 900) ---
+Screenshot: docs/proofs/screens/s1-desktop-1440x900.png
+Raw getBoundingClientRect output:
+  Sound Permission Prompt: {"x":1063.4,"y":702.8,"width":337.6,"height":109.3,"top":702.8,"right":1401,"bottom":812,"left":1063.4}
+  Biyoo Companion Container: {"x":16,"y":776.4,"width":110,"height":107.6,"top":776.4,"right":126,"bottom":884,"left":16}
+  Biyoo Body (Art Wrapper): {"x":33.8,"y":769.3,"width":108.7,"height":95.1,"top":769.3,"right":142.5,"bottom":864.4,"left":33.8}
+  Biyoo Speech Bubble:      {"x":36,"y":720.4,"width":70,"height":30,"top":720.4,"right":106,"bottom":750.4,"left":36}
+
+Overlap Verdict:
+  Banner overlaps Biyoo Body:   PASS (NO OVERLAP)
+  Banner overlaps Biyoo Bubble: PASS (NO OVERLAP)
+  Body clearance:   Horizontal = 920.9000000000001px | Vertical = 0px
+  Bubble clearance: Horizontal = 957.4000000000001px | Vertical = 0px
+
+--- 2. MOBILE VIEWPORT (390 x 844) ---
+Screenshot: docs/proofs/screens/s1-mobile-390x844.png
+Raw getBoundingClientRect output:
+  Sound Permission Prompt: {"x":16,"y":533.5,"width":358,"height":106.5,"top":533.5,"right":374,"bottom":640,"left":16}
+  Biyoo Companion Container: {"x":16,"y":720.4,"width":72,"height":107.6,"top":720.4,"right":88,"bottom":828,"left":16}
+  Biyoo Body (Art Wrapper): {"x":33.7,"y":715.3,"width":72.4,"height":95.1,"top":715.3,"right":106.1,"bottom":810.4,"left":33.7}
+  Biyoo Speech Bubble:      {"x":16,"y":664.4,"width":70,"height":26,"top":664.4,"right":86,"bottom":690.4,"left":16}
+
+Overlap Verdict:
+  Banner overlaps Biyoo Body:   PASS (NO OVERLAP)
+  Banner overlaps Biyoo Bubble: PASS (NO OVERLAP)
+  Body clearance:   Horizontal = 0px | Vertical = 75.29999999999995px
+  Bubble clearance: Horizontal = 0px | Vertical = 24.399999999999977px
+
+OVERALL VERDICT: PASS. Zero overlap detected at both 1440x900 and 390x844 with both Biyoo body and speech bubble.
+================================================================

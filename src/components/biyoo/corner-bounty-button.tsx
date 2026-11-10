@@ -55,7 +55,9 @@ export function CornerBountyButton({ className = "" }: CornerBountyButtonProps) 
     return () => clearTimeout(timer);
   }, [reducedMotion]);
 
-  if (isWantedPage) {
+  // Hidden until /wanted page exists (structure-S1 requirement 4a)
+  const hasWantedPage = false;
+  if (!hasWantedPage || isWantedPage) {
     return null;
   }
 
@@ -73,6 +75,7 @@ export function CornerBountyButton({ className = "" }: CornerBountyButtonProps) 
       <div className="relative group">
         <Link
           href="/wanted"
+          prefetch={false}
           aria-label="Bounty board"
           className={`relative flex items-center gap-2 p-1.5 sm:p-2 rounded-full border border-line/80 bg-ink/95 text-feather hover:border-star hover:text-star shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-star select-none ${
             wiggling ? "animate-bounty-wiggle" : ""

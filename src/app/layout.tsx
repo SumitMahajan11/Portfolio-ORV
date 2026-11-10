@@ -5,7 +5,7 @@ import { ModeProvider } from "@/lib/flags";
 import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
 import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
-import { CornerBountyButton } from "@/components/biyoo/corner-bounty-button";
+import { CornerBountyButton, BiyooCompanion } from "@/components/biyoo";
 import { LivingWall } from "@/components/background/site-wall";
 import { identity } from "@/content";
 import "@/styles/globals.css";
@@ -159,14 +159,16 @@ export default function RootLayout({
                   {/* Sound toggle: On / Off */}
                   <SoundToggle />
 
-                  {/* Bounty board link (desktop header; corner Biyoo covers mobile & tablet) */}
-                  <Link
-                    href="/wanted"
-                    prefetch={false}
-                    className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-                  >
-                    Bounty board
-                  </Link>
+                  {/* Bounty board link (hidden until /wanted page exists) */}
+                  {false && (
+                    <Link
+                      href="/wanted"
+                      prefetch={false}
+                      className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
+                    >
+                      Bounty board
+                    </Link>
+                  )}
 
                   {/* Skip to contact link (desktop only to prevent tablet header overflow) */}
                   <Link
@@ -194,6 +196,9 @@ export default function RootLayout({
 
             {/* Persistent Corner Bounty Button */}
             <CornerBountyButton />
+
+            {/* Persistent Fixed Bottom-Left Companion Biyoo */}
+            <BiyooCompanion />
 
             {/* Non-blocking Sound Permission Prompt ("Biyoo wants to say hi. Turn sound on?") */}
             <SoundPermissionPrompt />

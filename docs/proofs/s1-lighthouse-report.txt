@@ -1,0 +1,21 @@
+================================================================
+ MOBILE LIGHTHOUSE AUDIT REPORT (3 RUNS, 60S IDLE)
+================================================================
+Target URL: http://localhost:3000/
+Timestamp: 2026-11-10T16:19:56.644Z
+Runs: 3
+
+Run 1: Perf=95 | LCP=0.93s | LCP Element=unknown | CLS=0 | TBT=227ms | /wanted requests=0 | sha256=6f06d354748aa4eeafafa38375bd66c817e8bf6abbec32c31caeed55126c29c6
+Run 2: Perf=92 | LCP=0.92s | LCP Element=unknown | CLS=0 | TBT=308ms | /wanted requests=0 | sha256=bf3f4c934d62d0569f78e16acb48f8875801cb73cd2309ccb1d730a6f4ef7d0c
+Run 3: Perf=98 | LCP=0.92s | LCP Element=unknown | CLS=0 | TBT=134ms | /wanted requests=0 | sha256=79107aa2c0c28c9765b1823b8e20de44bd2d69d1790966f46c88c553f7a164d1
+
+Median Performance: 95
+Median LCP: 0.92s
+Median TBT: 227ms
+Median CLS: 0
+Target Requirement: Floor Perf >= 92
+Performance Verdict: PASS (>= 92)
+
+Does /wanted appear as a 404 request?
+Verdict: NO. Zero requests to /wanted detected across all 3 runs (count: 0).
+================================================================

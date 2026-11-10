@@ -11,4 +11,5 @@ export * from "./biyoo-speech";
 export * from "./costume-registry";
 export * from "./reaction-map";
 export * from "./corner-bounty-button";
+export * from "./biyoo-companion";
 export * from "./use-biyoo-audio";
