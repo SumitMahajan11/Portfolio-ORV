@@ -73,7 +73,6 @@ html,
 body,
 main,
 #hero-scene,
-#hero-scene-container,
 .pin-spacer {
   overflow-x: clip !important;
   max-width: 100vw;
@@ -220,18 +219,6 @@ button,
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ==========================================================================
-   CROSS-BROWSER COMPATIBILITY: SAFARI & FIREFOX SVG TRANSFORM-BOX
-   ========================================================================== */
-/* Elements animated with absolute viewBox coordinates (e.g. 140px 160px) */
-.dokja-wing-back-l,
-.dokja-wing-back-r,
-.dokja-wing-front-l,
-.dokja-wing-front-r,
-.dokja-layer-horns {
-  transform-box: view-box;
 }
 
 /* ==========================================================================

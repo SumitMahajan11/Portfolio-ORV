@@ -1,3 +1,5 @@
+> **SUPERSEDED**: Dokja is out of the site entirely per owner override in hero-H1.
+
 # 06 Dokja Transformation Spec
 
 Character: original-art Dokja, white coat, front-facing the entire sequence, no turning, no back view, no upward gaze. Horns red-black with thin red rim light. Wings white, layered feathers, wide enough to cross screen edges. Lit figure with cold rim light.

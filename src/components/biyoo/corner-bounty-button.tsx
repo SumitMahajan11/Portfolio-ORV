@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMode } from "@/lib/flags";
-import { useOptionalHeroContext } from "@/components/dokja/hero-context";
 
 export interface CornerBountyButtonProps {
   className?: string;
@@ -29,7 +28,6 @@ export interface CornerBountyButtonProps {
 export function CornerBountyButton({ className = "" }: CornerBountyButtonProps) {
   const pathname = usePathname();
   const { reducedMotion } = useMode();
-  const heroContext = useOptionalHeroContext();
 
   const [wiggling, setWiggling] = useState(false);
   const hasWiggledRef = useRef(false);
@@ -37,12 +35,8 @@ export function CornerBountyButton({ className = "" }: CornerBountyButtonProps) 
   // Hidden on /wanted route
   const isWantedPage = pathname === "/wanted";
 
-  // Hide while hero is pinned in stages 4 to 7 to preserve cinematic wing transformation
-  const isHeroTransforming = Boolean(
-    heroContext &&
-      heroContext.heroState.stage >= 4 &&
-      heroContext.heroState.scrollProgress < 0.95
-  );
+  // Hero is no longer pinned/transforming (hero-H1)
+  const isHeroTransforming = false;
 
   // Gentle one-time wiggle after 10 seconds of arrival (never repeats)
   useEffect(() => {

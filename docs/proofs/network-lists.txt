@@ -1,5 +1,5 @@
 === TASK 5: NETWORK ASSET AUDIT SUMMARY ===
-Date: 2026-11-09T12:46:43.570Z
+Date: 2026-11-10T08:06:50.752Z
 Asset Identification Method: URL path matching /art/wall/* filter.
 
 1. MOBILE 390x844 NETWORK LIST (/art/wall/*):
@@ -16,31 +16,30 @@ Full Mobile 390x844 Request URLs:
   GET Font http://localhost:3000/_next/static/media/237858b39a32779d-s.p.2cyn07wtgehh0.woff2
   GET Font http://localhost:3000/_next/static/media/9a321a2c78eff0b5-s.p.1bkzbscqrt8rl.woff2
   GET Font http://localhost:3000/_next/static/media/b5f28e41fa16b2ca-s.p.3iriq4vwiqn7a.woff2
-  GET Stylesheet http://localhost:3000/_next/static/chunks/3nul_c5a4bnqg.css
+  GET Stylesheet http://localhost:3000/_next/static/chunks/1n05owtoeg3hf.css
   GET Script http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js
   GET Script http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js
   GET Script http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js
   GET Script http://localhost:3000/_next/static/chunks/107i8ab907rvg.js
   GET Script http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js
-  GET Script http://localhost:3000/_next/static/chunks/15_7mr904kvzw.js
+  GET Script http://localhost:3000/_next/static/chunks/2tinhuy8__os0.js
   GET Script http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js
-  GET Script http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js
-  GET Script http://localhost:3000/_next/static/chunks/273y7get_7i8a.js
+  GET Script http://localhost:3000/_next/static/chunks/2zo0s1-b7w-ud.js
   GET Script http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js
   GET Script http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js
   GET Image http://localhost:3000/art/wall/archive-portrait.avif
   GET Image http://localhost:3000/art/biyoo/biyoo-calm-360.avif
   GET Image http://localhost:3000/art/biyoo/biyoo-excited-720.avif
   GET Image http://localhost:3000/art/biyoo/biyoo-burst-192.avif
+  GET Other http://localhost:3000/icon.svg
   GET Script http://localhost:3000/_next/static/chunks/44cf4p0cdbkbq.js
   GET Script http://localhost:3000/_next/static/chunks/14ufyu4dga04y.js
   GET Script http://localhost:3000/_next/static/chunks/032-toqo2a4sy.js
   GET Script http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js
   GET Script http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js
-  GET Script http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js
-  GET Other http://localhost:3000/icon.svg
-  GET Script http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js
+  GET Script http://localhost:3000/_next/static/chunks/0sxuqm8kn5-22.js
   GET Fetch http://localhost:3000/wanted?_rsc=5CB68i4pnAekjehf
+  GET Fetch http://localhost:3000/?_rsc=5CB68i4pnAekjehf
   GET Script http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js
 
 Full Desktop 1440x900 Request URLs:
@@ -48,16 +47,15 @@ Full Desktop 1440x900 Request URLs:
   GET Font http://localhost:3000/_next/static/media/237858b39a32779d-s.p.2cyn07wtgehh0.woff2
   GET Font http://localhost:3000/_next/static/media/9a321a2c78eff0b5-s.p.1bkzbscqrt8rl.woff2
   GET Font http://localhost:3000/_next/static/media/b5f28e41fa16b2ca-s.p.3iriq4vwiqn7a.woff2
-  GET Stylesheet http://localhost:3000/_next/static/chunks/3nul_c5a4bnqg.css
+  GET Stylesheet http://localhost:3000/_next/static/chunks/1n05owtoeg3hf.css
   GET Script http://localhost:3000/_next/static/chunks/310vm2bl3xxpt.js
   GET Script http://localhost:3000/_next/static/chunks/2uy6962aj_g7c.js
   GET Script http://localhost:3000/_next/static/chunks/2-3bcc782c_pu.js
   GET Script http://localhost:3000/_next/static/chunks/107i8ab907rvg.js
   GET Script http://localhost:3000/_next/static/chunks/turbopack-077hmtqrhcoji.js
-  GET Script http://localhost:3000/_next/static/chunks/15_7mr904kvzw.js
+  GET Script http://localhost:3000/_next/static/chunks/2tinhuy8__os0.js
   GET Script http://localhost:3000/_next/static/chunks/3cwwyj_hcpnu5.js
-  GET Script http://localhost:3000/_next/static/chunks/40-_z3cpqrlug.js
-  GET Script http://localhost:3000/_next/static/chunks/273y7get_7i8a.js
+  GET Script http://localhost:3000/_next/static/chunks/2zo0s1-b7w-ud.js
   GET Script http://localhost:3000/_next/static/chunks/0wj0noag-9_fs.js
   GET Script http://localhost:3000/_next/static/chunks/2921s0yvpjrtv.js
   GET Image http://localhost:3000/art/wall/archive-desktop.avif
@@ -70,10 +68,10 @@ Full Desktop 1440x900 Request URLs:
   GET Script http://localhost:3000/_next/static/chunks/032-toqo2a4sy.js
   GET Script http://localhost:3000/_next/static/chunks/23_h4cotvuqfz.js
   GET Script http://localhost:3000/_next/static/chunks/3dhpt5d9-39nr.js
-  GET Script http://localhost:3000/_next/static/chunks/1lum-cgjybu2s.js
+  GET Script http://localhost:3000/_next/static/chunks/0sxuqm8kn5-22.js
   GET Image http://localhost:3000/art/wall/archive-desktop-bright.avif
   GET Fetch http://localhost:3000/wanted?_rsc=5CB68i4pnAekjehf
-  GET Script http://localhost:3000/_next/static/chunks/1z-koprwcgr0h.js
+  GET Fetch http://localhost:3000/?_rsc=5CB68i4pnAekjehf
   GET Script http://localhost:3000/_next/static/chunks/3srmhsp9bconi.js
   GET Script http://localhost:3000/_next/static/chunks/417ikp3yapgr7.js
   GET Script http://localhost:3000/_next/static/chunks/0xezo521xmc_z.js

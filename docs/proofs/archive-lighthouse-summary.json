@@ -1,45 +1,49 @@
 {
   "targetUrl": "http://localhost:3000/",
-  "medianPerf": 84,
+  "medianPerf": 98,
   "medianA11y": 100,
   "medianBP": 96,
   "medianSEO": 100,
-  "medianLCP": 4367,
+  "medianLCP": 912,
+  "lcpElement": "unknown",
   "medianCLS": 0,
-  "medianTBT": 133,
+  "medianTBT": 106,
   "runs": [
     {
       "run": 1,
-      "perf": 85,
+      "perf": 100,
       "a11y": 100,
       "bp": 96,
       "seo": 100,
-      "lcp": 4335,
+      "lcp": 912,
+      "lcpElement": "unknown",
       "cls": 0,
-      "tbt": 106,
-      "rawSha256": "e01955abd1c56b4fdb31b71fdd7df5cacc4eb2df9558a9474d5918e69df4ef82"
+      "tbt": 90,
+      "rawSha256": "bbefcdf31d3bf322c5825ba654d4412f23127762d2eee84e9a637cf9a5c0e649"
     },
     {
       "run": 2,
-      "perf": 82,
+      "perf": 97,
       "a11y": 100,
       "bp": 96,
       "seo": 100,
-      "lcp": 4556,
+      "lcp": 915,
+      "lcpElement": "unknown",
       "cls": 0,
-      "tbt": 157,
-      "rawSha256": "ffbec8b450edd649bbd9e38a10113644c5c3207bb74a385c1ce2e08d4832ccc2"
+      "tbt": 166,
+      "rawSha256": "fb35d5327a1ef9866aae90695050fd114823916979357db6cafb64f388e71e1d"
     },
     {
       "run": 3,
-      "perf": 84,
+      "perf": 98,
       "a11y": 100,
       "bp": 96,
       "seo": 100,
-      "lcp": 4367,
+      "lcp": 912,
+      "lcpElement": "unknown",
       "cls": 0,
-      "tbt": 133,
-      "rawSha256": "1db7b1de9650f4f25c730932a7eff6e5bd8ae5b3e312fad0c40fb3fc70c420eb"
+      "tbt": 106,
+      "rawSha256": "ccaa075f1289327d492b5622a24d520c9a3e49c71e9e34d824dca5d9dea33682"
     }
   ]
 }

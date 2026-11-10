@@ -1,72 +1,72 @@
 === SCROLL FPS PERFORMANCE SUMMARY ===
 
 Desktop 1440x900 (Unthrottled, Pointer Moving):
-  Runs: 60, 60, 60 fps
-  Median: 60 fps (Floor: 58 fps) -> PASS
+  Runs: 55.2, 54.1, 56.9 fps
+  Median: 55.2 fps (Floor: 58 fps) -> FAIL
 
 Mobile 390x844 (4x CPU Throttled):
-  Runs: 53.5, 58.3, 55.8 fps
-  Median: 55.8 fps (Floor: 50 fps) -> PASS
+  Runs: 59.4, 59.8, 60 fps
+  Median: 59.8 fps (Floor: 50 fps) -> PASS
 
 {
   "desktop": {
     "runs": [
       {
-        "totalFrames": 211,
-        "totalDurationMs": 3517,
-        "effectiveFps": 60,
-        "avgFrameMs": 16.67,
-        "slowOver18ms": 0,
-        "slowOver33ms": 0
+        "totalFrames": 195,
+        "totalDurationMs": 3533,
+        "effectiveFps": 55.2,
+        "avgFrameMs": 18.12,
+        "slowOver18ms": 16,
+        "slowOver33ms": 12
       },
       {
-        "totalFrames": 212,
+        "totalFrames": 191,
         "totalDurationMs": 3533,
-        "effectiveFps": 60,
-        "avgFrameMs": 16.67,
-        "slowOver18ms": 0,
-        "slowOver33ms": 0
+        "effectiveFps": 54.1,
+        "avgFrameMs": 18.5,
+        "slowOver18ms": 19,
+        "slowOver33ms": 16
       },
       {
-        "totalFrames": 212,
+        "totalFrames": 201,
         "totalDurationMs": 3533,
-        "effectiveFps": 60,
-        "avgFrameMs": 16.67,
-        "slowOver18ms": 0,
-        "slowOver33ms": 0
+        "effectiveFps": 56.9,
+        "avgFrameMs": 17.58,
+        "slowOver18ms": 10,
+        "slowOver33ms": 9
       }
     ],
-    "medianFps": 60,
-    "pass": true
+    "medianFps": 55.2,
+    "pass": false
   },
   "mobile4x": {
     "runs": [
       {
-        "totalFrames": 307,
-        "totalDurationMs": 5733,
-        "effectiveFps": 53.5,
-        "avgFrameMs": 18.67,
-        "slowOver18ms": 7,
-        "slowOver33ms": 6
+        "totalFrames": 284,
+        "totalDurationMs": 4783,
+        "effectiveFps": 59.4,
+        "avgFrameMs": 16.84,
+        "slowOver18ms": 2,
+        "slowOver33ms": 2
       },
       {
-        "totalFrames": 316,
-        "totalDurationMs": 5417,
-        "effectiveFps": 58.3,
-        "avgFrameMs": 17.14,
-        "slowOver18ms": 9,
-        "slowOver33ms": 8
+        "totalFrames": 289,
+        "totalDurationMs": 4833,
+        "effectiveFps": 59.8,
+        "avgFrameMs": 16.72,
+        "slowOver18ms": 1,
+        "slowOver33ms": 1
       },
       {
-        "totalFrames": 356,
-        "totalDurationMs": 6383,
-        "effectiveFps": 55.8,
-        "avgFrameMs": 17.93,
-        "slowOver18ms": 25,
-        "slowOver33ms": 17
+        "totalFrames": 289,
+        "totalDurationMs": 4816,
+        "effectiveFps": 60,
+        "avgFrameMs": 16.67,
+        "slowOver18ms": 0,
+        "slowOver33ms": 0
       }
     ],
-    "medianFps": 55.8,
+    "medianFps": 59.8,
     "pass": true
   }
 }

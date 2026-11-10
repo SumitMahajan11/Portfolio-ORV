@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useHeroContext } from "@/components/dokja/hero-context";
 import { useReaderTracker } from "./use-reader";
 import { useMode } from "@/lib/flags";
 import { useConstellationEngine } from "./use-constellation";
 import { ConstellationOverlay } from "./constellation-overlay";
 
 export function ConstellationGlobalLayer() {
-  const { heroState } = useHeroContext();
   const { signals } = useMode();
   const readerSignals = useReaderTracker();
   const [isBiyooSpeaking, setIsBiyooSpeaking] = useState(false);
@@ -27,7 +25,8 @@ export function ConstellationGlobalLayer() {
     };
   }, []);
 
-  const introComplete = heroState.introDone;
+  // Archive Hero is visible at full opacity on arrival; intro is immediately complete
+  const introComplete = true;
   const { activeLine, dismissLine } = useConstellationEngine({
     introComplete,
     introDone: introComplete,
@@ -51,4 +50,3 @@ export function ConstellationGlobalLayer() {
 }
 
 export default ConstellationGlobalLayer;
-
