@@ -97,3 +97,4 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
 }
 
 export default ArchiveHero;
+
