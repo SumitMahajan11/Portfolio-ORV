@@ -2,14 +2,14 @@
  MOBILE LIGHTHOUSE AUDIT REPORT (3 RUNS, 60S IDLE)
 ================================================================
 Target URL: http://localhost:3000/
-Timestamp: 2026-11-10T08:14:30.378Z
+Timestamp: 2026-11-10T08:54:12.195Z
 Runs: 3
 
-Run 1: Perf=100 | LCP=0.91s | LCP Element=unknown | CLS=0.000 | TBT=90ms | sha256=bbefcdf31d3bf322c5825ba654d4412f23127762d2eee84e9a637cf9a5c0e649
-Run 2: Perf=97 | LCP=0.92s | LCP Element=unknown | CLS=0.000 | TBT=166ms | sha256=fb35d5327a1ef9866aae90695050fd114823916979357db6cafb64f388e71e1d
-Run 3: Perf=98 | LCP=0.91s | LCP Element=unknown | CLS=0.000 | TBT=106ms | sha256=ccaa075f1289327d492b5622a24d520c9a3e49c71e9e34d824dca5d9dea33682
+Run 1: Perf=100 | LCP=0.91s | LCP Element=unknown | CLS=0.000 | TBT=89ms | sha256=7fd288262fad8dd14dee711c4923f1aa3bd416f1ba5681e05026891d3b14d7e0
+Run 2: Perf=99 | LCP=0.91s | LCP Element=unknown | CLS=0.000 | TBT=94ms | sha256=1694d7b7c43ec54d9aa71e9924ec2f0e19160ebfb52208d81d14cc2bee37a474
+Run 3: Perf=84 | LCP=0.93s | LCP Element=unknown | CLS=0.000 | TBT=489ms | sha256=92bc0d401b5d74c8f015dca37641d8dffe824284afdf6b5e614b0d97836b8d95
 
-Median Performance: 98
+Median Performance: 99
 Median LCP: 0.91s
 LCP Element Selector: unknown
 Target Requirement: >= 92

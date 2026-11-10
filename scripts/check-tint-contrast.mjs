@@ -138,6 +138,7 @@ async function runContrastVerification() {
 
   const report = [];
   const lanternReport = [];
+  const particleReport = [];
   let anyFailed = false;
 
   for (const tint of TINT_PALETTES) {
@@ -189,6 +190,40 @@ async function runContrastVerification() {
       'Body Text (#F4F6FA)': `${bodyLanternContrast.toFixed(2)}:1 (${passLantern ? 'PASS' : 'FAIL'})`,
       'WCAG AA Normal Text (>=4.5:1)': passLantern ? 'PASS' : 'FAIL',
     });
+
+    // 3. Atmospheric Particles: cyan #5EE1E6 at peak alpha 0.5 between tints and 0.55 scrim
+    // (a) Over tinted base
+    const particleOnBase = {
+      r: Math.round(tintedBase.r * 0.5 + TOKENS.star.r * 0.5),
+      g: Math.round(tintedBase.g * 0.5 + TOKENS.star.g * 0.5),
+      b: Math.round(tintedBase.b * 0.5 + TOKENS.star.b * 0.5),
+    };
+    const compParticleBase = alphaBlend(particleOnBase, TOKENS.void, 0.55);
+    const lumPartBase = getLuminance(compParticleBase.r, compParticleBase.g, compParticleBase.b);
+    const bodyPartBaseContrast = getContrast(lumBody, lumPartBase);
+    const passPartBase = bodyPartBaseContrast >= 4.5;
+    if (!passPartBase) anyFailed = true;
+
+    // (b) Over peak lantern bright layer
+    const particleOnBright = {
+      r: Math.round(tintedBright.r * 0.5 + TOKENS.star.r * 0.5),
+      g: Math.round(tintedBright.g * 0.5 + TOKENS.star.g * 0.5),
+      b: Math.round(tintedBright.b * 0.5 + TOKENS.star.b * 0.5),
+    };
+    const compParticleBright = alphaBlend(particleOnBright, TOKENS.void, 0.55);
+    const lumPartBright = getLuminance(compParticleBright.r, compParticleBright.g, compParticleBright.b);
+    const bodyPartBrightContrast = getContrast(lumBody, lumPartBright);
+    const passPartBright = bodyPartBrightContrast >= 4.5;
+    if (!passPartBright) anyFailed = true;
+
+    particleReport.push({
+      'Tint State': tint.label,
+      'Particle on Base RGB': `rgb(${compParticleBase.r},${compParticleBase.g},${compParticleBase.b})`,
+      'Body Contrast (Base)': `${bodyPartBaseContrast.toFixed(2)}:1 (${passPartBase ? 'PASS' : 'FAIL'})`,
+      'Particle on Lantern RGB': `rgb(${compParticleBright.r},${compParticleBright.g},${compParticleBright.b})`,
+      'Body Contrast (Lantern)': `${bodyPartBrightContrast.toFixed(2)}:1 (${passPartBright ? 'PASS' : 'FAIL'})`,
+      'WCAG AA (>=4.5:1)': passPartBase && passPartBright ? 'PASS' : 'FAIL',
+    });
   }
 
   console.log('1. BASE TINT STATES (NO LANTERN):');
@@ -197,12 +232,19 @@ async function runContrastVerification() {
   console.log('\n2. WITH CURSOR LANTERN AT PEAK REVEAL (DERIVED BRIGHT LAYER UNDER SCRIM):');
   console.table(lanternReport);
 
+  console.log('\n3. WITH ATMOSPHERIC PARTICLES AT MAX ALPHA (0.5 CYAN UNDER SCRIM 0.55):');
+  console.table(particleReport);
+
   const proofDir = path.resolve('docs/proofs');
   fs.mkdirSync(proofDir, { recursive: true });
   fs.writeFileSync(
     path.join(proofDir, 'contrast-recheck-output.txt'),
-    `=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY DUAL-EXPOSURE LANTERN ===\n\n` +
+    `=== CONTRAST RE-CHECK: TINTED STATES WITH PEAK OPACITY DUAL-EXPOSURE LANTERN & PARTICLES ===\n\n` +
+    `3. ATMOSPHERIC PARTICLES (CYAN #5EE1E6 AT MAX ALPHA 0.5 UNDER SCRIM):\n` +
+    JSON.stringify(particleReport, null, 2) + '\n\n' +
+    `2. DUAL-EXPOSURE LANTERN PEAK REVEAL:\n` +
     JSON.stringify(lanternReport, null, 2) + '\n\n' +
+    `1. BASE TINT STATES:\n` +
     JSON.stringify(report, null, 2) + '\n'
   );
 
@@ -210,7 +252,7 @@ async function runContrastVerification() {
     console.error('\nFAILED: One or more tint states fail WCAG AA contrast threshold.');
     process.exit(1);
   } else {
-    console.log('\nPASSED: All tinted states satisfy WCAG AA contrast on brightest region both with and without peak lantern.');
+    console.log('\nPASSED: All tinted states satisfy WCAG AA contrast on brightest region across base, peak lantern, and particles.');
   }
 }
 

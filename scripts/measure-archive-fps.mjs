@@ -22,7 +22,6 @@ async function measureSingleRun({ mode, width, height, throttleRate, pointerMovi
     `--remote-debugging-port=${CDP_PORT}`,
     '--no-sandbox',
     '--disable-extensions',
-    '--disable-gpu',
     `--user-data-dir=${userDataDir}`,
   ]);
 

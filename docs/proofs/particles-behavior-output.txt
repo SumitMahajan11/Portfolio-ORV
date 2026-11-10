@@ -1,0 +1,133 @@
+=== TASK 2: ATMOSPHERIC PARTICLES BEHAVIOR & PERFORMANCE PROOF ===
+
+1. Z-Order & Layer Placement in .living-wall:
+[
+  {
+    "index": 0,
+    "tag": "div",
+    "className": "living-wall-zoom absolute -inset-[6%] w-[112%] h-[112%] pointer-events-none",
+    "zIndex": "auto"
+  },
+  {
+    "index": 1,
+    "tag": "div",
+    "className": "living-wall-lantern pointer-events-none fixed",
+    "zIndex": "auto"
+  },
+  {
+    "index": 2,
+    "tag": "div",
+    "className": "living-wall-tints absolute inset-0 pointer-events-none",
+    "zIndex": "auto"
+  },
+  {
+    "index": 3,
+    "tag": "canvas",
+    "className": "living-wall-particles fixed inset-0 pointer-events-none select-none",
+    "zIndex": "1"
+  },
+  {
+    "index": 4,
+    "tag": "div",
+    "className": "living-wall-scrim absolute inset-0 pointer-events-none",
+    "zIndex": "auto"
+  }
+]
+
+2. Canvas Coverage & Temporal Delta (1440x900):
+   Canvas Resolution: 1440x900 (12,96,000 px)
+   Non-transparent pixels: 1,135 px
+   Coverage %: 0.0876% (Floor: <= 1.0%) -> PASS
+   Diff pixels after 1s: 1,705 px -> PASS
+
+3. Per-Frame Script Execution Cost (over 300 frames):
+   Total Frames Measured: 300
+   Average Cost: 0.109 ms (Floor: <= 1.5 ms) -> PASS
+   p50 Cost: 0.1 ms
+   p95 Cost: 0.2 ms
+   Min/Max: 0 ms / 0.4 ms
+
+4. Mode Suppression:
+   Reduced Motion (no canvas rendered): PASS
+   Light Mode (no canvas rendered): PASS
+
+5. Mobile Verification (390x844, DPR 3):
+   Canvas Found: true
+   Canvas Dimensions: 585x1266
+
+{
+  "desktop": {
+    "zOrder": {
+      "wallChildren": [
+        {
+          "index": 0,
+          "tag": "div",
+          "className": "living-wall-zoom absolute -inset-[6%] w-[112%] h-[112%] pointer-events-none",
+          "zIndex": "auto"
+        },
+        {
+          "index": 1,
+          "tag": "div",
+          "className": "living-wall-lantern pointer-events-none fixed",
+          "zIndex": "auto"
+        },
+        {
+          "index": 2,
+          "tag": "div",
+          "className": "living-wall-tints absolute inset-0 pointer-events-none",
+          "zIndex": "auto"
+        },
+        {
+          "index": 3,
+          "tag": "canvas",
+          "className": "living-wall-particles fixed inset-0 pointer-events-none select-none",
+          "zIndex": "1"
+        },
+        {
+          "index": 4,
+          "tag": "div",
+          "className": "living-wall-scrim absolute inset-0 pointer-events-none",
+          "zIndex": "auto"
+        }
+      ],
+      "canvasFound": true,
+      "canvasDprWidth": 1440,
+      "canvasDprHeight": 900,
+      "canvasCssWidth": "1440px",
+      "canvasCssHeight": "900px"
+    },
+    "coverage": {
+      "width": 1440,
+      "height": 900,
+      "totalPixels": 1296000,
+      "nonTransparentPixels": 1135,
+      "coveragePct": 0.0876,
+      "diffPixelsAfter1s": 1705,
+      "snapshotsDiffer": true
+    },
+    "scriptCost": {
+      "totalFrames": 300,
+      "avgMs": 0.109,
+      "p50Ms": 0.1,
+      "p95Ms": 0.2,
+      "minMs": 0,
+      "maxMs": 0.4
+    }
+  },
+  "mobile": {
+    "canvasFound": true,
+    "canvasWidth": 585,
+    "canvasHeight": 1266
+  },
+  "modes": {
+    "reducedMotionNoCanvas": true,
+    "lightModeNoCanvas": true
+  },
+  "passes": {
+    "coveragePass": true,
+    "snapshotsDifferPass": true,
+    "scriptCostPass": true,
+    "reducedMotionPass": true,
+    "lightModePass": true
+  }
+}

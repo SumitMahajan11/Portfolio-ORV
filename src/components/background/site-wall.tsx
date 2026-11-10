@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useMode } from '@/lib/flags';
+import { AtmosphericParticles } from './wall-particles';
 import {
   WALL_DEFINITIONS,
   DEFAULT_WALL_ID,
@@ -628,6 +629,11 @@ export function LivingWall() {
               );
             })}
           </div>
+        )}
+
+        {/* Atmospheric Particles Canvas: ONE fixed Canvas 2D layer between tints and scrim */}
+        {!isInstant && !isExcludedRoute && (
+          <AtmosphericParticles />
         )}
 
         {/* Fixed scrim layer above the wall: vignette + soft dark gradient */}
