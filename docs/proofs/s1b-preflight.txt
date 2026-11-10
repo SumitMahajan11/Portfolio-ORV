@@ -1,0 +1,107 @@
+================================================================
+ PREFLIGHT AUDIT: LCP ELEMENT & REQUEST LISTS
+================================================================
+Timestamp: 2026-11-10T17:08:42.877Z
+
+App A (HEAD with BiyooCompanion):
+  URL: http://127.0.0.1:3010/
+  LCP Element: unknown
+  Request Count: 29
+  Requests:
+    [200] text/html (10254B) /
+    [200] font/woff2 (23224B) /_next/static/media/237858b39a32779d-s.p.2cyn07wtgehh0.woff2
+    [200] font/woff2 (32244B) /_next/static/media/9a321a2c78eff0b5-s.p.1bkzbscqrt8rl.woff2
+    [200] font/woff2 (16128B) /_next/static/media/b5f28e41fa16b2ca-s.p.3iriq4vwiqn7a.woff2
+    [200] text/css (17058B) /_next/static/chunks/3r1j-q8g2102b.css
+    [200] application/javascript (2968B) /_next/static/chunks/0qwnvhn-vznzr.js
+    [200] application/javascript (9962B) /_next/static/chunks/340imvrlush58.js
+    [200] application/javascript (72856B) /_next/static/chunks/1ujwz32qycyj_.js
+    [200] application/javascript (46551B) /_next/static/chunks/3wvl5zpb8mfo-.js
+    [200] application/javascript (5355B) /_next/static/chunks/turbopack-077hmtqrhcoji.js
+    [200] application/javascript (5622B) /_next/static/chunks/1_xd3g9rbi92_.js
+    [200] application/javascript (45811B) /_next/static/chunks/1nq7f8oassj3m.js
+    [200] application/javascript (11909B) /_next/static/chunks/0g6tdqd48pgh4.js
+    [200] application/javascript (14112B) /_next/static/chunks/2tis5oatgytn3.js
+    [200] application/javascript (4601B) /_next/static/chunks/007139y5qx1g4.js
+    [200] application/javascript (1886B) /_next/static/chunks/0fycgilb6-ulm.js
+    [200] image/avif (75216B) /art/wall/archive-portrait.avif
+    [200] image/avif (18636B) /art/biyoo/biyoo-calm-360.avif
+    [200] image/avif (39435B) /art/biyoo/biyoo-excited-720.avif
+    [200] image/avif (3063B) /art/biyoo/biyoo-burst-192.avif
+    [200] application/javascript (5684B) /_next/static/chunks/0tckuszalgbgu.js
+    [200] application/javascript (11751B) /_next/static/chunks/0ka8ks5-24gaf.js
+    [200] application/javascript (7346B) /_next/static/chunks/19fgo9tyzgvvt.js
+    [200] application/javascript (3968B) /_next/static/chunks/2z46nay_jp74o.js
+    [200] application/javascript (4118B) /_next/static/chunks/0mtoh7xt12ywv.js
+    [200] application/javascript (4664B) /_next/static/chunks/34-vczposa-_j.js
+    [200] image/svg+xml (1645B) /icon.svg
+    [200] application/javascript (1099B) /_next/static/chunks/2wlsf1v6zlc0y.js
+    [200] text/x-component (1305B) /?_rsc=5CB68i4pnAekjehf
+
+App B (without BiyooCompanion):
+  URL: http://127.0.0.1:3011/
+  LCP Element: unknown
+  Request Count: 27
+  Requests:
+    [200] text/html (9560B) /
+    [200] font/woff2 (23224B) /_next/static/media/237858b39a32779d-s.p.2cyn07wtgehh0.woff2
+    [200] font/woff2 (32244B) /_next/static/media/9a321a2c78eff0b5-s.p.1bkzbscqrt8rl.woff2
+    [200] font/woff2 (16128B) /_next/static/media/b5f28e41fa16b2ca-s.p.3iriq4vwiqn7a.woff2
+    [200] text/css (17058B) /_next/static/chunks/3r1j-q8g2102b.css
+    [200] application/javascript (2968B) /_next/static/chunks/0qwnvhn-vznzr.js
+    [200] application/javascript (9962B) /_next/static/chunks/340imvrlush58.js
+    [200] application/javascript (72856B) /_next/static/chunks/1ujwz32qycyj_.js
+    [200] application/javascript (46551B) /_next/static/chunks/3wvl5zpb8mfo-.js
+    [200] application/javascript (5355B) /_next/static/chunks/turbopack-077hmtqrhcoji.js
+    [200] application/javascript (5622B) /_next/static/chunks/2s5uf2k-e6_k6.js
+    [200] application/javascript (45813B) /_next/static/chunks/1_dqwbw1piv_w.js
+    [200] application/javascript (11814B) /_next/static/chunks/2pebluf5-olu9.js
+    [200] application/javascript (14102B) /_next/static/chunks/3_p5hbkvk-nb3.js
+    [200] application/javascript (4601B) /_next/static/chunks/007139y5qx1g4.js
+    [200] application/javascript (1886B) /_next/static/chunks/2i5stytfy1rls.js
+    [200] image/avif (75216B) /art/wall/archive-portrait.avif
+    [200] image/avif (18636B) /art/biyoo/biyoo-calm-360.avif
+    [200] application/javascript (5683B) /_next/static/chunks/3zzzxo41cu7zw.js
+    [200] application/javascript (11752B) /_next/static/chunks/426rl_udwifpn.js
+    [200] application/javascript (7353B) /_next/static/chunks/35ts70ofua1y2.js
+    [200] application/javascript (3968B) /_next/static/chunks/0vzfnsxkperom.js
+    [200] application/javascript (4115B) /_next/static/chunks/3t42jo7nouxcj.js
+    [200] application/javascript (4665B) /_next/static/chunks/376xxt7izgu_c.js
+    [200] image/svg+xml (1645B) /icon.svg
+    [200] application/javascript (1099B) /_next/static/chunks/0a5y64ltn-t3n.js
+    [200] text/x-component (1305B) /?_rsc=5CB68i4pnAekjehf
+
+--- COMPARISON ---
+LCP Elements Match: YES (Identical)
+  App A LCP: unknown
+  App B LCP: unknown
+
+Requests unique to App A (14):
+  + /_next/static/chunks/1_xd3g9rbi92_.js
+  + /_next/static/chunks/1nq7f8oassj3m.js
+  + /_next/static/chunks/0g6tdqd48pgh4.js
+  + /_next/static/chunks/2tis5oatgytn3.js
+  + /_next/static/chunks/0fycgilb6-ulm.js
+  + /art/biyoo/biyoo-excited-720.avif
+  + /art/biyoo/biyoo-burst-192.avif
+  + /_next/static/chunks/0tckuszalgbgu.js
+  + /_next/static/chunks/0ka8ks5-24gaf.js
+  + /_next/static/chunks/19fgo9tyzgvvt.js
+  + /_next/static/chunks/2z46nay_jp74o.js
+  + /_next/static/chunks/0mtoh7xt12ywv.js
+  + /_next/static/chunks/34-vczposa-_j.js
+  + /_next/static/chunks/2wlsf1v6zlc0y.js
+
+Requests unique to App B (12):
+  - /_next/static/chunks/2s5uf2k-e6_k6.js
+  - /_next/static/chunks/1_dqwbw1piv_w.js
+  - /_next/static/chunks/2pebluf5-olu9.js
+  - /_next/static/chunks/3_p5hbkvk-nb3.js
+  - /_next/static/chunks/2i5stytfy1rls.js
+  - /_next/static/chunks/3zzzxo41cu7zw.js
+  - /_next/static/chunks/426rl_udwifpn.js
+  - /_next/static/chunks/35ts70ofua1y2.js
+  - /_next/static/chunks/0vzfnsxkperom.js
+  - /_next/static/chunks/3t42jo7nouxcj.js
+  - /_next/static/chunks/376xxt7izgu_c.js
+  - /_next/static/chunks/0a5y64ltn-t3n.js

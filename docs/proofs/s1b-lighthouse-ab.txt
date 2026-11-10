@@ -1,0 +1,114 @@
+================================================================
+ TASK structure-S1b: MOBILE LIGHTHOUSE CLEAN A/B (16 RUNS)
+================================================================
+Group A: http://127.0.0.1:3010/ (HEAD as-is, with BiyooCompanion)
+Group B: http://127.0.0.1:3011/ (without BiyooCompanion)
+Design: Interleaved A, B, A, B... x 8 pairs (16 runs total)
+Interval: 60s idle between runs
+Timestamp: 2026-11-10T17:10:17.599Z
+
+
+>>> PAIR 1/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 1/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 2...
+
+>>> PAIR 2/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 2/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 3...
+
+>>> PAIR 3/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 3/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 4...
+
+>>> PAIR 4/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 4/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 5...
+
+>>> PAIR 5/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 5/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 6...
+
+>>> PAIR 6/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 6/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 7...
+
+>>> PAIR 7/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 7/8: Running Group B (without BiyooCompanion)...
+Waiting 60s idle before Pair 8...
+
+>>> PAIR 8/8: Running Group A (with BiyooCompanion)...
+Waiting 60s idle before Group B...
+
+>>> PAIR 8/8: Running Group B (without BiyooCompanion)...
+
+================================================================
+ ALL 16 RUN RESULTS
+================================================================
+
+--- GROUP A (HEAD as-is, with BiyooCompanion) ---
+  Run A1: Perf=99 | TBT=113ms | LCP=0.93s | sha256=c313f3ecb6d228fb24622ef189691d29d95ce2e015bc021f42fc2da47799b4c7
+  Run A2: Perf=99 | TBT=117ms | LCP=0.94s | sha256=8a2c6492dc2080f5a902db5d860c6dccef35bec8e50776ae4c45c74a941c6263
+  Run A3: Perf=100 | TBT=85ms | LCP=0.92s | sha256=ac7d18563ef737536fa891c9727651d40c4c5eb55e2aa9e0fceaad2237ebd1f9
+  Run A4: Perf=99 | TBT=116ms | LCP=0.92s | sha256=7fc13a269333e9776a86f5da9018b28ccef904dd6da73a0bc0e2f7135a2e44d3
+  Run A5: Perf=99 | TBT=104ms | LCP=0.91s | sha256=7048f90a2955afa0495c88de0d545446a19f6c1827d65a3d35013754a356ffc6
+  Run A6: Perf=100 | TBT=87ms | LCP=0.91s | sha256=5e455f01621f4a0edf186c9ae1b994ef032c4f081a6d70794b50cea3f61d9392
+  Run A7: Perf=100 | TBT=86ms | LCP=0.91s | sha256=d526c087ec9fb0d03ca9692036926f32e37744537a0c043c4519478cb9dc1c76
+  Run A8: Perf=100 | TBT=86ms | LCP=0.91s | sha256=20a3f3c12a6654a7634a48365b1ea5c20d0d38ef27364b05e2519e5eed1fff5f
+
+--- GROUP B (without BiyooCompanion) ---
+  Run B1: Perf=99 | TBT=138ms | LCP=0.92s | sha256=1ae704e0bd522d9f5c797177b873dfbc783ae31916be38e5224a4810ffff369c
+  Run B2: Perf=98 | TBT=167ms | LCP=0.92s | sha256=8766272293844eeacbb64102a262462aefaaf2bad036f2a43352075ba0a90f4c
+  Run B3: Perf=90 | TBT=359ms | LCP=0.98s | sha256=f4412dbc252f03919a4e34ef1d54132ce0fbb40a397868217a0d1cfd046be0f6
+    Top Long Tasks (TBT > 200ms):
+      - 306ms at 3568.5ms (http://127.0.0.1:3011/_next/static/chunks/1ujwz32qycyj_.js)
+      - 125ms at 745.5ms (http://127.0.0.1:3011/)
+      - 109ms at 3964.5ms (http://127.0.0.1:3011/_next/static/chunks/1ujwz32qycyj_.js)
+      - 104ms at 4454ms (http://127.0.0.1:3011/_next/static/chunks/1ujwz32qycyj_.js)
+      - 98ms at 4558ms (http://127.0.0.1:3011/_next/static/chunks/1ujwz32qycyj_.js)
+  Run B4: Perf=99 | TBT=127ms | LCP=0.91s | sha256=91a80dfed1e0e6d14a77f5c93cc42d95784fba5569c2b4dbdb2492bf3ce7663d
+  Run B5: Perf=99 | TBT=92ms | LCP=0.91s | sha256=59354d7bc4039767da5abdb1df820ac47a2e616b970c9d2fc39afdfddf5135c7
+  Run B6: Perf=98 | TBT=163ms | LCP=0.91s | sha256=08bdca3e79b231d7ceb81049496417c3f86be88a934ecabe58d641b8002a4bab
+  Run B7: Perf=98 | TBT=143ms | LCP=0.91s | sha256=72c1010b0b855d26aecc7b963ef6ef0a231cefed828fc2432f128b9f18a072fa
+  Run B8: Perf=97 | TBT=183ms | LCP=0.91s | sha256=750a4f37925d665cf1ffc541c2c06a068b8d8eaff6507617eed4ca3a9f3acef7
+
+================================================================
+ SUMMARY & STATISTICAL COMPARISON
+================================================================
+Group A (with BiyooCompanion):
+  Perf values:  [99, 99, 100, 99, 99, 100, 100, 100]
+  Perf Median:  99.5 (Range: [99, 100])
+  TBT values:   [113, 117, 85, 116, 104, 87, 86, 86] ms
+  TBT Median:   95.5 ms (Range: [85, 117])
+  LCP values:   [0.93, 0.94, 0.92, 0.92, 0.91, 0.91, 0.91, 0.91] s
+  LCP Median:   0.92 s (Range: [0.91, 0.94])
+  Runs with TBT > 200ms: 0 of 8
+
+Group B (without BiyooCompanion):
+  Perf values:  [99, 98, 90, 99, 99, 98, 98, 97]
+  Perf Median:  98 (Range: [90, 99])
+  TBT values:   [138, 167, 359, 127, 92, 163, 143, 183] ms
+  TBT Median:   153 ms (Range: [92, 359])
+  LCP values:   [0.92, 0.92, 0.98, 0.91, 0.91, 0.91, 0.91, 0.91] s
+  LCP Median:   0.91 s (Range: [0.91, 0.98])
+  Runs with TBT > 200ms: 1 of 8
+
+--- RANGE OVERLAP ANALYSIS ---
+Perf Range Overlap: YES (Ranges overlap)
+TBT Range Overlap:  YES (Ranges overlap)
+LCP Range Overlap:  YES (Ranges overlap)
+
+Verdict: no detectable difference at n=8
