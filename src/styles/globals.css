@@ -266,8 +266,8 @@ body.biyoo-qa-open #sound-permission-prompt {
 
 @media (min-width: 1024px) and (max-height: 699px) {
   .biyoo-qa-panel-dock {
-    bottom: calc(1rem + env(safe-area-inset-bottom, 0px) + 185px) !important;
-    max-height: calc(100vh - 460px) !important;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px) + 180px) !important;
+    max-height: calc(100vh - 400px) !important;
   }
 }
 

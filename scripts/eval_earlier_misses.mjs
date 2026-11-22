@@ -138,3 +138,4 @@ for (const item of EARLIER_21) {
     console.log(`| "${item.q}" | ${item.expected} | ${matchedId} | ${detail.score.toFixed(3)} | ${detail.secondScore.toFixed(3)} | ${Math.round(detail.coverage * 100)}% | ${detail.reason} |`);
   }
 }
+

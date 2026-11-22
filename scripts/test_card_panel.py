@@ -72,3 +72,4 @@ async def measure():
         await browser.close()
 
 asyncio.run(measure())
+

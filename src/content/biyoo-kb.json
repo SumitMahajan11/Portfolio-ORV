@@ -22,7 +22,10 @@
       "who",
       "profile",
       "bio",
-      "overview"
+      "overview",
+      "projects",
+      "builder",
+      "identity"
     ],
     "answer": "Sumit Mahajan is a computer science undergraduate and systems builder specializing in distributed consensus and formal verification. He builds systems like Ratify and iac-verifier with verifiable correctness.",
     "sourceLabel": "Identity / Hero",
@@ -53,7 +56,11 @@
       "institution",
       "undergraduate",
       "employed",
-      "studies"
+      "studies",
+      "city",
+      "location",
+      "finish",
+      "timeline"
     ],
     "answer": "Sumit is a 3rd-year Computer Science Engineering undergrad at Pimpri Chinchwad University in Pune, graduating in March 2028. He is actively preparing for GSoC 2027 targeting CNCF, Kubeflow, or KubeVirt.",
     "sourceLabel": "Identity",
@@ -82,7 +89,9 @@
       "green",
       "carbon",
       "scheduler",
-      "emissions"
+      "emissions",
+      "grid",
+      "intensity"
     ],
     "answer": "Edge-Cloud Orchestrator is a flagship project exploring carbon-aware workload routing across distributed edge and cloud infrastructure. Its interactive scenario visualizes routing decisions based on regional carbon intensity.",
     "sourceLabel": "Edge-Cloud Scenario",
@@ -111,7 +120,12 @@
       "ucb1",
       "protocol",
       "linearizable",
-      "algorithm"
+      "algorithm",
+      "tools",
+      "correctness",
+      "implementation",
+      "checker",
+      "tests"
     ],
     "answer": "Ratify is a from-scratch Rust implementation of the Raft consensus algorithm with 68 passing tests, TLA+ model checking, and Porcupine linearizability verification. It reproduces 4 historical bug classes and is designed as a 3-node correctness project rather than a performance benchmark.",
     "sourceLabel": "Ratify Scenario",
@@ -145,7 +159,10 @@
       "checker",
       "privilege escalation",
       "invariants",
-      "smt solver"
+      "smt solver",
+      "infrastructure",
+      "bugs",
+      "detect"
     ],
     "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it found a privilege-escalation path.",
     "sourceLabel": "iac-verifier Scenario",
@@ -178,7 +195,9 @@
       "claims",
       "reproduce",
       "artifacts",
-      "correctness"
+      "correctness",
+      "results",
+      "true"
     ],
     "answer": "The strongest evidence includes 68 passing tests with TLA+ model checking and Porcupine linearizability verification for Ratify, alongside 276 tests passing in the recorded run on 2026-11-08 for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
     "sourceLabel": "Reader's Record",
@@ -212,7 +231,9 @@
       "specialization",
       "tools",
       "technical",
-      "coding"
+      "coding",
+      "interests",
+      "focus"
     ],
     "answer": "Sumit focuses on distributed systems, formal verification, and cloud infrastructure using Rust, TLA+, Z3/SMT solvers, and Terraform. His work prioritizes formal correctness and verification over unverified performance claims.",
     "sourceLabel": "Skills & Tech Focus",
@@ -273,7 +294,8 @@
       "programs",
       "applying",
       "aspirations",
-      "future plans"
+      "future plans",
+      "roles"
     ],
     "answer": "Sumit is targeting GSoC 2027 in CNCF, Kubeflow, or KubeVirt and looking for open-source systems engineering opportunities. He aims to contribute to distributed systems, formal verification, and infrastructure tooling.",
     "sourceLabel": "Identity / Goals",
@@ -304,7 +326,11 @@
       "fluffy",
       "creature",
       "guide",
-      "dokkaebi"
+      "dokkaebi",
+      "job",
+      "purpose",
+      "corner",
+      "small"
     ],
     "answer": "I am Biyoo, the archival companion and narrator guiding readers through Sumit's portfolio. I monitor your reading pace, react to project evidence, and help answer questions about the work here.",
     "sourceLabel": "Mascot Companion",

@@ -77,6 +77,7 @@ docs/proofs/*lighthouse*run*.json
 docs/proofs/*-run[0-9]*.json
 
 # Biyoo scratch, source art, test scripts and proof screenshots
+round*.png
 scratch/
 artwork/
 scripts/test_*.js

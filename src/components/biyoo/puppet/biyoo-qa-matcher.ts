@@ -9,15 +9,24 @@ export interface BiyooKbEntry {
   sourceHref: string;
 }
 
+export interface BiyooFallbackChip {
+  id: string;
+  label: string;
+  entry: BiyooKbEntry;
+}
+
 export interface BiyooQaResult {
   matched: boolean;
   score: number;
+  secondScore?: number;
   coverage?: number;
+  reason?: 'matched' | 'deny' | 'coverage' | 'margin' | 'min_score';
   entry?: BiyooKbEntry;
   answer: string;
   sourceLabel: string;
   sourceHref: string;
   matchedText?: string;
+  fallbackChips?: BiyooFallbackChip[];
 }
 
 export const kbEntries: BiyooKbEntry[] = kbRaw as BiyooKbEntry[];
@@ -26,8 +35,8 @@ export const FALLBACK_ANSWER = "I don't know that one, but the evidence section 
 export const FALLBACK_SOURCE_LABEL = "Evidence / Reader's Record";
 export const FALLBACK_SOURCE_HREF = "#readers-record";
 
-// Matching Constants
-export const MIN_CONTENT_COVERAGE = 0.60;
+// Matching Constants - MIN_CONTENT_COVERAGE must not go below 0.50
+export const MIN_CONTENT_COVERAGE = 0.50;
 export const MIN_ACCEPT_SCORE = 0.80;
 export const MIN_SCORE_MARGIN = 0.10;
 export const ABSOLUTE_MARGIN = 0.30;
@@ -35,14 +44,30 @@ export const PRIMARY_TERM_BOOST = 1.50;
 
 // Denied intents that must always fallback even if they reuse in-scope words
 export const DENY_PATTERNS = [
-  /\b(salary|pay|compensation|wage|wages|stipend)\b/i,
-  /\b(how many users|user count|customer count|customers|active users)\b/i,
+  /\b(salary|pay|compensation|wage|wages|stipend|freelance|charges?|rates?|prices?)\b/i,
+  /\b(how many users|user count|customer count|customers|active users|stars?)\b/i,
   /\b(in production|production use|used in production)\b/i,
-  /\b(benchmark speed|latency improvement|speed of raft|performance numbers|latency numbers)\b/i,
+  /\b(benchmark speed|latency improvement|speed of raft|performance numbers|latency numbers|throughput)\b/i,
   /\b(cgpa|gpa|marks|percentage|grades?)\b/i,
   /\b(linkedin)\b/i,
   /\b(resume|cv)\b/i,
   /\b(ignore (your |all )?(rules|instructions)|reveal (your |the )?(system )?prompt|system prompt|pretend|bypass)\b/i,
+  // Required word-boundary anchored patterns for comparison, popularity, pricing, employment history
+  /\b(better than|faster than|slower than|beats?|vs|versus)\b/i,
+  /\b(ever worked|worked at)\b/i,
+  // Bait & adversarial queries
+  /\b(think of|think about|work for|hiding|best engineer|like him|what do you want|who made you|rivals?)\b/i,
+  /\b(joke|jokes|cricket|sudoku|where (in pune|does he live)|address|neighborhood)\b/i,
+];
+
+// Exact phrase patterns for Biyoo identity
+export const BIYOO_IDENTITY_PATTERNS = [
+  /\bwho are you\b/i,
+  /\bwhat are you\b/i,
+  /\bwho is biyoo\b/i,
+  /\bwhat is biyoo\b/i,
+  /\bintroduce yourself\b/i,
+  /\btell me about yourself\b/i,
 ];
 
 // Stopwords and conversational fillers
@@ -62,21 +87,32 @@ export const STOP_WORDS = new Set([
   'why', 'with', 's', 'd', 'm', 't', 're', 've', 'll',
   'thing', 'things', 'person', 'one', 'line', 'actually', 'use', 'using',
   'built', 'build', 'go', 'went', 'good', 'tell', 'give', 'show', 'see', 'many', 'much', 'work',
-  'solve', 'solves', 'solving'
+  // Conversational fillers
+  'look', 'know', 'way', 'best', 'get', 'runs', 'behind', 'kind', 'deal'
 ]);
 
 // Synonym Canonicalization Map
 export const SYNONYM_MAP: Record<string, string> = {
-  // college / university / school
+  // college / university / school / city / location
   college: 'college',
   university: 'college',
   school: 'college',
   undergrad: 'college',
   undergraduate: 'college',
   campus: 'college',
+  city: 'pune',
+  location: 'pune',
+  based: 'pune',
+  finish: 'graduation',
+  finishing: 'graduation',
+  graduating: 'graduation',
+  complete: 'graduation',
+  completing: 'graduation',
 
   // job / working / employed / student
-  job: 'employment',
+  job: 'guide',
+  duties: 'guide',
+  purpose: 'guide',
   working: 'employment',
   employed: 'employment',
   employment: 'employment',
@@ -94,10 +130,13 @@ export const SYNONYM_MAP: Record<string, string> = {
   technical: 'technical',
   technically: 'technical',
   coding: 'code',
+  interests: 'focus',
+  interest: 'focus',
 
   // reach / contact / message / email
   reach: 'contact',
   contacting: 'contact',
+  touch: 'contact',
   message: 'contact',
   messaging: 'contact',
   email: 'contact',
@@ -111,6 +150,9 @@ export const SYNONYM_MAP: Record<string, string> = {
   biyoo: 'mascot',
   dokbi: 'mascot',
   character: 'mascot',
+  little: 'mascot',
+  guy: 'mascot',
+  corner: 'mascot',
 
   // prove / verify / evidence / receipts / tests
   prove: 'prove',
@@ -126,6 +168,8 @@ export const SYNONYM_MAP: Record<string, string> = {
   tests: 'tests',
   tested: 'tests',
   testing: 'tests',
+  results: 'results',
+  true: 'true',
 
   // domain concepts
   consensus: 'consensus',
@@ -140,24 +184,44 @@ export const SYNONYM_MAP: Record<string, string> = {
   scheduling: 'scheduling',
   orchestrator: 'orchestrator',
   routing: 'routing',
+  moves: 'routing',
+  moving: 'routing',
+  move: 'routing',
+  grid: 'grid',
+  intensity: 'intensity',
+  infrastructure: 'infrastructure',
+  tools: 'tools',
+  detect: 'detect',
+  detects: 'detect',
+  correct: 'correctness',
+  correctness: 'correctness',
   mentorship: 'mentorship',
   programs: 'programs',
   program: 'programs',
-  gsoc: 'gsoc'
+  gsoc: 'gsoc',
+  google: 'gsoc',
+  summer: 'gsoc',
+  apply: 'applying',
+  applying: 'applying',
+  roles: 'roles',
+  role: 'roles',
+  introduce: 'profile',
+  projects: 'projects',
+  project: 'projects'
 };
 
 // Signature terms for domain specificity weighting
 export const ENTRY_PRIMARY_TERMS: Record<string, Set<string>> = {
-  'iac-verifier-z3': new Set(['z3', 'terraform', 'checker', 'smt', 'iam']),
-  'ratify-raft': new Set(['raft', 'ratify', 'consensus']),
-  'edge-cloud': new Set(['carbon', 'emissions', 'orchestrator', 'routing']),
-  'current-status': new Set(['college', 'university', 'student', 'pune', 'graduating']),
-  'strongest-evidence': new Set(['receipts', 'evidence', 'prove', 'verify', 'claims']),
-  'tech-focus': new Set(['languages', 'skills', 'technical', 'stack']),
-  'contact': new Set(['contact', 'email', 'message', 'phone']),
-  'goals-gsoc': new Set(['gsoc', 'mentorship', 'programs', 'applying']),
-  'who-is-sumit': new Set(['sumit', 'background', 'author', 'creator']),
-  'biyoo-mascot': new Set(['biyoo', 'mascot', 'creature', 'fluffy'])
+  'iac-verifier-z3': new Set(['z3', 'terraform', 'checker', 'smt', 'iam', 'infrastructure']),
+  'ratify-raft': new Set(['raft', 'ratify', 'consensus', 'tools', 'correctness', 'tests']),
+  'edge-cloud': new Set(['carbon', 'emissions', 'orchestrator', 'routing', 'grid', 'intensity']),
+  'current-status': new Set(['college', 'university', 'student', 'pune', 'graduating', 'graduation', 'city']),
+  'strongest-evidence': new Set(['receipts', 'evidence', 'prove', 'verify', 'claims', 'results', 'true']),
+  'tech-focus': new Set(['languages', 'skills', 'technical', 'stack', 'focus']),
+  'contact': new Set(['contact', 'email', 'message', 'phone', 'touch']),
+  'goals-gsoc': new Set(['gsoc', 'mentorship', 'programs', 'applying', 'roles']),
+  'who-is-sumit': new Set(['sumit', 'background', 'author', 'creator', 'projects', 'profile']),
+  'biyoo-mascot': new Set(['biyoo', 'mascot', 'creature', 'fluffy', 'guide'])
 };
 
 export function lightStem(word: string): string {
@@ -174,29 +238,6 @@ export function lightStem(word: string): string {
 export function normalizeToken(token: string): string {
   const stem = lightStem(token);
   return SYNONYM_MAP[stem] || SYNONYM_MAP[token] || stem;
-}
-
-export function levenshtein(a: string, b: string): number {
-  if (a === b) return 0;
-  if (!a.length) return b.length;
-  if (!b.length) return a.length;
-  const matrix: number[][] = [];
-  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
-      }
-    }
-  }
-  return matrix[b.length][a.length];
 }
 
 export function cleanAndTokenize(text: string): string[] {
@@ -249,7 +290,9 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
     return {
       matched: false,
       score: 0,
+      secondScore: 0,
       coverage: 0,
+      reason: 'min_score',
       answer: FALLBACK_ANSWER,
       sourceLabel: FALLBACK_SOURCE_LABEL,
       sourceHref: FALLBACK_SOURCE_HREF,
@@ -262,7 +305,9 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
       return {
         matched: false,
         score: 0,
+        secondScore: 0,
         coverage: 0,
+        reason: 'deny',
         answer: FALLBACK_ANSWER,
         sourceLabel: FALLBACK_SOURCE_LABEL,
         sourceHref: FALLBACK_SOURCE_HREF,
@@ -270,23 +315,23 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
     }
   }
 
-  // 2. Identity query detection
-  const qTokensRaw = cleanAndTokenize(cleanQ);
-  if (
-    (qTokensRaw.includes('who') || qTokensRaw.includes('what')) &&
-    (qTokensRaw.includes('you') || qTokensRaw.includes('biyoo'))
-  ) {
-    const entry = kbEntries.find(e => e.id === 'biyoo-mascot');
-    if (entry) {
-      return {
-        matched: true,
-        score: 5.0,
-        coverage: 1.0,
-        entry,
-        answer: entry.answer,
-        sourceLabel: entry.sourceLabel,
-        sourceHref: entry.sourceHref,
-      };
+  // 2. Identity query detection using exact phrase patterns only
+  for (const pattern of BIYOO_IDENTITY_PATTERNS) {
+    if (pattern.test(cleanQ)) {
+      const entry = kbEntries.find(e => e.id === 'biyoo-mascot');
+      if (entry) {
+        return {
+          matched: true,
+          score: 5.0,
+          secondScore: 0.0,
+          coverage: 1.0,
+          reason: 'matched',
+          entry,
+          answer: entry.answer,
+          sourceLabel: entry.sourceLabel,
+          sourceHref: entry.sourceHref,
+        };
+      }
     }
   }
 
@@ -296,7 +341,9 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
     return {
       matched: false,
       score: 0,
+      secondScore: 0,
       coverage: 0,
+      reason: 'min_score',
       answer: FALLBACK_ANSWER,
       sourceLabel: FALLBACK_SOURCE_LABEL,
       sourceHref: FALLBACK_SOURCE_HREF,
@@ -320,20 +367,7 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
     let score = 0;
 
     for (const qt of qTokens) {
-      let matched = false;
       if (entryTokens.has(qt)) {
-        matched = true;
-      } else if (qt.length >= 4) {
-        // Typo tolerance: edit distance <= 1 for word length >= 4
-        for (const et of entryTokens) {
-          if (Math.abs(et.length - qt.length) <= 1 && levenshtein(qt, et) <= 1) {
-            matched = true;
-            break;
-          }
-        }
-      }
-
-      if (matched) {
         matchedTokensCount++;
         let weight = getWeight(qt);
         if (primaryTerms.has(qt)) {
@@ -356,26 +390,67 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
   const best = scores[0];
   const second = scores[1];
 
-  if (best && best.coverage >= MIN_CONTENT_COVERAGE && best.score >= MIN_ACCEPT_SCORE) {
-    if (!second || best.score >= second.score * (1 + MIN_SCORE_MARGIN) || best.score > second.score + ABSOLUTE_MARGIN) {
-      return {
-        matched: true,
-        score: best.score,
-        coverage: best.coverage,
-        entry: best.entry,
-        answer: best.entry.answer,
-        sourceLabel: best.entry.sourceLabel,
-        sourceHref: best.entry.sourceHref,
-      };
-    }
+  // Prepare fallback chips: up to 3 distinct closest entries with score > 0
+  const fallbackChips: BiyooFallbackChip[] = scores
+    .filter(s => s.score > 0)
+    .slice(0, 3)
+    .map(s => ({
+      id: s.entry.id,
+      label: s.entry.questions[0],
+      entry: s.entry
+    }));
+
+  if (!best || best.score < MIN_ACCEPT_SCORE) {
+    return {
+      matched: false,
+      score: best ? best.score : 0,
+      secondScore: second ? second.score : 0,
+      coverage: best ? best.coverage : 0,
+      reason: 'min_score',
+      answer: FALLBACK_ANSWER,
+      sourceLabel: FALLBACK_SOURCE_LABEL,
+      sourceHref: FALLBACK_SOURCE_HREF,
+      fallbackChips: fallbackChips.length > 0 ? fallbackChips : undefined,
+    };
+  }
+
+  if (best.coverage < MIN_CONTENT_COVERAGE) {
+    return {
+      matched: false,
+      score: best.score,
+      secondScore: second ? second.score : 0,
+      coverage: best.coverage,
+      reason: 'coverage',
+      answer: FALLBACK_ANSWER,
+      sourceLabel: FALLBACK_SOURCE_LABEL,
+      sourceHref: FALLBACK_SOURCE_HREF,
+      fallbackChips: fallbackChips.length > 0 ? fallbackChips : undefined,
+    };
+  }
+
+  if (second && best.score < second.score * (1 + MIN_SCORE_MARGIN) && best.score <= second.score + ABSOLUTE_MARGIN) {
+    return {
+      matched: false,
+      score: best.score,
+      secondScore: second.score,
+      coverage: best.coverage,
+      reason: 'margin',
+      answer: FALLBACK_ANSWER,
+      sourceLabel: FALLBACK_SOURCE_LABEL,
+      sourceHref: FALLBACK_SOURCE_HREF,
+      fallbackChips: fallbackChips.length > 0 ? fallbackChips : undefined,
+    };
   }
 
   return {
-    matched: false,
-    score: best ? best.score : 0,
-    coverage: best ? best.coverage : 0,
-    answer: FALLBACK_ANSWER,
-    sourceLabel: FALLBACK_SOURCE_LABEL,
-    sourceHref: FALLBACK_SOURCE_HREF,
+    matched: true,
+    score: best.score,
+    secondScore: second ? second.score : 0,
+    coverage: best.coverage,
+    reason: 'matched',
+    entry: best.entry,
+    answer: best.entry.answer,
+    sourceLabel: best.entry.sourceLabel,
+    sourceHref: best.entry.sourceHref,
   };
 }

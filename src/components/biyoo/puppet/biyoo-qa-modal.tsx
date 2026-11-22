@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { searchBiyooKb, type BiyooQaResult } from './biyoo-qa-matcher';
+import { searchBiyooKb, kbEntries, type BiyooQaResult, type BiyooKbEntry } from './biyoo-qa-matcher';
 
 export interface BiyooQaModalProps {
   isOpen: boolean;
@@ -10,7 +10,7 @@ export interface BiyooQaModalProps {
   triggerElement?: HTMLElement | null;
 }
 
-const SUGGESTED_QUESTIONS = [
+const DEFAULT_SUGGESTED_QUESTIONS = [
   'Who is Sumit?',
   'What is Ratify?',
   'How does iac-verifier work?',
@@ -35,7 +35,6 @@ export function BiyooQaModal({
   useEffect(() => {
     if (isOpen) {
       setHasInteracted(false);
-      // Small timeout to allow mount and animation
       const t = setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
@@ -83,6 +82,46 @@ export function BiyooQaModal({
     handleAsk(query);
   };
 
+  // Direct exact-lookup answer on chip click
+  const handleChipClick = (questionText: string, exactEntry?: BiyooKbEntry) => {
+    setQuery(questionText);
+    if (exactEntry) {
+      setResult({
+        matched: true,
+        score: 5.0,
+        secondScore: 0.0,
+        coverage: 1.0,
+        reason: 'matched',
+        entry: exactEntry,
+        answer: exactEntry.answer,
+        sourceLabel: exactEntry.sourceLabel,
+        sourceHref: exactEntry.sourceHref,
+      });
+      setHasInteracted(true);
+      onExpressionChange('happy');
+    } else {
+      // Find matching entry from default questions
+      const found = kbEntries.find(e => e.questions.includes(questionText));
+      if (found) {
+        setResult({
+          matched: true,
+          score: 5.0,
+          secondScore: 0.0,
+          coverage: 1.0,
+          reason: 'matched',
+          entry: found,
+          answer: found.answer,
+          sourceLabel: found.sourceLabel,
+          sourceHref: found.sourceHref,
+        });
+        setHasInteracted(true);
+        onExpressionChange('happy');
+      } else {
+        handleAsk(questionText);
+      }
+    }
+  };
+
   // Input change triggers "curious" expression
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -127,7 +166,7 @@ export function BiyooQaModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleClose]);
 
-  // Outside click/tap to close (ignores clicks on the trigger element)
+  // Outside click/tap to close
   useEffect(() => {
     if (!isOpen) return;
 
@@ -153,6 +192,14 @@ export function BiyooQaModal({
   }, [isOpen, handleClose, triggerElement]);
 
   if (!isOpen) return null;
+
+  // Determine which chips to show
+  const isAnswerShowing = Boolean(result && result.matched);
+  const isFallback = Boolean(result && !result.matched);
+
+  const fallbackChips = result?.fallbackChips && result.fallbackChips.length > 0
+    ? result.fallbackChips
+    : null;
 
   return (
     <div
@@ -202,6 +249,7 @@ export function BiyooQaModal({
             onChange={handleInputChange}
             placeholder="Ask about Ratify, Z3, tech, or Sumit..."
             aria-label="Ask Biyoo a question"
+            data-testid="biyoo-qa-input"
             className="w-full bg-[#0a1428] border border-cyan-500/30 rounded-lg px-3 py-1.5 pr-8 text-xs text-white placeholder-white/40 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-sans tracking-wide"
           />
           <button
@@ -222,47 +270,76 @@ export function BiyooQaModal({
         </div>
       </form>
 
-      {/* Suggested Question Chips */}
-      <div className="mt-2">
-        <div className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-1">
-          Suggested Questions
+      {/* Suggested Question Chips: Collapsed while an answer is showing to ensure first 3 lines are visible */}
+      {!isAnswerShowing && (
+        <div className="mt-2" data-testid="biyoo-qa-chips">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-1">
+            {isFallback && fallbackChips ? 'Related Questions' : 'Suggested Questions'}
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {isFallback && fallbackChips ? (
+              fallbackChips.map((chip) => (
+                <button
+                  key={chip.id}
+                  type="button"
+                  data-testid="biyoo-qa-chip"
+                  onClick={() => handleChipClick(chip.label, chip.entry)}
+                  className="text-[10px] font-sans px-2 py-0.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 hover:border-cyan-400/60 text-cyan-200 hover:text-cyan-100 transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400 text-left"
+                >
+                  {chip.label}
+                </button>
+              ))
+            ) : (
+              DEFAULT_SUGGESTED_QUESTIONS.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  data-testid="biyoo-qa-chip"
+                  onClick={() => handleChipClick(q)}
+                  className="text-[10px] font-sans px-2 py-0.5 rounded-full bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/50 text-cyan-200/90 hover:text-cyan-100 transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400 text-left"
+                >
+                  {q}
+                </button>
+              ))
+            )}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1">
-          {SUGGESTED_QUESTIONS.map((q) => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => {
-                setQuery(q);
-                handleAsk(q);
-              }}
-              className="text-[10px] font-sans px-2 py-0.5 rounded-full bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/50 text-cyan-200/90 hover:text-cyan-100 transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400 text-left"
-            >
-              {q}
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Answer Display */}
       {hasInteracted && result && (
         <div
           data-testid="biyoo-qa-answer"
-          className={`mt-2.5 p-2.5 rounded-lg border text-xs leading-relaxed transition-all max-h-[110px] sm:max-h-[150px] overflow-y-auto ${
+          className={`mt-2.5 p-2.5 rounded-lg border text-xs leading-relaxed transition-all ${
             result.matched
               ? 'bg-cyan-950/40 border-cyan-500/30 text-cyan-100'
               : 'bg-amber-950/30 border-amber-500/30 text-amber-200'
           }`}
         >
-          <div className="flex items-center gap-1.5 mb-1 text-[10px] font-mono tracking-wider uppercase">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                result.matched ? 'bg-cyan-400' : 'bg-amber-400'
-              }`}
-            />
-            <span className={result.matched ? 'text-cyan-300 font-semibold' : 'text-amber-300 font-semibold'}>
-              {result.matched ? 'Archivist Answer' : 'No Direct Receipt'}
-            </span>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase">
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  result.matched ? 'bg-cyan-400' : 'bg-amber-400'
+                }`}
+              />
+              <span className={result.matched ? 'text-cyan-300 font-semibold' : 'text-amber-300 font-semibold'}>
+                {result.matched ? 'Archivist Answer' : 'No Direct Receipt'}
+              </span>
+            </div>
+            {isAnswerShowing && (
+              <button
+                type="button"
+                onClick={() => {
+                  setResult(null);
+                  setQuery('');
+                  onExpressionChange('curious');
+                }}
+                className="text-[10px] font-mono text-cyan-300/70 hover:text-cyan-200 underline"
+              >
+                ask another
+              </button>
+            )}
           </div>
 
           {/* Plain text answer - strictly safe string rendering */}
@@ -288,4 +365,3 @@ export function BiyooQaModal({
 }
 
 export default BiyooQaModal;
-
