@@ -160,3 +160,4 @@ console.log(`Total Collisions / Lifted Matches Found: ${hits.length}`);
 for (const h of hits) {
   console.log(`- [${h.entryId}] (${h.type}): KB "${h.kbString}" <=> Target "${h.match}"`);
 }
+

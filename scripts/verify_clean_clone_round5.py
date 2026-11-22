@@ -21,25 +21,30 @@ def run_cmd(cmd, cwd=None):
     return res.stdout
 
 async def main():
-    # 1. Clean clone
-    if os.path.exists(TEMP_DIR):
-        print(f"Removing existing temp dir: {TEMP_DIR}")
-        shutil.rmtree(TEMP_DIR, ignore_errors=True)
+    # If not built yet, clone and build
+    if not os.path.exists(os.path.join(TEMP_DIR, ".next")):
+        if os.path.exists(TEMP_DIR):
+            print(f"Removing existing temp dir: {TEMP_DIR}")
+            shutil.rmtree(TEMP_DIR, ignore_errors=True)
 
-    print(f"Cloning {SRC_REPO} into {TEMP_DIR}...")
-    run_cmd(f'git clone "{SRC_REPO}" "{TEMP_DIR}"')
+        print(f"Cloning {SRC_REPO} into {TEMP_DIR}...")
+        run_cmd(f'git clone "{SRC_REPO}" "{TEMP_DIR}"')
 
-    # Verify cloned commit
-    commit_info = run_cmd('git log -1 --oneline', cwd=TEMP_DIR)
-    print(f"Cloned HEAD commit: {commit_info.strip()}")
+        # Verify cloned commit
+        commit_info = run_cmd('git log -1 --oneline', cwd=TEMP_DIR)
+        print(f"Cloned HEAD commit: {commit_info.strip()}")
 
-    # 2. npm ci
-    print("\nRunning npm ci in clean clone...")
-    run_cmd('npm ci', cwd=TEMP_DIR)
+        # 2. npm ci
+        print("\nRunning npm ci in clean clone...")
+        run_cmd('npm ci', cwd=TEMP_DIR)
 
-    # 3. npm run build
-    print("\nRunning npm run build in clean clone...")
-    run_cmd('npm run build', cwd=TEMP_DIR)
+        # 3. npm run build
+        print("\nRunning npm run build in clean clone...")
+        run_cmd('npm run build', cwd=TEMP_DIR)
+    else:
+        print(f"Using already-built clean clone at {TEMP_DIR}")
+        commit_info = run_cmd('git log -1 --oneline', cwd=TEMP_DIR)
+        print(f"Clean clone HEAD commit: {commit_info.strip()}")
 
     # 4. Start production server on PORT
     print(f"\nStarting Next.js production server on port {PORT}...")
@@ -80,7 +85,7 @@ async def main():
 
             # Check Q&A: "Who is Sumit?"
             print("\nTesting Q&A: 'Who is Sumit?'...")
-            await page.locator('[data-testid="biyoo-silhouette-hitbox"]').click()
+            await page.locator('[data-testid="biyoo-silhouette-hitbox"]').dispatch_event('click')
             await page.wait_for_selector('[data-testid="biyoo-qa-panel"]')
             input_box = page.locator('#biyoo-question-input')
             await input_box.fill('Who is Sumit?')
@@ -99,11 +104,16 @@ async def main():
             print(f"Answer 2: {ans2.strip()}")
             assert len(ans2.strip()) > 10, "Answer 2 empty or invalid"
 
-            # Close QA modal (click close button or outside)
-            close_btn = page.locator('[data-testid="biyoo-qa-close"]')
+            # Close QA modal
+            close_btn = page.locator('button[aria-label="Close question dialog"]')
             if await close_btn.is_visible():
                 await close_btn.click()
+            else:
+                await page.keyboard.press('Escape')
             await page.wait_for_timeout(300)
+
+            qa_active_now = await page.evaluate("() => window.__biyooEngine ? window.__biyooEngine.qaActive : null")
+            print(f"QA Panel Active status after closing: {qa_active_now}")
 
             # Check all KB sourceHrefs in DOM
             print("\nVerifying every KB sourceHref exists in the DOM:")
@@ -121,8 +131,8 @@ async def main():
                 assert count > 0, f"sourceHref '{href}' not found in DOM!"
 
             # Hover test: CTA 1 (a[href="#scenario-select"])
-            print("\nTesting real 2.5s hover on Hero CTA 1: a[href='#scenario-select']...")
-            cta1 = page.locator('a[href="#scenario-select"]')
+            print("\nTesting real 2.5s hover on Hero CTA 1: #hero-scene a[href='#scenario-select']...")
+            cta1 = page.locator('#hero-scene a[href="#scenario-select"]')
             cta1_box = await cta1.bounding_box()
             cta1_center_x = cta1_box['x'] + cta1_box['width'] / 2
             cta1_center_y = cta1_box['y'] + cta1_box['height'] / 2
@@ -132,7 +142,7 @@ async def main():
             print(f"  [TIMESTAMP START] Moving cursor to CTA 1 ({round(cta1_center_x)}, {round(cta1_center_y)}) at {iso_start1}")
             await page.mouse.move(cta1_center_x, cta1_center_y)
 
-            # Wait for 2.6s (trigger is 2.5s)
+            # Wait for 2.65s (trigger is 2.5s)
             await page.wait_for_timeout(2650)
             t_hover1_end = time.time()
             iso_end1 = time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(t_hover1_end)) + f".{int((t_hover1_end % 1)*1000):03d}Z"
@@ -144,13 +154,14 @@ async def main():
             print(f"    pointingArm: '{engine_arm1}' | Left arm transform: '{transform1}'")
             assert engine_arm1 == 'left' or 'rotate(68deg)' in transform1, f"Expected pointing arm left, got {engine_arm1}, transform: {transform1}"
 
-            # Reset arm by moving mouse away
+            # Reset arm and bubble cooldown before testing CTA 2
             await page.mouse.move(100, 100)
             await page.wait_for_timeout(600)
+            await page.evaluate("() => window.__biyooEngine && window.__biyooEngine.resetBubbleCooldown()")
 
             # Hover test: CTA 2 (a[href="#readers-record"])
-            print("\nTesting real 2.5s hover on Hero CTA 2: a[href='#readers-record']...")
-            cta2 = page.locator('a[href="#readers-record"]')
+            print("\nTesting real 2.5s hover on Hero CTA 2: #hero-scene a[href='#readers-record']...")
+            cta2 = page.locator('#hero-scene a[href="#readers-record"]')
             cta2_box = await cta2.bounding_box()
             cta2_center_x = cta2_box['x'] + cta2_box['width'] / 2
             cta2_center_y = cta2_box['y'] + cta2_box['height'] / 2
@@ -160,7 +171,7 @@ async def main():
             print(f"  [TIMESTAMP START] Moving cursor to CTA 2 ({round(cta2_center_x)}, {round(cta2_center_y)}) at {iso_start2}")
             await page.mouse.move(cta2_center_x, cta2_center_y)
 
-            # Wait for 2.6s
+            # Wait for 2.65s
             await page.wait_for_timeout(2650)
             t_hover2_end = time.time()
             iso_end2 = time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(t_hover2_end)) + f".{int((t_hover2_end % 1)*1000):03d}Z"

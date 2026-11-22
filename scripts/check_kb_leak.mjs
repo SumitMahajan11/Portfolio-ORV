@@ -181,3 +181,4 @@ console.log(`Total Collisions / Matches: ${results.length}`);
 for (const r of results) {
   console.log(`[${r.entryId}] Type: ${r.type} | KB: "${r.kbString}" | Target/Query: "${r.target || r.query}" ${r.detail ? `(${r.detail})` : ''}`);
 }
+
