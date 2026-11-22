@@ -21,7 +21,7 @@
       "who is the portfolio author?",
       "tell me about the creator of this site"
     ],
-    "answer": "Sumit Mahajan is a computer science undergraduate and systems builder specializing in distributed consensus and formal verification. He builds systems like Ratify and iac-verifier with verifiable correctness proofs.",
+    "answer": "Sumit Mahajan is a computer science undergraduate and systems builder specializing in distributed consensus and formal verification. He builds systems like Ratify and iac-verifier with verifiable correctness.",
     "sourceLabel": "Identity / Hero",
     "sourceHref": "#hero-scene"
   },
@@ -128,7 +128,7 @@
       "how does the z3 formal verification work?",
       "tell me about the terraform iam verifier"
     ],
-    "answer": "iac-verifier performs Z3-based reachability proofs on Terraform IAM and network security graphs with an auto-repair engine and proof certificates. It includes 276 tests and detects privilege-escalation paths that tools like Checkov and TFSec miss.",
+    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine and proof certificates. It includes 276 tests passing in the recorded run on 2026-11-08, finding a privilege escalation path from 'account:111122223333' to 'aws_iam_role.target_role' in 2 hop(s).",
     "sourceLabel": "iac-verifier Scenario",
     "sourceHref": "#iac-verifier"
   },
@@ -156,7 +156,7 @@
       "where can i see the proof certificates?",
       "how are the test suites verified on this site?"
     ],
-    "answer": "The strongest evidence includes 68 passing tests with TLA+ invariant proofs and Porcupine linearizability verification for Ratify, alongside 276 recorded test proofs for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
+    "answer": "The strongest evidence includes 68 passing tests with TLA+ model checking and Porcupine linearizability verification for Ratify, alongside 276 tests passing in the recorded run on 2026-11-08 for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
     "sourceLabel": "Reader's Record",
     "sourceHref": "#readers-record"
   },
