@@ -1,14 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Cinzel, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
 import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
 import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
-import { CornerBountyButton, BiyooCompanion } from "@/components/biyoo";
+import { CornerBountyButton } from "@/components/biyoo/corner-bounty-button";
 import { LivingWall } from "@/components/background/site-wall";
 import { identity } from "@/content";
 import "@/styles/globals.css";
+
+const GlobalBiyoo = dynamic(
+  () => import("@/components/biyoo/puppet/global-biyoo").then((m) => m.GlobalBiyoo)
+);
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -146,6 +151,7 @@ export default function RootLayout({
               <div className="mx-auto flex max-w-7xl items-center justify-between px-2.5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
                 <Link
                   href="/"
+                  data-biyoo-point
                   prefetch={false}
                   className={`${cinzel.className} font-display text-xs sm:text-base font-bold tracking-tight sm:tracking-wider text-feather hover:text-star transition-colors shrink-0`}
                 >
@@ -173,6 +179,7 @@ export default function RootLayout({
                   {/* Skip to contact link (desktop only to prevent tablet header overflow) */}
                   <Link
                     href="/#contact"
+                    data-biyoo-point
                     prefetch={false}
                     className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
                   >
@@ -182,6 +189,7 @@ export default function RootLayout({
                   {/* Skip to plain version link - visible on first paint, keyboard focusable */}
                   <Link
                     href="/skip"
+                    data-biyoo-point
                     prefetch={false}
                     className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1 shrink-0"
                   >
@@ -197,8 +205,8 @@ export default function RootLayout({
             {/* Persistent Corner Bounty Button */}
             <CornerBountyButton />
 
-            {/* Persistent Fixed Bottom-Left Companion Biyoo */}
-            <BiyooCompanion />
+            {/* Step 5: Persistent Fixed Bottom-Right Global Biyoo Puppet */}
+            <GlobalBiyoo />
 
             {/* Non-blocking Sound Permission Prompt ("Biyoo wants to say hi. Turn sound on?") */}
             <SoundPermissionPrompt />

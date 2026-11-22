@@ -38,17 +38,29 @@ export function DeferredWorlds() {
   return (
     <>
       {/* Act 3 Flagship World: Edge-Cloud Orchestrator */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}>
+      <div
+        data-biyoo-linger
+        data-biyoo-line="edge orchestration at scale!"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}
+      >
         <EdgeCloudWorld />
       </div>
 
       {/* Act 3 Flagship World: Ratify (Raft) */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}>
+      <div
+        data-biyoo-linger
+        data-biyoo-line="distributed consensus is tricky, huh?"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}
+      >
         <RaftWorld />
       </div>
 
       {/* Act 3 Flagship World: iac-verifier (Z3) */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}>
+      <div
+        data-biyoo-linger
+        data-biyoo-line="formal verification keeps things airtight"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}
+      >
         <Z3World />
       </div>
 

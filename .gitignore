@@ -76,3 +76,19 @@ docs/proofs/screens/
 docs/proofs/*lighthouse*run*.json
 docs/proofs/*-run[0-9]*.json
 
+# Biyoo scratch, source art, test scripts and proof screenshots
+scratch/
+artwork/
+scripts/test_*.js
+scripts/test_*.mjs
+public/art/biyoo/Gemini_Generated_Image_*
+public/art/biyoo/source/
+public/art/biyoo/*.png.png
+public/biyoo/*.png
+public/biyoo/parts/assembly-*.png
+public/biyoo/parts/face-zone-overlay.png
+public/biyoo/proofs/
+public/biyoo/reference/
+public/biyoo/states/
+
+

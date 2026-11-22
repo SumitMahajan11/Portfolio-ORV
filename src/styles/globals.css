@@ -209,14 +209,42 @@ button,
   animation: bounty-wiggle 750ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Sound Permission Prompt position: clear bottom-left Biyoo and speech bubble */
+/* Sound Permission Prompt position: compact docked bar at bottom-left on mobile/tablet, bottom-right above Biyoo on desktop */
 .sound-permission-prompt-pos {
-  bottom: calc(12.75rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  left: calc(1rem + env(safe-area-inset-left, 0px));
+  right: auto;
+  max-width: calc(100vw - 96px - 40px);
+}
+
+@media (min-width: 1024px) {
+  .sound-permission-prompt-pos {
+    left: auto;
+    right: 1.5rem;
+    bottom: calc(15.5rem + env(safe-area-inset-bottom, 0px));
+    max-width: 24rem;
+  }
+}
+
+/* Step 6: Biyoo Q&A Panel Docking - mobile bottom sheet docked above Biyoo row (max 45vh), desktop anchored above bubble row */
+.biyoo-qa-panel-dock {
+  position: fixed;
+  z-index: 50;
+  right: calc(1rem + env(safe-area-inset-right, 0px));
+  bottom: calc(max(1rem, env(keyboard-inset-height, 0px)) + env(safe-area-inset-bottom, 0px) + 138px);
+  width: calc(100vw - 2rem);
+  max-width: 340px;
+  max-height: 45vh;
+  overflow-y: auto;
 }
 
 @media (min-width: 640px) {
-  .sound-permission-prompt-pos {
-    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  .biyoo-qa-panel-dock {
+    right: calc(1.5rem + env(safe-area-inset-right, 0px));
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px) + 215px);
+    width: 320px;
+    max-width: 320px;
+    max-height: calc(100vh - 435px);
   }
 }
 
