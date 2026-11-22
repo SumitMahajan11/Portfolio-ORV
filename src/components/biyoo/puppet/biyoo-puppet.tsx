@@ -95,7 +95,7 @@ export const BiyooPuppet: React.FC<BiyooPuppetProps> = ({
         <div
           data-testid="biyoo-speech-bubble"
           onClick={onDismissBubble}
-          className={`absolute z-30 cursor-pointer pointer-events-auto select-none px-3.5 py-1.5 rounded-2xl bg-[#070e1d]/95 border border-cyan-400/80 shadow-2xl backdrop-blur-md flex items-center justify-center gap-1.5 group transition-all ${
+          className={`biyoo-bubble-dock absolute z-30 cursor-pointer pointer-events-auto select-none px-3.5 py-1.5 rounded-2xl bg-[#070e1d]/95 border border-cyan-400/80 shadow-2xl backdrop-blur-md flex items-center justify-center gap-1.5 group transition-all ${
             bubbleAlign === 'right'
               ? 'bottom-[102%] right-0'
               : bubbleAlign === 'left'

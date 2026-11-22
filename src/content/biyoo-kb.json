@@ -108,7 +108,7 @@
     "sourceHref": "#edge-cloud"
   },
   {
-    "id": "ratify-raft",
+    "id": "ratify-consensus",
     "questions": [
       "What is Ratify?",
       "Tell me about the Raft project",
@@ -181,7 +181,7 @@
       "smt solver",
       "terraform"
     ],
-    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it detected a multi-hop privilege escalation path through chained IAM roles.",
+    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it found a privilege-escalation path in the recorded run.",
     "sourceLabel": "iac-verifier Scenario",
     "sourceHref": "#iac-verifier"
   },
@@ -338,7 +338,7 @@
   {
     "id": "biyoo-mascot",
     "questions": [
-      "Who are you?",
+      "Introduce yourself to the reader",
       "Who is Biyoo?",
       "What is Biyoo?",
       "What do you do here?",
@@ -346,7 +346,7 @@
       "What can you do?",
       "What is this small fluffy companion creature?",
       "Why is there a mascot guiding this portfolio?",
-      "Who are you and what do you do?"
+      "Tell me about your role and identity"
     ],
     "keywords": [
       "biyoo",
@@ -355,7 +355,7 @@
       "companion",
       "narrator",
       "orv",
-      "who are you",
+      "identity",
       "what is biyoo",
       "helper",
       "what is biyoo's role in this archive?",

@@ -135,8 +135,8 @@ async def run_playwright_test(port):
 
         answer_text = await page.locator('[data-testid="biyoo-qa-answer"] p').text_content()
 
-        # Ask "where did he go to college"
-        await input_el.fill('where did he go to college')
+        # Ask "which college is this person at"
+        await input_el.fill('which college is this person at')
         await input_el.press('Enter')
         await page.wait_for_timeout(300)
         await page.wait_for_selector('[data-testid="biyoo-qa-answer"]', timeout=5000)

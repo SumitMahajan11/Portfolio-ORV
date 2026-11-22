@@ -61,7 +61,8 @@ export const STOP_WORDS = new Set([
   'up', 'very', 'what', 'when', 'where', 'which', 'while', 'whom',
   'why', 'with', 's', 'd', 'm', 't', 're', 've', 'll',
   'thing', 'things', 'person', 'one', 'line', 'actually', 'use', 'using',
-  'built', 'build', 'go', 'went', 'good', 'tell', 'give', 'show', 'see', 'many', 'much', 'work'
+  'built', 'build', 'go', 'went', 'good', 'tell', 'give', 'show', 'see', 'many', 'much', 'work',
+  'solve', 'solves', 'solving'
 ]);
 
 // Synonym Canonicalization Map
@@ -148,7 +149,7 @@ export const SYNONYM_MAP: Record<string, string> = {
 // Signature terms for domain specificity weighting
 export const ENTRY_PRIMARY_TERMS: Record<string, Set<string>> = {
   'iac-verifier-z3': new Set(['z3', 'terraform', 'checker', 'smt', 'iam']),
-  'ratify-raft': new Set(['raft', 'ratify', 'consensus']),
+  'ratify-consensus': new Set(['raft', 'ratify', 'consensus']),
   'edge-cloud': new Set(['carbon', 'emissions', 'orchestrator', 'routing']),
   'current-status': new Set(['college', 'university', 'student', 'pune', 'graduating']),
   'strongest-evidence': new Set(['receipts', 'evidence', 'prove', 'verify', 'claims']),

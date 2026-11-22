@@ -258,11 +258,64 @@ button,
   }
 }
 
-/* Step 6 round 3: Below 700px viewport height, shrink Biyoo to 72px to avoid CTA overlap */
+/* Step 6 round 4: Small phones (<700px tall) non-overlapping dock layout */
 @media (max-height: 699px) {
+  [data-testid="global-biyoo-container"] {
+    right: calc(0.5rem + env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
   [data-biyoo-puppet="global"] {
-    width: 72px !important;
-    height: 72px !important;
+    width: 64px !important;
+    height: 64px !important;
+  }
+
+  .biyoo-controls-cluster {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: flex-end !important;
+    gap: 6px !important;
+  }
+
+  #biyoo-quiet-toggle {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    justify-content: center !important;
+    border-radius: 9999px !important;
+  }
+
+  .biyoo-toggle-text {
+    display: none !important;
+  }
+
+  .biyoo-bubble-dock {
+    position: absolute !important;
+    right: calc(100% + 6px) !important;
+    bottom: 34px !important;
+    top: auto !important;
+    left: auto !important;
+    max-width: 135px !important;
+    padding: 3px 6px !important;
+    border-radius: 10px !important;
+  }
+
+  .biyoo-bubble-dock > div:last-child {
+    display: none !important;
+  }
+
+  .sound-permission-prompt-pos {
+    left: calc(0.5rem + env(safe-area-inset-left, 0px)) !important;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
+    max-width: 140px !important;
+    padding: 3px 6px !important;
+  }
+
+  .sound-permission-prompt-pos button {
+    padding: 2px 6px !important;
+    font-size: 11px !important;
   }
 }
 
