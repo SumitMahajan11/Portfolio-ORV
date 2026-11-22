@@ -149,7 +149,7 @@ export const SYNONYM_MAP: Record<string, string> = {
 // Signature terms for domain specificity weighting
 export const ENTRY_PRIMARY_TERMS: Record<string, Set<string>> = {
   'iac-verifier-z3': new Set(['z3', 'terraform', 'checker', 'smt', 'iam']),
-  'ratify-consensus': new Set(['raft', 'ratify', 'consensus']),
+  'ratify-raft': new Set(['raft', 'ratify', 'consensus']),
   'edge-cloud': new Set(['carbon', 'emissions', 'orchestrator', 'routing']),
   'current-status': new Set(['college', 'university', 'student', 'pune', 'graduating']),
   'strongest-evidence': new Set(['receipts', 'evidence', 'prove', 'verify', 'claims']),

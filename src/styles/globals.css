@@ -258,8 +258,24 @@ button,
   }
 }
 
-/* Step 6 round 4: Small phones (<700px tall) non-overlapping dock layout */
-@media (max-height: 699px) {
+/* Mobile speech bubble docking: dock left of Biyoo's head to clear hero CTAs on all mobile viewports */
+@media (max-width: 767px) {
+  .biyoo-bubble-dock {
+    position: absolute !important;
+    right: calc(100% + 8px) !important;
+    top: 6px !important;
+    bottom: auto !important;
+    left: auto !important;
+    max-width: 140px !important;
+  }
+
+  .biyoo-bubble-dock > div:last-child {
+    display: none !important;
+  }
+}
+
+/* Step 6 round 4/5: Small phones (<700px tall and <768px wide) non-overlapping dock layout */
+@media (max-height: 699px) and (max-width: 767px) {
   [data-testid="global-biyoo-container"] {
     right: calc(0.5rem + env(safe-area-inset-right, 0px)) !important;
     bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
@@ -316,6 +332,59 @@ button,
   .sound-permission-prompt-pos button {
     padding: 2px 6px !important;
     font-size: 11px !important;
+  }
+}
+
+/* Step 6 round 5: Ultra-compact phones (<=320px width / <=580px height) spacing */
+@media (max-height: 580px) and (max-width: 359px) {
+  #hero-scene {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  #hero-scene > div:first-child {
+    display: none !important;
+  }
+
+  #hero-scene .my-auto {
+    margin-top: 0 !important;
+    margin-bottom: auto !important;
+  }
+
+  #hero-scene h1 {
+    font-size: 2.25rem !important;
+    line-height: 2.5rem !important;
+  }
+
+  #hero-scene p {
+    margin-top: 0.35rem !important;
+  }
+
+  #hero-scene .max-w-md {
+    margin-top: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  [data-testid="global-biyoo-container"] {
+    right: calc(0.25rem + env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  [data-biyoo-puppet="global"] {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .biyoo-bubble-dock {
+    max-width: 120px !important;
+    bottom: 28px !important;
+  }
+
+  .sound-permission-prompt-pos {
+    left: calc(0.25rem + env(safe-area-inset-left, 0px)) !important;
+    bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px)) !important;
+    max-width: 120px !important;
+    padding: 2px 4px !important;
   }
 }
 

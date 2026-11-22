@@ -4,11 +4,10 @@
     "questions": [
       "Who is Sumit?",
       "Tell me about Sumit",
-      "Tell me about the author",
       "Who created this portfolio?",
       "Who is the author?",
       "Who built this website?",
-      "What is Sumit's technical background and profile?",
+      "What is Sumit's technical profile?",
       "Can you give an overview of the author?",
       "What is the background of the creator?"
     ],
@@ -21,13 +20,9 @@
       "engineer",
       "protagonist",
       "who",
-      "who is the portfolio author?",
-      "tell me about the creator of this site",
-      "background",
       "profile",
       "bio",
-      "overview",
-      "sumit background"
+      "overview"
     ],
     "answer": "Sumit Mahajan is a computer science undergraduate and systems builder specializing in distributed consensus and formal verification. He builds systems like Ratify and iac-verifier with verifiable correctness.",
     "sourceLabel": "Identity / Hero",
@@ -36,15 +31,12 @@
   {
     "id": "current-status",
     "questions": [
-      "What is his current role?",
       "Where does Sumit study?",
-      "What year is Sumit in?",
-      "What college does Sumit attend?",
+      "What is his current role?",
+      "What degree is Sumit pursuing?",
       "When does he graduate?",
-      "What is his university enrollment and study status?",
-      "Is he currently a university student or employed in industry?",
-      "Which engineering institute in Pune does he attend?",
-      "Which college or university campus does he go to?"
+      "What is his university enrollment?",
+      "Which engineering institute in Pune does he attend?"
     ],
     "keywords": [
       "education",
@@ -57,15 +49,11 @@
       "degree",
       "graduation",
       "2028",
-      "which university in pune does sumit attend?",
-      "what year of college is he currently in?",
       "enrollment",
       "institution",
       "undergraduate",
       "employed",
-      "student or working",
-      "studies",
-      "college"
+      "studies"
     ],
     "answer": "Sumit is a 3rd-year Computer Science Engineering undergrad at Pimpri Chinchwad University in Pune, graduating in March 2028. He is actively preparing for GSoC 2027 targeting CNCF, Kubeflow, or KubeVirt.",
     "sourceLabel": "Identity",
@@ -79,9 +67,9 @@
       "What does the Edge-Cloud project do?",
       "How does carbon-aware routing work?",
       "Explain the carbon-aware routing project",
-      "How does the carbon intensity workload scheduler operate?",
+      "How does the carbon intensity scheduler operate?",
       "Give an explanation of the edge cloud routing model",
-      "Explain the edge cloud orchestrator system"
+      "Explain the distributed routing system"
     ],
     "keywords": [
       "edge-cloud",
@@ -92,33 +80,24 @@
       "edge",
       "cloud",
       "green",
-      "how does the carbon aware workload routing work?",
-      "what is the edge cloud orchestrator project?",
-      "emissions",
       "carbon",
       "scheduler",
-      "workload",
-      "routing",
-      "green",
-      "carbon emissions",
-      "edge cloud"
+      "emissions"
     ],
     "answer": "Edge-Cloud Orchestrator is a flagship project exploring carbon-aware workload routing across distributed edge and cloud infrastructure. Its interactive scenario visualizes routing decisions based on regional carbon intensity.",
     "sourceLabel": "Edge-Cloud Scenario",
     "sourceHref": "#edge-cloud"
   },
   {
-    "id": "ratify-consensus",
+    "id": "ratify-raft",
     "questions": [
-      "What is Ratify?",
       "Tell me about the Raft project",
       "How is the Raft consensus tested?",
       "How does Ratify work?",
       "What is the consensus project?",
       "What are the proofs for Ratify?",
-      "Did he implement the Raft consensus protocol in Rust?",
-      "How was the consensus implementation model checked?",
-      "Has he built a raft consensus engine?"
+      "Did he implement the Raft protocol in Rust?",
+      "How was the consensus implementation verified?"
     ],
     "keywords": [
       "ratify",
@@ -130,15 +109,9 @@
       "linearizability",
       "fuzzer",
       "ucb1",
-      "what consensus protocol does ratify implement?",
-      "tell me about the raft implementation in rust",
-      "consensus",
-      "model checking",
-      "model checked",
       "protocol",
-      "linearizability",
-      "raft consensus",
-      "built raft"
+      "linearizable",
+      "algorithm"
     ],
     "answer": "Ratify is a from-scratch Rust implementation of the Raft consensus algorithm with 68 passing tests, TLA+ model checking, and Porcupine linearizability verification. It reproduces 4 historical bug classes and is designed as a 3-node correctness project rather than a performance benchmark.",
     "sourceLabel": "Ratify Scenario",
@@ -155,9 +128,7 @@
       "Explain the formal verification project",
       "What security properties does the Terraform analyzer check?",
       "How does the automated reachability engine verify infrastructure?",
-      "What did the recorded SMT verification run demonstrate?",
-      "How does the terraform checker find privilege escalation?",
-      "How many tests verify the z3 reachability tool?"
+      "What did the recorded SMT verification run demonstrate?"
     ],
     "keywords": [
       "iac-verifier",
@@ -170,18 +141,13 @@
       "checkov",
       "tfsec",
       "proof",
-      "how does the z3 formal verification work?",
-      "tell me about the terraform iam verifier",
       "analyzer",
       "checker",
-      "terraform checker",
       "privilege escalation",
-      "z3 project",
       "invariants",
-      "smt solver",
-      "terraform"
+      "smt solver"
     ],
-    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it found a privilege-escalation path in the recorded run.",
+    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it found a privilege-escalation path.",
     "sourceLabel": "iac-verifier Scenario",
     "sourceHref": "#iac-verifier"
   },
@@ -196,8 +162,7 @@
       "How are the projects verified?",
       "What test artifacts and proofs substantiate the claims?",
       "Where can an evaluator verify the project receipts?",
-      "How can an engineer verify his technical claims?",
-      "What evidence proves these projects actually work?"
+      "How can an engineer verify technical claims?"
     ],
     "keywords": [
       "evidence",
@@ -210,15 +175,10 @@
       "porcupine",
       "z3",
       "record",
-      "where can i see the proof certificates?",
-      "how are the test suites verified on this site?",
       "claims",
-      "receipts",
-      "validation",
-      "verification",
       "reproduce",
-      "verify claims",
-      "proves projects"
+      "artifacts",
+      "correctness"
     ],
     "answer": "The strongest evidence includes 68 passing tests with TLA+ model checking and Porcupine linearizability verification for Ratify, alongside 276 tests passing in the recorded run on 2026-11-08 for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
     "sourceLabel": "Reader's Record",
@@ -234,8 +194,7 @@
       "What are his technical skills?",
       "Which programming languages and systems tools does he specialize in?",
       "What technical skills define his engineering focus?",
-      "What languages does he write code in?",
-      "What areas is he technically proficient in?"
+      "Which core development languages does he use?"
     ],
     "keywords": [
       "tech",
@@ -248,16 +207,12 @@
       "distributed systems",
       "terraform",
       "kubernetes",
-      "what are sumit's core technical skills?",
-      "what tech stack does he specialize in?",
       "languages",
-      "skills",
       "capabilities",
       "specialization",
       "tools",
-      "technically",
-      "code languages",
-      "technically good"
+      "technical",
+      "coding"
     ],
     "answer": "Sumit focuses on distributed systems, formal verification, and cloud infrastructure using Rust, TLA+, Z3/SMT solvers, and Terraform. His work prioritizes formal correctness and verification over unverified performance claims.",
     "sourceLabel": "Skills & Tech Focus",
@@ -266,14 +221,12 @@
   {
     "id": "contact",
     "questions": [
-      "How can I contact Sumit?",
       "How to reach him?",
       "Where can I reach him?",
       "Where can I find his contact info?",
-      "How do I message Sumit?",
-      "Where can an engineer send an inquiry or message?",
+      "Where can an engineer send an inquiry?",
       "What email or correspondence options are available?",
-      "How do I send him an email or message?"
+      "How do I send an email or message?"
     ],
     "keywords": [
       "contact",
@@ -285,14 +238,10 @@
       "github",
       "form",
       "touch",
-      "how do i get in touch with sumit?",
-      "where is the form to message him?",
       "inquiry",
       "reach out",
       "email address",
-      "send message",
-      "message him",
-      "email"
+      "send message"
     ],
     "answer": "You can reach Sumit directly using the contact form at the bottom of the page or through his GitHub profile. Direct phone and email are not publicly displayed to protect personal privacy.",
     "sourceLabel": "Contact Section",
@@ -306,9 +255,8 @@
       "Is he targeting GSoC?",
       "Is he looking for internships or GSoC?",
       "What kind of opportunities is he seeking?",
-      "What open source programs or mentorships is he pursuing next?",
-      "What are his upcoming open source aspirations?",
-      "What programs is he applying for next year?"
+      "What open source programs is he pursuing next?",
+      "What are his upcoming open source aspirations?"
     ],
     "keywords": [
       "looking",
@@ -321,15 +269,11 @@
       "kubevirt",
       "opportunities",
       "future",
-      "which organizations is he targeting for gsoc 2027?",
-      "what kind of open source work is he seeking?",
       "mentorship",
       "programs",
       "applying",
       "aspirations",
-      "future plans",
-      "mentorship programs",
-      "next year"
+      "future plans"
     ],
     "answer": "Sumit is targeting GSoC 2027 in CNCF, Kubeflow, or KubeVirt and looking for open-source systems engineering opportunities. He aims to contribute to distributed systems, formal verification, and infrastructure tooling.",
     "sourceLabel": "Identity / Goals",
@@ -344,7 +288,6 @@
       "What do you do here?",
       "Why are you here?",
       "What can you do?",
-      "What is this small fluffy companion creature?",
       "Why is there a mascot guiding this portfolio?",
       "Tell me about your role and identity"
     ],
@@ -358,14 +301,10 @@
       "identity",
       "what is biyoo",
       "helper",
-      "what is biyoo's role in this archive?",
-      "who is the dokkaebi mascot accompanying the reader?",
       "fluffy",
       "creature",
-      "companion",
       "guide",
-      "mascot",
-      "fluffy creature"
+      "dokkaebi"
     ],
     "answer": "I am Biyoo, the archival companion and narrator guiding readers through Sumit's portfolio. I monitor your reading pace, react to project evidence, and help answer questions about the work here.",
     "sourceLabel": "Mascot Companion",
