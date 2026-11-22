@@ -36,6 +36,18 @@ export function GlobalBiyoo() {
     }
   }, [engine]);
 
+  // Sync Q&A panel open state to body class so sound prompt and other elements can react cleanly
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.body.classList.toggle('biyoo-qa-open', isQaOpen);
+    }
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('biyoo-qa-open');
+      }
+    };
+  }, [isQaOpen]);
+
   const handleOpenQa = useCallback(() => {
     setHasEverOpened(true);
     setIsQaOpen(true);

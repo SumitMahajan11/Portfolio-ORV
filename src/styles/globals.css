@@ -226,6 +226,12 @@ button,
   }
 }
 
+/* Step 6 round 6: When Biyoo Q&A panel is open, hide the sound prompt (hidden, not dismissed; returns on close) */
+body:has([data-testid="biyoo-qa-panel"]) #sound-permission-prompt,
+body.biyoo-qa-open #sound-permission-prompt {
+  display: none !important;
+}
+
 /* Step 6: Biyoo Q&A Panel Docking - max-height 40vh on <1024px with internal scroll; desktop anchored above bubble row */
 .biyoo-qa-panel-dock {
   position: fixed;
@@ -258,8 +264,37 @@ button,
   }
 }
 
+@media (min-width: 1024px) and (max-height: 699px) {
+  .biyoo-qa-panel-dock {
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px) + 185px) !important;
+    max-height: calc(100vh - 460px) !important;
+  }
+}
+
 /* Mobile speech bubble docking: dock left of Biyoo's head to clear hero CTAs on all mobile viewports */
 @media (max-width: 767px) {
+  #hero-scene {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  #hero-scene > div:first-child {
+    height: 1rem !important;
+  }
+
+  #hero-scene .max-w-md {
+    margin-top: 1rem !important;
+    gap: 0.75rem !important;
+  }
+
+  #hero-scene > div:last-child {
+    visibility: hidden !important;
+  }
+
+  #hero-scene > div:last-child * {
+    display: none !important;
+  }
+
   .biyoo-bubble-dock {
     position: absolute !important;
     right: calc(100% + 8px) !important;
