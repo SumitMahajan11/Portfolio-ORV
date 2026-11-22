@@ -24,7 +24,7 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
     <section
       id="hero-scene"
       aria-label="Sumit Mahajan Portfolio Archive"
-      className={`relative w-full min-h-[100dvh] flex flex-col justify-between items-center text-center px-4 py-10 sm:py-16 bg-transparent select-none z-10 ${className}`}
+      className={`relative w-full min-h-[100dvh] flex flex-col justify-between items-center text-center px-4 py-10 sm:py-16 bg-transparent select-none z-[45] ${className}`}
     >
       {/* Top spacer for vertical balance below header */}
       <div className="w-full h-8 sm:h-12 pointer-events-none" aria-hidden="true" />
@@ -44,11 +44,11 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
         </p>
 
         {/* Action CTAs: >= 44px touch targets, visible focus rings, logical tab order */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 sm:mt-10 w-full max-w-md mx-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 sm:mt-10 w-full max-w-md mx-auto relative z-50">
           <Link
             href="#scenario-select"
             data-biyoo-point
-            className="w-full sm:w-auto min-h-[44px] h-[44px] inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-star text-ink font-mono font-medium text-sm tracking-wide transition-colors hover:bg-star/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-star focus-visible:ring-offset-2 focus-visible:ring-offset-void shadow-lg"
+            className="relative z-50 w-full sm:w-auto min-h-[44px] h-[44px] inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-star text-ink font-mono font-medium text-sm tracking-wide transition-colors hover:bg-star/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-star focus-visible:ring-offset-2 focus-visible:ring-offset-void shadow-lg"
           >
             See the projects
           </Link>
@@ -56,7 +56,7 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
           <Link
             href="#readers-record"
             data-biyoo-point
-            className="w-full sm:w-auto min-h-[44px] h-[44px] inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-line bg-ink/80 text-feather font-mono font-medium text-sm tracking-wide transition-colors hover:border-star hover:text-star focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-star focus-visible:ring-offset-2 focus-visible:ring-offset-void shadow-lg"
+            className="relative z-50 w-full sm:w-auto min-h-[44px] h-[44px] inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-line bg-ink/80 text-feather font-mono font-medium text-sm tracking-wide transition-colors hover:border-star hover:text-star focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-star focus-visible:ring-offset-2 focus-visible:ring-offset-void shadow-lg"
           >
             Read the evidence
           </Link>

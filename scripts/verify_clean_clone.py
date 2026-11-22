@@ -135,6 +135,13 @@ async def run_playwright_test(port):
 
         answer_text = await page.locator('[data-testid="biyoo-qa-answer"] p').text_content()
 
+        # Ask "where did he go to college"
+        await input_el.fill('where did he go to college')
+        await input_el.press('Enter')
+        await page.wait_for_timeout(300)
+        await page.wait_for_selector('[data-testid="biyoo-qa-answer"]', timeout=5000)
+        answer_college = await page.locator('[data-testid="biyoo-qa-answer"] p').text_content()
+
         print("\n--- Playwright Verification Results ---")
         print(f"1. 4xx/5xx HTTP Requests Count: {len(failed_requests)}")
         if failed_requests:
@@ -158,6 +165,11 @@ async def run_playwright_test(port):
         print(f"   Answer displayed: \"{answer_text.strip()}\"")
         assert "Sumit Mahajan" in answer_text, f"Unexpected answer: {answer_text}"
         print("   PASS: Q&A correctly opened and answered 'Who is Sumit?'.")
+
+        print(f"   Query: 'where did he go to college'")
+        print(f"   Answer displayed: \"{answer_college.strip()}\"")
+        assert "Pune" in answer_college or "CSE" in answer_college, f"Unexpected college answer: {answer_college}"
+        print("   PASS: Q&A correctly answered 'where did he go to college'.")
 
         await browser.close()
 

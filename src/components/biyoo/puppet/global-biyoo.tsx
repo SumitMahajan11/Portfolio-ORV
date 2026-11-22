@@ -73,7 +73,7 @@ export function GlobalBiyoo() {
     <aside
       aria-label="Biyoo Companion Mascot"
       data-testid="global-biyoo-container"
-      className="fixed z-40 select-none pointer-events-none flex flex-col items-end"
+      className={`fixed ${isQaOpen ? 'z-50' : 'z-40'} select-none pointer-events-none flex flex-col items-end`}
       style={{
         right: 'calc(1rem + env(safe-area-inset-right, 0px))',
         bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',

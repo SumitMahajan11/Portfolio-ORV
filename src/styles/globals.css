@@ -226,7 +226,7 @@ button,
   }
 }
 
-/* Step 6: Biyoo Q&A Panel Docking - mobile bottom sheet docked above Biyoo row (max 45vh), desktop anchored above bubble row */
+/* Step 6: Biyoo Q&A Panel Docking - max-height 40vh on <1024px with internal scroll; desktop anchored above bubble row */
 .biyoo-qa-panel-dock {
   position: fixed;
   z-index: 50;
@@ -234,17 +234,35 @@ button,
   bottom: calc(max(1rem, env(keyboard-inset-height, 0px)) + env(safe-area-inset-bottom, 0px) + 138px);
   width: calc(100vw - 2rem);
   max-width: 340px;
-  max-height: 45vh;
+  max-height: 40vh;
   overflow-y: auto;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (max-width: 1023px) {
   .biyoo-qa-panel-dock {
     right: calc(1.5rem + env(safe-area-inset-right, 0px));
     bottom: calc(1rem + env(safe-area-inset-bottom, 0px) + 215px);
     width: 320px;
     max-width: 320px;
+    max-height: 40vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .biyoo-qa-panel-dock {
+    right: calc(1.5rem + env(safe-area-inset-right, 0px));
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px) + 215px);
+    width: 250px;
+    max-width: 250px;
     max-height: calc(100vh - 435px);
+  }
+}
+
+/* Step 6 round 3: Below 700px viewport height, shrink Biyoo to 72px to avoid CTA overlap */
+@media (max-height: 699px) {
+  [data-biyoo-puppet="global"] {
+    width: 72px !important;
+    height: 72px !important;
   }
 }
 

@@ -30,23 +30,39 @@ async def capture_and_export():
         await page_desk.screenshot(path=desk_path)
         await page_desk.close()
         
-        # 2. Mobile (390x844) bottom sheet
-        page_mob = await browser.new_page(viewport={'width': 390, 'height': 844})
-        await page_mob.goto('http://localhost:3000', wait_until='networkidle')
-        await page_mob.wait_for_selector('[data-testid="biyoo-live-puppet"]')
-        hitbox_mob = page_mob.locator('[data-testid="biyoo-silhouette-hitbox"]')
-        await hitbox_mob.dispatch_event('click')
-        await page_mob.wait_for_selector('[data-testid="biyoo-qa-panel"]')
-        input_mob = page_mob.locator('#biyoo-question-input')
-        await input_mob.fill('What is Ratify?')
-        await input_mob.press('Enter')
-        await page_mob.wait_for_selector('[data-testid="biyoo-qa-answer"]')
-        await page_mob.wait_for_timeout(400)
-        mob_path = os.path.join(PUBLIC_DIR, "step6-panel-mobile-sheet.png")
-        await page_mob.screenshot(path=mob_path)
-        await page_mob.close()
+        # 2. Mobile (360x640) with panel open
+        page_360 = await browser.new_page(viewport={'width': 360, 'height': 640})
+        await page_360.goto('http://localhost:3000', wait_until='networkidle')
+        await page_360.wait_for_selector('[data-testid="biyoo-live-puppet"]')
+        hitbox_360 = page_360.locator('[data-testid="biyoo-silhouette-hitbox"]')
+        await hitbox_360.dispatch_event('click')
+        await page_360.wait_for_selector('[data-testid="biyoo-qa-panel"]')
+        input_360 = page_360.locator('#biyoo-question-input')
+        await input_360.fill('What is Ratify?')
+        await input_360.press('Enter')
+        await page_360.wait_for_selector('[data-testid="biyoo-qa-answer"]')
+        await page_360.wait_for_timeout(400)
+        path_360 = os.path.join(PUBLIC_DIR, "step6-panel-360x640.png")
+        await page_360.screenshot(path=path_360)
+        await page_360.close()
+
+        # 3. Mobile (390x844) with panel open
+        page_390 = await browser.new_page(viewport={'width': 390, 'height': 844})
+        await page_390.goto('http://localhost:3000', wait_until='networkidle')
+        await page_390.wait_for_selector('[data-testid="biyoo-live-puppet"]')
+        hitbox_390 = page_390.locator('[data-testid="biyoo-silhouette-hitbox"]')
+        await hitbox_390.dispatch_event('click')
+        await page_390.wait_for_selector('[data-testid="biyoo-qa-panel"]')
+        input_390 = page_390.locator('#biyoo-question-input')
+        await input_390.fill('What is Ratify?')
+        await input_390.press('Enter')
+        await page_390.wait_for_selector('[data-testid="biyoo-qa-answer"]')
+        await page_390.wait_for_timeout(400)
+        path_390 = os.path.join(PUBLIC_DIR, "step6-panel-390x844.png")
+        await page_390.screenshot(path=path_390)
+        await page_390.close()
         
-        # 3. Fallback state ("No Direct Receipt")
+        # 4. Fallback state ("No Direct Receipt")
         page_fb = await browser.new_page(viewport={'width': 1440, 'height': 900})
         await page_fb.goto('http://localhost:3000', wait_until='networkidle')
         await page_fb.wait_for_selector('[data-testid="biyoo-live-puppet"]')
@@ -64,32 +80,36 @@ async def capture_and_export():
         
         await browser.close()
         
-    print("Generating contact sheet...")
+    print("Generating 4-panel contact sheet...")
     img_desk = Image.open(desk_path)
-    img_mob = Image.open(mob_path)
+    img_360 = Image.open(path_360)
+    img_390 = Image.open(path_390)
     img_fb = Image.open(fb_path)
     
     # Scale to uniform heights for contact sheet
-    target_h = 700
+    target_h = 600
     w_desk = int(img_desk.width * (target_h / img_desk.height))
     desk_resized = img_desk.resize((w_desk, target_h), Image.Resampling.LANCZOS)
     
-    w_mob = int(img_mob.width * (target_h / img_mob.height))
-    mob_resized = img_mob.resize((w_mob, target_h), Image.Resampling.LANCZOS)
+    w_360 = int(img_360.width * (target_h / img_360.height))
+    resized_360 = img_360.resize((w_360, target_h), Image.Resampling.LANCZOS)
+
+    w_390 = int(img_390.width * (target_h / img_390.height))
+    resized_390 = img_390.resize((w_390, target_h), Image.Resampling.LANCZOS)
     
     w_fb = int(img_fb.width * (target_h / img_fb.height))
     fb_resized = img_fb.resize((w_fb, target_h), Image.Resampling.LANCZOS)
     
-    pad = 20
-    header_h = 60
-    total_w = w_desk + w_mob + w_fb + pad * 4
+    pad = 16
+    header_h = 50
+    total_w = w_desk + w_360 + w_390 + w_fb + pad * 5
     total_h = target_h + header_h + pad * 2
     
     sheet = Image.new("RGBA", (total_w, total_h), (8, 12, 20, 255))
     draw = ImageDraw.Draw(sheet)
     
     # Title
-    draw.text((pad, 16), "STEP 6 FINAL: BIYOO LOCAL Q&A (DESKTOP ANSWER / MOBILE BOTTOM SHEET / FALLBACK RECEIPT)", fill=(94, 225, 230, 255))
+    draw.text((pad, 14), "STEP 6 ROUND 3: BIYOO LOCAL Q&A (1. DESKTOP ANSWER | 2. 360x640 SHEET | 3. 390x844 SHEET | 4. FALLBACK RECEIPT)", fill=(94, 225, 230, 255))
     
     # Paste panels
     x_offset = pad
@@ -99,17 +119,23 @@ async def capture_and_export():
     draw.rectangle([x_offset, header_h, x_offset + w_desk, header_h + target_h], outline=(94, 225, 230, 180), width=2)
     draw.text((x_offset + 10, header_h + 10), "1. Desktop (1440x900) - Answered ('Who is Sumit?')", fill=(255, 255, 255, 220))
     x_offset += w_desk + pad
+
+    # Panel 2: 360x640 Panel Open
+    sheet.paste(resized_360, (x_offset, header_h))
+    draw.rectangle([x_offset, header_h, x_offset + w_360, header_h + target_h], outline=(94, 225, 230, 180), width=2)
+    draw.text((x_offset + 10, header_h + 10), "2. Mobile (360x640) - Panel Open", fill=(255, 255, 255, 220))
+    x_offset += w_360 + pad
     
-    # Panel 2: Mobile Bottom Sheet
-    sheet.paste(mob_resized, (x_offset, header_h))
-    draw.rectangle([x_offset, header_h, x_offset + w_mob, header_h + target_h], outline=(94, 225, 230, 180), width=2)
-    draw.text((x_offset + 10, header_h + 10), "2. Mobile (390x844) - Bottom Sheet", fill=(255, 255, 255, 220))
-    x_offset += w_mob + pad
+    # Panel 3: 390x844 Panel Open
+    sheet.paste(resized_390, (x_offset, header_h))
+    draw.rectangle([x_offset, header_h, x_offset + w_390, header_h + target_h], outline=(94, 225, 230, 180), width=2)
+    draw.text((x_offset + 10, header_h + 10), "3. Mobile (390x844) - Panel Open", fill=(255, 255, 255, 220))
+    x_offset += w_390 + pad
     
-    # Panel 3: Fallback State
+    # Panel 4: Fallback State
     sheet.paste(fb_resized, (x_offset, header_h))
     draw.rectangle([x_offset, header_h, x_offset + w_fb, header_h + target_h], outline=(245, 158, 11, 180), width=2)
-    draw.text((x_offset + 10, header_h + 10), "3. Fallback State ('No Direct Receipt')", fill=(245, 158, 11, 240))
+    draw.text((x_offset + 10, header_h + 10), "4. Fallback State ('No Direct Receipt')", fill=(245, 158, 11, 240))
     
     contact_path = os.path.join(PUBLIC_DIR, "step6-qa-contact-sheet.png")
     sheet.save(contact_path, "PNG")

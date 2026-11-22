@@ -48,7 +48,9 @@ export function BiyooQaModal({
     onExpressionChange('neutral');
     onClose();
     if (triggerElement && typeof triggerElement.focus === 'function') {
-      triggerElement.focus();
+      setTimeout(() => {
+        triggerElement.focus();
+      }, 10);
     }
   }, [onClose, onExpressionChange, triggerElement]);
 
@@ -124,6 +126,31 @@ export function BiyooQaModal({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleClose]);
+
+  // Outside click/tap to close (ignores clicks on the trigger element)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleOutside = (e: Event) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(target) &&
+        (!triggerElement || !triggerElement.contains(target))
+      ) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('pointerdown', handleOutside);
+    document.addEventListener('click', handleOutside);
+
+    return () => {
+      document.removeEventListener('pointerdown', handleOutside);
+      document.removeEventListener('click', handleOutside);
+    };
+  }, [isOpen, handleClose, triggerElement]);
 
   if (!isOpen) return null;
 
