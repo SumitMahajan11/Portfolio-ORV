@@ -82,6 +82,7 @@ scratch/
 artwork/
 scripts/test_*.js
 scripts/test_*.mjs
+scripts/*.patch
 public/art/biyoo/Gemini_Generated_Image_*
 public/art/biyoo/source/
 public/art/biyoo/*.png.png

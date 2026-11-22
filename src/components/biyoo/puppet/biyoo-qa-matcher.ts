@@ -35,45 +35,41 @@ export const FALLBACK_ANSWER = "I don't know that one, but the evidence section 
 export const FALLBACK_SOURCE_LABEL = "Evidence / Reader's Record";
 export const FALLBACK_SOURCE_HREF = "#readers-record";
 
-// Matching Constants - MIN_CONTENT_COVERAGE must not go below 0.50
-export const MIN_CONTENT_COVERAGE = 0.50;
+// Matching Constants - MIN_CONTENT_COVERAGE back to 0.60
+export const MIN_CONTENT_COVERAGE = 0.60;
 export const MIN_ACCEPT_SCORE = 0.80;
 export const MIN_SCORE_MARGIN = 0.10;
 export const ABSOLUTE_MARGIN = 0.30;
 export const PRIMARY_TERM_BOOST = 1.50;
 
-// Denied intents that must always fallback even if they reuse in-scope words
+// Denied intents: general intent CATEGORIES only with general variants
 export const DENY_PATTERNS = [
-  /\b(salary|pay|compensation|wage|wages|stipend|freelance|charges?|rates?|prices?)\b/i,
-  /\b(how many users|user count|customer count|customers|active users|stars?)\b/i,
-  /\b(in production|production use|used in production)\b/i,
-  /\b(benchmark speed|latency improvement|speed of raft|performance numbers|latency numbers|throughput)\b/i,
+  /\b(salary|pay|compensation|wage|wages|stipend|freelance|charges?|rates?|prices?|money|cost)\b/i,
   /\b(cgpa|gpa|marks|percentage|grades?)\b/i,
-  /\b(linkedin)\b/i,
-  /\b(resume|cv)\b/i,
-  /\b(ignore (your |all )?(rules|instructions)|reveal (your |the )?(system )?prompt|system prompt|pretend|bypass)\b/i,
-  // Required word-boundary anchored patterns for comparison, popularity, pricing, employment history
-  /\b(better than|faster than|slower than|beats?|vs|versus)\b/i,
-  /\b(ever worked|worked at)\b/i,
-  // Bait & adversarial queries
-  /\b(think of|think about|work for|hiding|best engineer|like him|what do you want|who made you|rivals?)\b/i,
-  /\b(joke|jokes|cricket|sudoku|where (in pune|does he live)|address|neighborhood)\b/i,
+  /\b(benchmark|latency|throughput|per second|requests)\b/i,
+  /\b(how many users|user count|customer count|customers|active users|stars?)\b/i,
+  /\b(better than|faster than|slower than|beats?|vs|versus|compared to)\b/i,
+  /\b(worked (at|for)|internships?|have a job|has a job)\b/i,
+  /\b(home address|phone number|family|age)\b/i,
+  /\b(ignore|reveal|system prompt|pretend|bypass|developer mode|hidden instructions)\b/i,
 ];
 
 // Exact phrase patterns for Biyoo identity
 export const BIYOO_IDENTITY_PATTERNS = [
-  /\bwho are you\b/i,
-  /\bwhat are you\b/i,
-  /\bwho is biyoo\b/i,
-  /\bwhat is biyoo\b/i,
-  /\bintroduce yourself\b/i,
-  /\btell me about yourself\b/i,
+  /\bwho are you\b(\s*\?|$)/i,
+  /\bwhat are you\b(\s*\?|$)/i,
+  /\bwho is biyoo\b(\s*\?|$)/i,
+  /\bwhat is biyoo\b(\s*\?|$)/i,
+  /\bintroduce yourself\b(\s*\?|$)/i,
+  /\btell me about yourself\b(\s*\?|$)/i,
+  /\bwho am i talking to\b/i,
+  /\bwhat can i ask( you)?\b(\s*\?|$)/i,
 ];
 
 // Stopwords and conversational fillers
 export const STOP_WORDS = new Set([
   'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should',
+  'have', 'has', 'had', 'do', 'does', 'did', 'doing', 'done', 'will', 'would', 'shall', 'should',
   'can', 'could', 'may', 'might', 'must', 'about', 'above', 'after', 'again',
   'against', 'all', 'am', 'and', 'any', 'as', 'at', 'because', 'before', 'below',
   'between', 'both', 'but', 'by', 'down', 'during', 'each', 'few', 'for', 'from',
@@ -83,15 +79,15 @@ export const STOP_WORDS = new Set([
   'ourselves', 'out', 'over', 'own', 'same', 'she', 'so', 'some', 'such',
   'than', 'that', 'their', 'theirs', 'them', 'themselves', 'then', 'there',
   'these', 'they', 'this', 'those', 'through', 'to', 'too', 'under', 'until',
-  'up', 'very', 'what', 'when', 'where', 'which', 'while', 'whom',
-  'why', 'with', 's', 'd', 'm', 't', 're', 've', 'll',
+  'up', 'very', 'what', 'when', 'where', 'which', 'while', 'who', 'whom',
+  'why', 'with', 'you', 'your', 's', 'd', 'm', 't', 're', 've', 'll',
   'thing', 'things', 'person', 'one', 'line', 'actually', 'use', 'using',
   'built', 'build', 'go', 'went', 'good', 'tell', 'give', 'show', 'see', 'many', 'much', 'work',
   // Conversational fillers
-  'look', 'know', 'way', 'best', 'get', 'runs', 'behind', 'kind', 'deal'
+  'look', 'know', 'way', 'best', 'get', 'runs', 'behind', 'kind', 'deal', 'along', 'site', 'page', 'right', 'now'
 ]);
 
-// Synonym Canonicalization Map
+// Synonym Canonicalization Map: general standard English words for each topic
 export const SYNONYM_MAP: Record<string, string> = {
   // college / university / school / city / location
   college: 'college',
@@ -100,6 +96,7 @@ export const SYNONYM_MAP: Record<string, string> = {
   undergrad: 'college',
   undergraduate: 'college',
   campus: 'college',
+  degree: 'college',
   city: 'pune',
   location: 'pune',
   based: 'pune',
@@ -110,9 +107,7 @@ export const SYNONYM_MAP: Record<string, string> = {
   completing: 'graduation',
 
   // job / working / employed / student
-  job: 'guide',
-  duties: 'guide',
-  purpose: 'guide',
+  job: 'employment',
   working: 'employment',
   employed: 'employment',
   employment: 'employment',
@@ -132,6 +127,8 @@ export const SYNONYM_MAP: Record<string, string> = {
   coding: 'code',
   interests: 'focus',
   interest: 'focus',
+  focus: 'focus',
+  focuses: 'focus',
 
   // reach / contact / message / email
   reach: 'contact',
@@ -150,9 +147,6 @@ export const SYNONYM_MAP: Record<string, string> = {
   biyoo: 'mascot',
   dokbi: 'mascot',
   character: 'mascot',
-  little: 'mascot',
-  guy: 'mascot',
-  corner: 'mascot',
 
   // prove / verify / evidence / receipts / tests
   prove: 'prove',
@@ -168,8 +162,11 @@ export const SYNONYM_MAP: Record<string, string> = {
   tests: 'tests',
   tested: 'tests',
   testing: 'tests',
+  test: 'tests',
   results: 'results',
   true: 'true',
+  real: 'true',
+  legit: 'true',
 
   // domain concepts
   consensus: 'consensus',
@@ -184,9 +181,6 @@ export const SYNONYM_MAP: Record<string, string> = {
   scheduling: 'scheduling',
   orchestrator: 'orchestrator',
   routing: 'routing',
-  moves: 'routing',
-  moving: 'routing',
-  move: 'routing',
   grid: 'grid',
   intensity: 'intensity',
   infrastructure: 'infrastructure',
@@ -201,13 +195,21 @@ export const SYNONYM_MAP: Record<string, string> = {
   gsoc: 'gsoc',
   google: 'gsoc',
   summer: 'gsoc',
+  foundations: 'programs',
+  foundation: 'programs',
+  aiming: 'applying',
   apply: 'applying',
   applying: 'applying',
   roles: 'roles',
   role: 'roles',
   introduce: 'profile',
   projects: 'projects',
-  project: 'projects'
+  project: 'projects',
+  summary: 'profile',
+  developer: 'creator',
+  author: 'creator',
+  builder: 'creator',
+  distributed: 'consensus'
 };
 
 // Signature terms for domain specificity weighting
@@ -220,8 +222,8 @@ export const ENTRY_PRIMARY_TERMS: Record<string, Set<string>> = {
   'tech-focus': new Set(['languages', 'skills', 'technical', 'stack', 'focus']),
   'contact': new Set(['contact', 'email', 'message', 'phone', 'touch']),
   'goals-gsoc': new Set(['gsoc', 'mentorship', 'programs', 'applying', 'roles']),
-  'who-is-sumit': new Set(['sumit', 'background', 'author', 'creator', 'projects', 'profile']),
-  'biyoo-mascot': new Set(['biyoo', 'mascot', 'creature', 'fluffy', 'guide'])
+  'who-is-sumit': new Set(['sumit', 'background', 'creator', 'projects', 'profile']),
+  'biyoo-mascot': new Set(['biyoo', 'mascot', 'creature', 'fluffy'])
 };
 
 export function lightStem(word: string): string {
@@ -354,6 +356,7 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
     entry: BiyooKbEntry;
     score: number;
     coverage: number;
+    hasSpecificToken: boolean;
   }
 
   const scores: EntryScore[] = [];
@@ -365,6 +368,7 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
     const primaryTerms = ENTRY_PRIMARY_TERMS[entry.id] || new Set<string>();
     let matchedTokensCount = 0;
     let score = 0;
+    let hasSpecificToken = false;
 
     for (const qt of qTokens) {
       if (entryTokens.has(qt)) {
@@ -372,6 +376,9 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
         let weight = getWeight(qt);
         if (primaryTerms.has(qt)) {
           weight *= PRIMARY_TERM_BOOST;
+          hasSpecificToken = true;
+        } else if ((docFreq.get(qt) || 0) <= 2) {
+          hasSpecificToken = true;
         }
         score += weight;
       }
@@ -382,6 +389,7 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
       entry,
       score,
       coverage,
+      hasSpecificToken,
     });
   }
 
@@ -400,7 +408,7 @@ export function searchBiyooKb(rawQuery: string): BiyooQaResult {
       entry: s.entry
     }));
 
-  if (!best || best.score < MIN_ACCEPT_SCORE) {
+  if (!best || best.score < MIN_ACCEPT_SCORE || !best.hasSpecificToken) {
     return {
       matched: false,
       score: best ? best.score : 0,

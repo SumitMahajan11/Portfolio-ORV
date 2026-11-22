@@ -271,46 +271,28 @@ body.biyoo-qa-open #sound-permission-prompt {
   }
 }
 
-/* Mobile speech bubble docking: dock left of Biyoo's head to clear hero CTAs on all mobile viewports */
+/* Mobile speech bubble docking and sound prompt: clean non-overlapping layout on mobile viewports */
 @media (max-width: 767px) {
-  #hero-scene {
-    padding-top: 1.5rem !important;
-    padding-bottom: 1.5rem !important;
-  }
-
-  #hero-scene > div:first-child {
-    height: 1rem !important;
-  }
-
-  #hero-scene .max-w-md {
-    margin-top: 1rem !important;
-    gap: 0.75rem !important;
-  }
-
-  #hero-scene > div:last-child {
-    visibility: hidden !important;
-  }
-
-  #hero-scene > div:last-child * {
-    display: none !important;
-  }
-
-  .biyoo-bubble-dock {
-    position: absolute !important;
-    right: calc(100% + 8px) !important;
-    top: 6px !important;
-    bottom: auto !important;
-    left: auto !important;
+  .sound-permission-prompt-pos {
+    left: calc(0.5rem + env(safe-area-inset-left, 0px)) !important;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
     max-width: 140px !important;
+    width: auto !important;
+    padding: 4px 6px !important;
   }
 
-  .biyoo-bubble-dock > div:last-child {
-    display: none !important;
+  .sound-permission-prompt-pos .flex-1 {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
   }
-}
 
-/* Step 6 round 4/5: Small phones (<700px tall and <768px wide) non-overlapping dock layout */
-@media (max-height: 699px) and (max-width: 767px) {
+  .sound-permission-prompt-pos button {
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+  }
+
   [data-testid="global-biyoo-container"] {
     right: calc(0.5rem + env(safe-area-inset-right, 0px)) !important;
     bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
@@ -345,10 +327,10 @@ body.biyoo-qa-open #sound-permission-prompt {
   .biyoo-bubble-dock {
     position: absolute !important;
     right: calc(100% + 6px) !important;
-    bottom: 34px !important;
+    bottom: 30px !important;
     top: auto !important;
     left: auto !important;
-    max-width: 135px !important;
+    max-width: 130px !important;
     padding: 3px 6px !important;
     border-radius: 10px !important;
   }
@@ -356,70 +338,51 @@ body.biyoo-qa-open #sound-permission-prompt {
   .biyoo-bubble-dock > div:last-child {
     display: none !important;
   }
+}
 
+/* Ultra-compact phones (<=359px width / <=580px height) spacing */
+@media (max-height: 580px) and (max-width: 359px) {
   .sound-permission-prompt-pos {
-    left: calc(0.5rem + env(safe-area-inset-left, 0px)) !important;
-    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
-    max-width: 140px !important;
-    padding: 3px 6px !important;
+    left: calc(0.25rem + env(safe-area-inset-left, 0px)) !important;
+    bottom: 0px !important;
+    max-width: 110px !important;
+    padding: 1px 4px !important;
+  }
+
+  .sound-permission-prompt-pos p {
+    font-size: 10px !important;
+    line-height: 1.1 !important;
   }
 
   .sound-permission-prompt-pos button {
-    padding: 2px 6px !important;
-    font-size: 11px !important;
-  }
-}
-
-/* Step 6 round 5: Ultra-compact phones (<=320px width / <=580px height) spacing */
-@media (max-height: 580px) and (max-width: 359px) {
-  #hero-scene {
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
-  }
-
-  #hero-scene > div:first-child {
-    display: none !important;
-  }
-
-  #hero-scene .my-auto {
-    margin-top: 0 !important;
-    margin-bottom: auto !important;
-  }
-
-  #hero-scene h1 {
-    font-size: 2.25rem !important;
-    line-height: 2.5rem !important;
-  }
-
-  #hero-scene p {
-    margin-top: 0.35rem !important;
-  }
-
-  #hero-scene .max-w-md {
-    margin-top: 0.75rem !important;
-    gap: 0.5rem !important;
+    padding: 1px 4px !important;
+    font-size: 10px !important;
   }
 
   [data-testid="global-biyoo-container"] {
     right: calc(0.25rem + env(safe-area-inset-right, 0px)) !important;
-    bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: 0px !important;
   }
 
   [data-biyoo-puppet="global"] {
-    width: 56px !important;
-    height: 56px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  #biyoo-quiet-toggle {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
   }
 
   .biyoo-bubble-dock {
-    max-width: 120px !important;
-    bottom: 28px !important;
-  }
-
-  .sound-permission-prompt-pos {
-    left: calc(0.25rem + env(safe-area-inset-left, 0px)) !important;
-    bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px)) !important;
-    max-width: 120px !important;
+    max-width: 55px !important;
+    top: 4px !important;
+    bottom: auto !important;
+    right: calc(100% + 2px) !important;
     padding: 2px 4px !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
   }
 }
 

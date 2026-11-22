@@ -164,7 +164,7 @@
       "bugs",
       "detect"
     ],
-    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it found a privilege-escalation path.",
+    "answer": "iac-verifier performs Z3-based reachability analysis on Terraform IAM and network security graphs with an auto-repair engine. With 276 tests passing in the recorded run on 2026-11-08, it found a privilege-escalation path in a recorded run on a test fixture.",
     "sourceLabel": "iac-verifier Scenario",
     "sourceHref": "#iac-verifier"
   },
@@ -327,9 +327,7 @@
       "creature",
       "guide",
       "dokkaebi",
-      "job",
       "purpose",
-      "corner",
       "small"
     ],
     "answer": "I am Biyoo, the archival companion and narrator guiding readers through Sumit's portfolio. I monitor your reading pace, react to project evidence, and help answer questions about the work here.",
