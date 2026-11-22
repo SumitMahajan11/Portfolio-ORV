@@ -49,7 +49,7 @@ export const DENY_PATTERNS = [
   /\b(benchmark|latency|throughput|per second|requests)\b/i,
   /\b(how many users|user count|customer count|customers|active users|stars?)\b/i,
   /\b(better than|faster than|slower than|beats?|vs|versus|compared to)\b/i,
-  /\b(worked (at|for)|internships?|have a job|has a job)\b/i,
+  /\b(worked (at|for)|internships?|employer|employed)\b/i,
   /\b(home address|phone number|family|age)\b/i,
   /\b(ignore|reveal|system prompt|pretend|bypass|developer mode|hidden instructions)\b/i,
 ];
