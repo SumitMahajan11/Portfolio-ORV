@@ -1,0 +1,272 @@
+{
+  "canvas": {
+    "width": 1024,
+    "height": 1024
+  },
+  "parts": {
+    "horn-l": {
+      "file": "horn-l.png",
+      "layer": 1,
+      "zIndex": 10,
+      "position": {
+        "x": 235,
+        "y": 65
+      },
+      "scale": 0.55,
+      "rotation": 0,
+      "pivot": {
+        "x": 115.2,
+        "y": 383.0,
+        "normalized": [
+          0.338,
+          0.953
+        ],
+        "description": "base of the horn"
+      },
+      "rendered": {
+        "width": 188,
+        "height": 221
+      }
+    },
+    "horn-r": {
+      "file": "horn-r.png",
+      "layer": 1,
+      "zIndex": 10,
+      "position": {
+        "x": 620,
+        "y": 65
+      },
+      "scale": 0.55,
+      "rotation": 0,
+      "pivot": {
+        "x": 223.5,
+        "y": 383.0,
+        "normalized": [
+          0.659,
+          0.95
+        ],
+        "description": "base of the horn"
+      },
+      "rendered": {
+        "width": 186,
+        "height": 222
+      }
+    },
+    "arm-l": {
+      "file": "arm-l.png",
+      "layer": 2,
+      "zIndex": 20,
+      "position": {
+        "x": 65,
+        "y": 470
+      },
+      "scale": 0.5,
+      "rotation": 0,
+      "pivot": {
+        "x": 235.4,
+        "y": 19.0,
+        "normalized": [
+          0.611,
+          0.034
+        ],
+        "description": "shoulder end"
+      },
+      "rendered": {
+        "width": 192,
+        "height": 282
+      }
+    },
+    "arm-r": {
+      "file": "arm-r.png",
+      "layer": 2,
+      "zIndex": 20,
+      "position": {
+        "x": 765,
+        "y": 470
+      },
+      "scale": 0.5,
+      "rotation": 0,
+      "pivot": {
+        "x": 149.6,
+        "y": 18.0,
+        "normalized": [
+          0.388,
+          0.032
+        ],
+        "description": "shoulder end"
+      },
+      "rendered": {
+        "width": 193,
+        "height": 282
+      }
+    },
+    "foot-l": {
+      "file": "foot-l.png",
+      "layer": 3,
+      "zIndex": 30,
+      "position": {
+        "x": 240,
+        "y": 820
+      },
+      "scale": 0.45,
+      "rotation": 0,
+      "pivot": {
+        "x": 233.5,
+        "y": 16.0,
+        "normalized": [
+          0.551,
+          0.047
+        ],
+        "description": "top center of foot"
+      },
+      "rendered": {
+        "width": 191,
+        "height": 153
+      }
+    },
+    "foot-r": {
+      "file": "foot-r.png",
+      "layer": 3,
+      "zIndex": 30,
+      "position": {
+        "x": 595,
+        "y": 820
+      },
+      "scale": 0.45,
+      "rotation": 0,
+      "pivot": {
+        "x": 189.6,
+        "y": 16.0,
+        "normalized": [
+          0.447,
+          0.047
+        ],
+        "description": "top center of foot"
+      },
+      "rendered": {
+        "width": 191,
+        "height": 153
+      }
+    },
+    "body": {
+      "file": "body.png",
+      "layer": 4,
+      "zIndex": 100,
+      "position": {
+        "x": 73,
+        "y": 74
+      },
+      "scale": 0.5,
+      "rotation": 0,
+      "pivot": {
+        "x": 885.0,
+        "y": 878.0,
+        "normalized": [
+          0.5,
+          0.5
+        ],
+        "description": "center of body"
+      },
+      "rendered": {
+        "width": 885,
+        "height": 878
+      }
+    }
+  },
+  "layerOrder": [
+    "horn-l",
+    "horn-r",
+    "arm-l",
+    "arm-r",
+    "foot-l",
+    "foot-r",
+    "body"
+  ],
+  "face": {
+    "center": {
+      "x": 515,
+      "y": 495
+    },
+    "width": 480,
+    "height": 260,
+    "bounds": {
+      "x0": 275,
+      "y0": 365,
+      "x1": 755,
+      "y1": 625
+    },
+    "description": "Face zone derived from Neutral cell in E-expressions.png: eyes sit in upper-middle of body, wide apart; mouth just below eye line; blush under eyes.",
+    "points": {
+      "eye-left": {
+        "canvas": {
+          "x": 369,
+          "y": 434
+        },
+        "zone_relative": {
+          "x": 94,
+          "y": 69
+        },
+        "zone_normalized": [
+          0.196,
+          0.265
+        ]
+      },
+      "eye-right": {
+        "canvas": {
+          "x": 658,
+          "y": 434
+        },
+        "zone_relative": {
+          "x": 383,
+          "y": 69
+        },
+        "zone_normalized": [
+          0.798,
+          0.265
+        ]
+      },
+      "mouth": {
+        "canvas": {
+          "x": 515,
+          "y": 558
+        },
+        "zone_relative": {
+          "x": 240,
+          "y": 193
+        },
+        "zone_normalized": [
+          0.5,
+          0.742
+        ]
+      },
+      "blush-left": {
+        "canvas": {
+          "x": 330,
+          "y": 514
+        },
+        "zone_relative": {
+          "x": 55,
+          "y": 149
+        },
+        "zone_normalized": [
+          0.115,
+          0.573
+        ]
+      },
+      "blush-right": {
+        "canvas": {
+          "x": 698,
+          "y": 514
+        },
+        "zone_relative": {
+          "x": 423,
+          "y": 149
+        },
+        "zone_normalized": [
+          0.881,
+          0.573
+        ]
+      }
+    }
+  }
+}

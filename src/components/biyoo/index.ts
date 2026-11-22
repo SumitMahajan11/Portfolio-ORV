@@ -13,3 +13,4 @@ export * from "./reaction-map";
 export * from "./corner-bounty-button";
 export * from "./biyoo-companion";
 export * from "./use-biyoo-audio";
+export * from "./puppet";

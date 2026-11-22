@@ -1,0 +1,270 @@
+[
+  {
+    "id": "who-is-sumit",
+    "questions": [
+      "Who is Sumit?",
+      "Tell me about Sumit",
+      "Tell me about the author",
+      "Who created this portfolio?",
+      "Who is the author?",
+      "Who built this website?"
+    ],
+    "keywords": [
+      "sumit",
+      "mahajan",
+      "author",
+      "creator",
+      "developer",
+      "engineer",
+      "protagonist",
+      "who",
+      "who is the portfolio author?",
+      "tell me about the creator of this site"
+    ],
+    "answer": "Sumit Mahajan is a computer science undergraduate and systems builder specializing in distributed consensus and formal verification. He builds systems like Ratify and iac-verifier with verifiable correctness proofs.",
+    "sourceLabel": "Identity / Hero",
+    "sourceHref": "#hero-scene"
+  },
+  {
+    "id": "current-status",
+    "questions": [
+      "What is his current role?",
+      "Where does Sumit study?",
+      "What year is Sumit in?",
+      "What college does Sumit attend?",
+      "When does he graduate?"
+    ],
+    "keywords": [
+      "education",
+      "college",
+      "university",
+      "pune",
+      "pimpri chinchwad",
+      "undergrad",
+      "student",
+      "degree",
+      "graduation",
+      "2028",
+      "which university in pune does sumit attend?",
+      "what year of college is he currently in?"
+    ],
+    "answer": "Sumit is a 3rd-year Computer Science Engineering undergrad at Pimpri Chinchwad University in Pune, graduating in March 2028. He is actively preparing for GSoC 2027 targeting CNCF, Kubeflow, or KubeVirt.",
+    "sourceLabel": "Identity",
+    "sourceHref": "#hero-scene"
+  },
+  {
+    "id": "edge-cloud",
+    "questions": [
+      "What is Edge-Cloud Orchestrator?",
+      "Tell me about Edge Cloud",
+      "What does the Edge-Cloud project do?",
+      "How does carbon-aware routing work?",
+      "Explain the carbon-aware routing project"
+    ],
+    "keywords": [
+      "edge-cloud",
+      "orchestrator",
+      "carbon-aware",
+      "routing",
+      "workload",
+      "edge",
+      "cloud",
+      "green",
+      "how does the carbon aware workload routing work?",
+      "what is the edge cloud orchestrator project?"
+    ],
+    "answer": "Edge-Cloud Orchestrator is a flagship project exploring carbon-aware workload routing across distributed edge and cloud infrastructure. Its interactive scenario visualizes routing decisions based on regional carbon intensity.",
+    "sourceLabel": "Edge-Cloud Scenario",
+    "sourceHref": "#edge-cloud"
+  },
+  {
+    "id": "ratify-raft",
+    "questions": [
+      "What is Ratify?",
+      "Tell me about the Raft project",
+      "How is the Raft consensus tested?",
+      "How does Ratify work?",
+      "What is the consensus project?",
+      "What are the proofs for Ratify?"
+    ],
+    "keywords": [
+      "ratify",
+      "raft",
+      "consensus",
+      "rust",
+      "tla+",
+      "porcupine",
+      "linearizability",
+      "fuzzer",
+      "ucb1",
+      "what consensus protocol does ratify implement?",
+      "tell me about the raft implementation in rust"
+    ],
+    "answer": "Ratify is a from-scratch Rust implementation of the Raft consensus algorithm with 68 passing tests, TLA+ model checking, and Porcupine linearizability verification. It reproduces 4 historical bug classes and is designed as a 3-node correctness project rather than a performance benchmark.",
+    "sourceLabel": "Ratify Scenario",
+    "sourceHref": "#ratify"
+  },
+  {
+    "id": "iac-verifier-z3",
+    "questions": [
+      "What is iac-verifier?",
+      "Tell me about the Z3 project",
+      "How does the Z3 Terraform verifier work?",
+      "How does the Terraform verifier work?",
+      "What does iac-verifier do?",
+      "Explain the formal verification project"
+    ],
+    "keywords": [
+      "iac-verifier",
+      "z3",
+      "smt",
+      "terraform",
+      "iam",
+      "security",
+      "reachability",
+      "checkov",
+      "tfsec",
+      "proof",
+      "how does the z3 formal verification work?",
+      "tell me about the terraform iam verifier"
+    ],
+    "answer": "iac-verifier performs Z3-based reachability proofs on Terraform IAM and network security graphs with an auto-repair engine and proof certificates. It includes 276 tests and detects privilege-escalation paths that tools like Checkov and TFSec miss.",
+    "sourceLabel": "iac-verifier Scenario",
+    "sourceHref": "#iac-verifier"
+  },
+  {
+    "id": "strongest-evidence",
+    "questions": [
+      "What is the strongest evidence?",
+      "Where are the receipts?",
+      "Where are the proofs and tests?",
+      "Show me the test proofs",
+      "Show me the receipts",
+      "How are the projects verified?"
+    ],
+    "keywords": [
+      "evidence",
+      "receipts",
+      "proofs",
+      "tests",
+      "validation",
+      "verification",
+      "tla+",
+      "porcupine",
+      "z3",
+      "record",
+      "where can i see the proof certificates?",
+      "how are the test suites verified on this site?"
+    ],
+    "answer": "The strongest evidence includes 68 passing tests with TLA+ invariant proofs and Porcupine linearizability verification for Ratify, alongside 276 recorded test proofs for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
+    "sourceLabel": "Reader's Record",
+    "sourceHref": "#readers-record"
+  },
+  {
+    "id": "tech-focus",
+    "questions": [
+      "What is his tech focus?",
+      "What technologies does Sumit use?",
+      "What is his tech stack?",
+      "What programming languages does he know?",
+      "What are his technical skills?"
+    ],
+    "keywords": [
+      "tech",
+      "stack",
+      "skills",
+      "technologies",
+      "rust",
+      "z3",
+      "tla+",
+      "distributed systems",
+      "terraform",
+      "kubernetes",
+      "what are sumit's core technical skills?",
+      "what tech stack does he specialize in?"
+    ],
+    "answer": "Sumit focuses on distributed systems, formal verification, and cloud infrastructure using Rust, TLA+, Z3/SMT solvers, and Terraform. His work prioritizes formal correctness and verification over unverified performance claims.",
+    "sourceLabel": "Skills & Tech Focus",
+    "sourceHref": "#readers-record"
+  },
+  {
+    "id": "contact",
+    "questions": [
+      "How can I contact Sumit?",
+      "How to reach him?",
+      "Where can I reach him?",
+      "Where can I find his contact info?",
+      "How do I message Sumit?"
+    ],
+    "keywords": [
+      "contact",
+      "reach",
+      "email",
+      "phone",
+      "message",
+      "hire",
+      "github",
+      "form",
+      "touch",
+      "how do i get in touch with sumit?",
+      "where is the form to message him?"
+    ],
+    "answer": "You can reach Sumit directly using the contact form at the bottom of the page or through his GitHub profile. Direct phone and email are not publicly displayed to protect personal privacy.",
+    "sourceLabel": "Contact Section",
+    "sourceHref": "#contact"
+  },
+  {
+    "id": "goals-gsoc",
+    "questions": [
+      "What is he looking for?",
+      "What are Sumit's goals?",
+      "Is he targeting GSoC?",
+      "Is he looking for internships or GSoC?",
+      "What kind of opportunities is he seeking?"
+    ],
+    "keywords": [
+      "looking",
+      "seeking",
+      "goals",
+      "gsoc",
+      "internship",
+      "cncf",
+      "kubeflow",
+      "kubevirt",
+      "opportunities",
+      "future",
+      "which organizations is he targeting for gsoc 2027?",
+      "what kind of open source work is he seeking?"
+    ],
+    "answer": "Sumit is targeting GSoC 2027 in CNCF, Kubeflow, or KubeVirt and looking for open-source systems engineering opportunities. He aims to contribute to distributed systems, formal verification, and infrastructure tooling.",
+    "sourceLabel": "Identity / Goals",
+    "sourceHref": "#hero-scene"
+  },
+  {
+    "id": "biyoo-mascot",
+    "questions": [
+      "Who are you?",
+      "Who is Biyoo?",
+      "What is Biyoo?",
+      "What do you do here?",
+      "Why are you here?",
+      "What can you do?"
+    ],
+    "keywords": [
+      "biyoo",
+      "dokbi",
+      "mascot",
+      "companion",
+      "narrator",
+      "orv",
+      "who are you",
+      "what is biyoo",
+      "helper",
+      "what is biyoo's role in this archive?",
+      "who is the dokkaebi mascot accompanying the reader?"
+    ],
+    "answer": "I am Biyoo, the archival companion and narrator guiding readers through Sumit's portfolio. I monitor your reading pace, react to project evidence, and help answer questions about the work here.",
+    "sourceLabel": "Mascot Companion",
+    "sourceHref": "#hero-scene"
+  }
+]
