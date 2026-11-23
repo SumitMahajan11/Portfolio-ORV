@@ -940,36 +940,70 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
 
       if (timeSinceScroll >= lingerThresholdMs) {
         const lingerElements = document.querySelectorAll('[data-biyoo-linger]');
+        let bestCandidate: {
+          el: Element;
+          ratio: number;
+          visibleArea: number;
+          matchesMood: boolean;
+        } | null = null;
+
         for (let i = 0; i < lingerElements.length; i++) {
           const el = lingerElements[i];
           if (lingerHandledElementRef.current === el) continue;
 
           const rect = el.getBoundingClientRect();
-          const visibleHeight = Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top);
+          const visibleHeight = Math.max(0, Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top));
+          const visibleWidth = Math.max(0, Math.min(window.innerWidth, rect.right) - Math.max(0, rect.left));
+          const visibleArea = visibleHeight * visibleWidth;
+
           const elemRatio = rect.height > 0 ? visibleHeight / rect.height : 0;
           const viewportRatio = window.innerHeight > 0 ? visibleHeight / window.innerHeight : 0;
           const ratio = Math.max(elemRatio, viewportRatio);
 
           if (ratio >= LINGER_VISIBILITY_RATIO) {
-            const rawVis = Math.round(ratio * 1000) / 10;
-            const rawElapsed = Math.round(timeSinceScroll * 10) / 10;
-            const line =
-              el.getAttribute('data-biyoo-line') || 'reading this part closely, huh?';
-            const res = requestReaction({
-              type: 'linger',
-              expression: 'curious',
-              bubbleText: line,
-              durationMs: 2000,
-              measuredValue: `${rawVis}% in view with no scroll for ${rawElapsed}ms`,
-              rawMetric: {
-                visibilityPercent: rawVis,
-                elapsedLingerMs: rawElapsed,
-              },
-            });
-            if (res.accepted) {
-              lingerHandledElementRef.current = el;
+            const matchesMood = Boolean(
+              currentMoodSectionRef.current &&
+                (el.id === currentMoodSectionRef.current ||
+                  el.querySelector(`#${currentMoodSectionRef.current}`) ||
+                  (currentMoodSectionRef.current === 'edge-cloud' &&
+                    el.getAttribute('data-biyoo-line') === 'edge orchestration at scale!') ||
+                  (currentMoodSectionRef.current === 'ratify' &&
+                    el.getAttribute('data-biyoo-line') === 'distributed consensus is tricky, huh?') ||
+                  (currentMoodSectionRef.current === 'iac-verifier' &&
+                    el.getAttribute('data-biyoo-line') === 'formal verification active!'))
+            );
+
+            if (
+              !bestCandidate ||
+              visibleArea > bestCandidate.visibleArea ||
+              (Math.abs(visibleArea - bestCandidate.visibleArea) < 1 &&
+                matchesMood &&
+                !bestCandidate.matchesMood)
+            ) {
+              bestCandidate = { el, ratio, visibleArea, matchesMood };
             }
-            break;
+          }
+        }
+
+        if (bestCandidate) {
+          const el = bestCandidate.el;
+          const rawVis = Math.round(bestCandidate.ratio * 1000) / 10;
+          const rawElapsed = Math.round(timeSinceScroll * 10) / 10;
+          const line =
+            el.getAttribute('data-biyoo-line') || 'reading this part closely, huh?';
+          const res = requestReaction({
+            type: 'linger',
+            expression: 'curious',
+            bubbleText: line,
+            durationMs: 2000,
+            measuredValue: `${rawVis}% in view with no scroll for ${rawElapsed}ms`,
+            rawMetric: {
+              visibilityPercent: rawVis,
+              elapsedLingerMs: rawElapsed,
+            },
+          });
+          if (res.accepted) {
+            lingerHandledElementRef.current = el;
           }
         }
       } else {
