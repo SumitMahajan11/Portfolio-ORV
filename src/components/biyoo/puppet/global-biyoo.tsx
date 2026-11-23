@@ -29,16 +29,16 @@ export function GlobalBiyoo() {
     enableSessionGreetings: true,
   });
 
-  // Expose engine to window for verification / tests (only on /biyoo-test or dev, not production on /)
+  // Expose engine to window only when NEXT_PUBLIC_BIYOO_TEST === "1"
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (process.env.NODE_ENV !== 'production' || pathname === '/biyoo-test') {
+      if (process.env.NEXT_PUBLIC_BIYOO_TEST === '1') {
         (window as unknown as { __biyooEngine: unknown }).__biyooEngine = engine;
       } else {
         delete (window as unknown as { __biyooEngine?: unknown }).__biyooEngine;
       }
     }
-  }, [engine, pathname]);
+  }, [engine]);
 
   // Sync Q&A panel open state to body class so sound prompt and other elements can react cleanly
   useEffect(() => {
@@ -85,6 +85,16 @@ export function GlobalBiyoo() {
     return null;
   }
 
+  // Map section mood to required values: happy | alert | serious | none
+  const moodAttr =
+    engine.currentMoodSection === 'edge-cloud'
+      ? 'happy'
+      : engine.currentMoodSection === 'ratify'
+      ? 'alert'
+      : engine.currentMoodSection === 'iac-verifier'
+      ? 'serious'
+      : 'none';
+
   return (
     <aside
       aria-label="Biyoo Companion Mascot"
@@ -119,7 +129,7 @@ export function GlobalBiyoo() {
           data-testid="biyoo-live-puppet"
           data-biyoo-puppet="global"
           data-biyoo-expression={engine.currentExpression}
-          data-biyoo-mood={engine.currentMood || 'none'}
+          data-biyoo-mood={moodAttr}
           data-biyoo-mood-section={engine.currentMoodSection || 'none'}
           className="relative w-[96px] h-[96px] sm:w-[140px] sm:h-[140px] pointer-events-none"
         >
