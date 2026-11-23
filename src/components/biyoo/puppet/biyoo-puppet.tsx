@@ -1,9 +1,10 @@
 import React from 'react';
-import type { BiyooFaceParams } from './types';
+import type { BiyooFaceParams, BiyooExpressionName } from './types';
 import { BiyooFace } from './biyoo-face';
 
 export interface BiyooPuppetProps {
   params: BiyooFaceParams;
+  expression?: BiyooExpressionName;
   className?: string;
   style?: React.CSSProperties;
   showFaceZone?: boolean;
@@ -21,6 +22,7 @@ export interface BiyooPuppetProps {
 
 export const BiyooPuppet: React.FC<BiyooPuppetProps> = ({
   params,
+  expression,
   className,
   style,
   showFaceZone = false,
@@ -39,6 +41,7 @@ export const BiyooPuppet: React.FC<BiyooPuppetProps> = ({
 
   return (
     <div
+      data-biyoo-expression={expression || 'neutral'}
       className={`relative select-none pointer-events-none ${className || ''}`}
       style={{
         width: '100%',

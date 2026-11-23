@@ -20,6 +20,9 @@ export const BUBBLE_COOLDOWN_MS = 20000; // 20s cooldown between bubble reaction
 export const IDLE_CHAIN_CURIOUS_SEC = 15; // 15s: Curious
 export const IDLE_CHAIN_SLEEPY_SEC = 30; // 30s: Sleepy
 export const IDLE_CHAIN_SLEEPING_SEC = 60; // 60s: Sleeping
+export const MOOD_VISIBILITY_START_RATIO = 0.50; // > 50% visible
+export const MOOD_VISIBILITY_END_RATIO = 0.30; // < 30% visible
+export const MOOD_START_DURATION_MS = 1500; // 1.5s
 
 export interface IdleEngineLogEntry {
   timestamp: number;
@@ -108,6 +111,20 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
   const [isSleeping, setIsSleeping] = useState<boolean>(false);
   const [pointingArm, setPointingArm] = useState<'left' | 'right' | null>(null);
   const [idleSeconds, setIdleSeconds] = useState<number>(0);
+
+  // Step 7: Project-world moods
+  const [currentMood, setCurrentMood] = useState<BiyooExpressionName | null>(null);
+  const [currentMoodSection, setCurrentMoodSection] = useState<string | null>(null);
+  const currentMoodRef = useRef<BiyooExpressionName | null>(null);
+  const currentMoodSectionRef = useRef<string | null>(null);
+  const sectionVisibleSinceRef = useRef<{ [id: string]: number }>({});
+  const lastFastScrollTimeRef = useRef<number>(0);
+  const moodStartTimestampRef = useRef<{ [id: string]: number }>({});
+  const idleStageFiredRef = useRef<{ curious: boolean; sleepy: boolean; sleeping: boolean }>({
+    curious: false,
+    sleepy: false,
+    sleeping: false,
+  });
 
   // Smooth interpolated face params
   const [faceParams, setFaceParams] = useState<BiyooFaceParams>(BIYOO_PRESETS.neutral);
@@ -210,24 +227,6 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       // ignore
     }
   }, []);
-
-  const toggleQuietMode = useCallback(() => {
-    setQuietModeState((prev) => {
-      const next = !prev;
-      quietModeRef.current = next;
-      try {
-        localStorage.setItem('biyoo_quiet_mode', JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      logAction(
-        currentExpressionRef.current,
-        null,
-        `Quiet Biyoo toggled ${next ? 'ON' : 'OFF'}`
-      );
-      return next;
-    });
-  }, [logAction]);
 
   // Load quiet mode from localStorage on client mount (try/catch, default OFF)
   useEffect(() => {
@@ -364,6 +363,31 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
     [transitionToParams]
   );
 
+  const toggleQuietMode = useCallback(() => {
+    setQuietModeState((prev) => {
+      const next = !prev;
+      quietModeRef.current = next;
+      if (next) {
+        currentMoodRef.current = null;
+        currentMoodSectionRef.current = null;
+        setCurrentMood(null);
+        setCurrentMoodSection(null);
+        setExpression('neutral', 0);
+      }
+      try {
+        localStorage.setItem('biyoo_quiet_mode', JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      logAction(
+        currentExpressionRef.current,
+        null,
+        `Quiet Biyoo toggled ${next ? 'ON' : 'OFF'}`
+      );
+      return next;
+    });
+  }, [logAction, setExpression]);
+
   // Dismiss bubble
   const dismissBubble = useCallback(() => {
     if (bubbleTimerRef.current) {
@@ -404,6 +428,36 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
     [dismissBubble, logAction]
   );
 
+  // Section visibility measurement helper (Step 7)
+  const getSectionVisibility = useCallback((id: string): number => {
+    if (typeof document === 'undefined') return 0;
+    const el = document.getElementById(id);
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const visibleHeight = Math.max(0, Math.min(vh, rect.bottom) - Math.max(0, rect.top));
+    if (visibleHeight <= 0) return 0;
+    const elemRatio = rect.height > 0 ? visibleHeight / rect.height : 0;
+    const vpRatio = vh > 0 ? visibleHeight / vh : 0;
+    return Math.max(elemRatio, vpRatio);
+  }, []);
+
+  // Helper to restore active mood or neutral (priority winner restoration)
+  const restoreMoodOrNeutral = useCallback(
+    (animDuration = 180) => {
+      if (
+        currentMoodRef.current &&
+        currentMoodSectionRef.current &&
+        getSectionVisibility(currentMoodSectionRef.current) >= MOOD_VISIBILITY_END_RATIO
+      ) {
+        setExpression(currentMoodRef.current, reducedMotionRef.current ? 0 : animDuration);
+      } else {
+        setExpression('neutral', reducedMotionRef.current ? 0 : animDuration);
+      }
+    },
+    [getSectionVisibility, setExpression]
+  );
+
   // Q&A panel open/close handler
   const setQaActive = useCallback(
     (active: boolean) => {
@@ -414,10 +468,10 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
         dismissBubble();
         setPointingArm(null);
       } else {
-        setExpression('neutral', reducedMotionRef.current ? 0 : 180);
+        restoreMoodOrNeutral(reducedMotionRef.current ? 0 : 180);
       }
     },
-    [dismissBubble, setExpression]
+    [dismissBubble, restoreMoodOrNeutral]
   );
 
   // Trigger blink (dip eye openness to 0, then recover; runs even in quietMode)
@@ -479,13 +533,17 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       returnTimerRef.current = setTimeout(() => {
         const durationMs = Math.round(performance.now() - happyStart);
         lastHappyHoldDurationRef.current = durationMs;
-        setExpression('neutral', 180);
         isWakingRef.current = false;
-        logAction('neutral', null, `Happy hold completed in ${durationMs}ms -> Neutral`);
+        restoreMoodOrNeutral(180);
+        logAction(
+          currentMoodRef.current || 'neutral',
+          null,
+          `Happy hold completed in ${durationMs}ms -> ${currentMoodRef.current || 'Neutral'}`
+        );
         if (onComplete) onComplete();
       }, 2000);
     },
-    [logAction, setExpression, showBubble]
+    [logAction, restoreMoodOrNeutral, setExpression, showBubble]
   );
 
   const triggerHappyHoldRef = useRef(triggerHappyHold);
@@ -601,7 +659,6 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
 
       // Reaction Accepted!
       lastBubbleTimeRef.current = now;
-      lastActivityRef.current = now; // Any reaction counts as visitor activity, resets idle chain
       recordHistory(true, 'ok', elapsed === Infinity ? 0 : elapsed);
 
       // Pointing arm
@@ -621,15 +678,19 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
         req.measuredValue
       );
 
-      // Schedule return to neutral
+      // Schedule return to mood or neutral
       const holdMs =
         (req.durationMs ?? 2000) * (idleScaleRef.current < 0.25 ? idleScaleRef.current : 1.0);
       if (reactionTimerRef.current) clearTimeout(reactionTimerRef.current);
       reactionTimerRef.current = setTimeout(() => {
-        setExpression('neutral', animDuration);
+        restoreMoodOrNeutral(animDuration);
         setPointingArm(null);
         reactionTimerRef.current = null;
-        logAction('neutral', null, `Reaction [${req.type}] hold completed: Return to Neutral`);
+        logAction(
+          currentMoodRef.current || 'neutral',
+          null,
+          `Reaction [${req.type}] hold completed: Return to ${currentMoodRef.current || 'Neutral'}`
+        );
       }, holdMs);
 
       return {
@@ -729,6 +790,7 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
   const handleUserActivity = useCallback(() => {
     const now = Date.now();
     lastActivityRef.current = now;
+    idleStageFiredRef.current = { curious: false, sleepy: false, sleeping: false };
 
     if (isWakingRef.current) return;
 
@@ -740,13 +802,17 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       currentExpressionRef.current !== 'surprised' &&
       !reactionTimerRef.current
     ) {
-      // Any activity before 60s: return to Neutral quietly
-      setExpression('neutral', 180);
+      // Any activity before 60s: return to mood or Neutral quietly
+      restoreMoodOrNeutral(180);
       dismissBubble();
       setPointingArm(null);
-      logAction('neutral', null, 'Activity detected before 60s: Return to Neutral quietly');
+      logAction(
+        currentMoodRef.current || 'neutral',
+        null,
+        `Activity detected before 60s: Return to ${currentMoodRef.current || 'Neutral'} quietly`
+      );
     }
-  }, [dismissBubble, logAction, setExpression, triggerWakeSequence]);
+  }, [dismissBubble, logAction, restoreMoodOrNeutral, triggerWakeSequence]);
 
   // Bind activity events (mouse move, mousedown, keydown, touch, scroll)
   useEffect(() => {
@@ -786,6 +852,10 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
 
       // 1. Fast Scroll Detection: > 3000px/s sustained for 400ms
       const speed = dt > 0 ? (dy / dt) * 1000 : 0;
+      if (speed > 2000) {
+        lastFastScrollTimeRef.current = now;
+        sectionVisibleSinceRef.current = {};
+      }
       if (speed > FAST_SCROLL_SPEED_THRESHOLD_PX_PER_SEC) {
         if (fastScrollStartRef.current === 0) {
           fastScrollStartRef.current = now;
@@ -1003,7 +1073,8 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       const t60 = IDLE_CHAIN_SLEEPING_SEC * scale;
 
       // 60s: Sleeping + slow "z z z" floating up, no bubble
-      if (inactiveSec >= t60 && !isSleepingRef.current) {
+      if (inactiveSec >= t60 && !idleStageFiredRef.current.sleeping) {
+        idleStageFiredRef.current.sleeping = true;
         dismissBubble();
         setPointingArm(null);
         setExpression('sleeping', 180);
@@ -1017,9 +1088,10 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       else if (
         inactiveSec >= t30 &&
         inactiveSec < t60 &&
-        currentExpressionRef.current !== 'sleepy' &&
+        !idleStageFiredRef.current.sleepy &&
         !isSleepingRef.current
       ) {
+        idleStageFiredRef.current.sleepy = true;
         setExpression('sleepy', 180);
         showBubble('...getting sleepy', true);
         logAction(
@@ -1032,10 +1104,10 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       else if (
         inactiveSec >= t15 &&
         inactiveSec < t30 &&
-        currentExpressionRef.current !== 'curious' &&
-        currentExpressionRef.current !== 'sleepy' &&
+        !idleStageFiredRef.current.curious &&
         !isSleepingRef.current
       ) {
+        idleStageFiredRef.current.curious = true;
         setExpression('curious', 180);
         showBubble('hey... still there?', true);
         logAction(
@@ -1165,12 +1237,13 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
     lastActivityRef.current = Date.now();
     lastScrollTimeMsRef.current = Date.now();
     lingerHandledElementRef.current = null;
+    idleStageFiredRef.current = { curious: false, sleepy: false, sleeping: false };
     setIdleSeconds(0);
-    setExpression('neutral', 180);
+    restoreMoodOrNeutral(180);
     dismissBubble();
     setPointingArm(null);
-    logAction('neutral', null, 'Manual inactivity reset');
-  }, [dismissBubble, logAction, setExpression]);
+    logAction(currentMoodRef.current || 'neutral', null, 'Manual inactivity reset');
+  }, [dismissBubble, logAction, restoreMoodOrNeutral]);
 
   // Step 4: Specific Behavior Triggers for manual / automated testing
   const triggerFastScroll = useCallback(
@@ -1362,7 +1435,127 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
     return () => clearTimeout(timer);
   }, [enableSessionGreetings, requestReaction]);
 
+  // -----------------------------------------------------------------
+  // Requirement: Project-world moods (Step 7)
+  // #edge-cloud -> Happy with bounce
+  // #ratify -> Curious
+  // #iac-verifier -> Neutral
+  // Starts when > 50% visible for 1.5s
+  // Ends when < 30% visible -> Neutral
+  // Suppressed during fast scroll and quiet mode
+  // Overridden by idle chain, wake-up, tab-return, bubble reactions
+  // -----------------------------------------------------------------
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const sections: { id: string; expression: BiyooExpressionName; bounce: boolean }[] = [
+      { id: 'edge-cloud', expression: 'happy', bounce: true },
+      { id: 'ratify', expression: 'curious', bounce: false },
+      { id: 'iac-verifier', expression: 'neutral', bounce: false },
+    ];
+
+    const interval = setInterval(() => {
+      // Quiet Biyoo ON: zero mood changes
+      if (quietModeRef.current) {
+        if (currentMoodRef.current !== null) {
+          currentMoodRef.current = null;
+          currentMoodSectionRef.current = null;
+          setCurrentMood(null);
+          setCurrentMoodSection(null);
+          setExpression('neutral', reducedMotionRef.current ? 0 : 180);
+        }
+        sectionVisibleSinceRef.current = {};
+        return;
+      }
+
+      const now = Date.now();
+      const perfNow = performance.now();
+      const isFastScrolling =
+        perfNow - lastFastScrollTimeRef.current < 600 || fastScrollStartRef.current !== 0;
+
+      // Check exit of currently active mood section (< 30% visible)
+      if (currentMoodSectionRef.current) {
+        const activeVis = getSectionVisibility(currentMoodSectionRef.current);
+        if (activeVis < MOOD_VISIBILITY_END_RATIO) {
+          const endedSection = currentMoodSectionRef.current;
+          const rawVis = Math.round(activeVis * 1000) / 10;
+          currentMoodRef.current = null;
+          currentMoodSectionRef.current = null;
+          setCurrentMood(null);
+          setCurrentMoodSection(null);
+          delete moodStartTimestampRef.current[endedSection];
+
+          if (
+            !reactionTimerRef.current &&
+            !isWakingRef.current &&
+            !wasTabAwayRef.current &&
+            !isSleepingRef.current
+          ) {
+            setExpression('neutral', reducedMotionRef.current ? 0 : 180);
+            logAction(
+              'neutral',
+              null,
+              `Mood ended for section #${endedSection}: visibility ${rawVis}% (< 30%) -> Neutral`
+            );
+          }
+        }
+      }
+
+      if (isFastScrolling) {
+        sectionVisibleSinceRef.current = {};
+        return;
+      }
+
+      // Check sections for mood start (> 50% for 1.5s)
+      for (const sec of sections) {
+        const vis = getSectionVisibility(sec.id);
+        if (vis > MOOD_VISIBILITY_START_RATIO) {
+          if (!sectionVisibleSinceRef.current[sec.id]) {
+            sectionVisibleSinceRef.current[sec.id] = now;
+          } else {
+            const visibleDuration = now - sectionVisibleSinceRef.current[sec.id];
+            if (visibleDuration >= MOOD_START_DURATION_MS) {
+              if (currentMoodSectionRef.current !== sec.id) {
+                currentMoodRef.current = sec.expression;
+                currentMoodSectionRef.current = sec.id;
+                setCurrentMood(sec.expression);
+                setCurrentMoodSection(sec.id);
+                moodStartTimestampRef.current[sec.id] = now;
+
+                const rawVis = Math.round(vis * 1000) / 10;
+                logAction(
+                  sec.expression,
+                  null,
+                  `Mood started for section #${sec.id}: ${sec.expression} (${rawVis}% visible for ${(visibleDuration / 1000).toFixed(1)}s)`
+                );
+
+                if (
+                  !reactionTimerRef.current &&
+                  !isWakingRef.current &&
+                  !wasTabAwayRef.current &&
+                  !isSleepingRef.current
+                ) {
+                  setExpression(sec.expression, reducedMotionRef.current ? 0 : 180);
+                  if (sec.bounce && !reducedMotionRef.current) {
+                    triggerHop();
+                  }
+                }
+              }
+            }
+          }
+        } else {
+          delete sectionVisibleSinceRef.current[sec.id];
+        }
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [getSectionVisibility, logAction, setExpression, triggerHop]);
+
   return {
+    currentMood,
+    currentMoodSection,
+    getMoodStartTimestamp: (secId: string) => moodStartTimestampRef.current[secId] || null,
     currentExpression,
     faceParams,
     bubbleText,

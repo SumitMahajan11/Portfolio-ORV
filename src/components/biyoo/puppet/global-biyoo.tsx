@@ -29,12 +29,16 @@ export function GlobalBiyoo() {
     enableSessionGreetings: true,
   });
 
-  // Expose engine to window for verification / tests
+  // Expose engine to window for verification / tests (only on /biyoo-test or dev, not production on /)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as unknown as { __biyooEngine: unknown }).__biyooEngine = engine;
+      if (process.env.NODE_ENV !== 'production' || pathname === '/biyoo-test') {
+        (window as unknown as { __biyooEngine: unknown }).__biyooEngine = engine;
+      } else {
+        delete (window as unknown as { __biyooEngine?: unknown }).__biyooEngine;
+      }
     }
-  }, [engine]);
+  }, [engine, pathname]);
 
   // Sync Q&A panel open state to body class so sound prompt and other elements can react cleanly
   useEffect(() => {
@@ -114,10 +118,21 @@ export function GlobalBiyoo() {
           ref={puppetContainerRef}
           data-testid="biyoo-live-puppet"
           data-biyoo-puppet="global"
+          data-biyoo-expression={engine.currentExpression}
+          data-biyoo-mood={engine.currentMood || 'none'}
+          data-biyoo-mood-section={engine.currentMoodSection || 'none'}
           className="relative w-[96px] h-[96px] sm:w-[140px] sm:h-[140px] pointer-events-none"
         >
+          <span
+            data-testid="biyoo-current-expression"
+            className="sr-only"
+            aria-hidden="true"
+          >
+            {engine.currentExpression}
+          </span>
           <BiyooPuppet
             params={engine.faceParams}
+            expression={engine.currentExpression}
             isBreathing={!engine.reducedMotion}
             isArmSwinging={!engine.reducedMotion}
             isSleeping={engine.isSleeping}
