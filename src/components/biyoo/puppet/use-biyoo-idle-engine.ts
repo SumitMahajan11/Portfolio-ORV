@@ -120,9 +120,15 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
   const sectionVisibleSinceRef = useRef<{ [id: string]: number }>({});
   const lastFastScrollTimeRef = useRef<number>(0);
   const moodStartTimestampRef = useRef<{ [id: string]: number }>({});
-  const idleStageFiredRef = useRef<{ curious: boolean; sleepy: boolean; sleeping: boolean }>({
+  const idleStageFiredRef = useRef<{
+    curious: boolean;
+    sleepy: boolean;
+    sleepyBubble: boolean;
+    sleeping: boolean;
+  }>({
     curious: false,
     sleepy: false,
+    sleepyBubble: false,
     sleeping: false,
   });
 
@@ -402,7 +408,7 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
     (text: string, force: boolean = false) => {
       if (quietModeRef.current) return false;
       const now = Date.now();
-      const minCooldown = 20000 * idleScaleRef.current;
+      const minCooldown = BUBBLE_COOLDOWN_MS * idleScaleRef.current;
       if (!force && lastBubbleTimeRef.current > 0 && now - lastBubbleTimeRef.current < minCooldown) {
         logAction(
           currentExpressionRef.current,
@@ -790,7 +796,7 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
   const handleUserActivity = useCallback(() => {
     const now = Date.now();
     lastActivityRef.current = now;
-    idleStageFiredRef.current = { curious: false, sleepy: false, sleeping: false };
+    idleStageFiredRef.current = { curious: false, sleepy: false, sleepyBubble: false, sleeping: false };
 
     if (isWakingRef.current) return;
 
@@ -1084,23 +1090,34 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
           `Inactivity threshold reached (${t60.toFixed(1)}s): Sleeping + z z z`
         );
       }
-      // 30s: Sleepy + bubble "...getting sleepy"
+      // 30s: Sleepy + bubble "...getting sleepy" (cooldown-gated)
       else if (
         inactiveSec >= t30 &&
         inactiveSec < t60 &&
-        !idleStageFiredRef.current.sleepy &&
         !isSleepingRef.current
       ) {
-        idleStageFiredRef.current.sleepy = true;
-        setExpression('sleepy', 180);
-        showBubble('...getting sleepy', true);
-        logAction(
-          'sleepy',
-          '...getting sleepy',
-          `Inactivity threshold reached (${t30.toFixed(1)}s): Sleepy + bubble`
-        );
+        if (!idleStageFiredRef.current.sleepy) {
+          idleStageFiredRef.current.sleepy = true;
+          setExpression('sleepy', 180);
+          logAction(
+            'sleepy',
+            null,
+            `Inactivity threshold reached (${t30.toFixed(1)}s): Sleepy`
+          );
+        }
+        if (!idleStageFiredRef.current.sleepyBubble) {
+          const shown = showBubble('...getting sleepy');
+          if (shown) {
+            idleStageFiredRef.current.sleepyBubble = true;
+            logAction(
+              'sleepy',
+              '...getting sleepy',
+              `Inactivity threshold reached (${t30.toFixed(1)}s): Sleepy + bubble`
+            );
+          }
+        }
       }
-      // 15s: Curious + bubble "hey... still there?"
+      // 15s: Curious + bubble "hey... still there?" (cooldown-gated)
       else if (
         inactiveSec >= t15 &&
         inactiveSec < t30 &&
@@ -1109,11 +1126,11 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
       ) {
         idleStageFiredRef.current.curious = true;
         setExpression('curious', 180);
-        showBubble('hey... still there?', true);
+        const shown = showBubble('hey... still there?');
         logAction(
           'curious',
-          'hey... still there?',
-          `Inactivity threshold reached (${t15.toFixed(1)}s): Curious + bubble`
+          shown ? 'hey... still there?' : null,
+          `Inactivity threshold reached (${t15.toFixed(1)}s): Curious${shown ? ' + bubble' : ' (bubble suppressed by cooldown)'}`
         );
       }
     }, 100);
@@ -1237,7 +1254,7 @@ export function useBiyooIdleEngine(options: UseBiyooIdleEngineOptions = {}) {
     lastActivityRef.current = Date.now();
     lastScrollTimeMsRef.current = Date.now();
     lingerHandledElementRef.current = null;
-    idleStageFiredRef.current = { curious: false, sleepy: false, sleeping: false };
+    idleStageFiredRef.current = { curious: false, sleepy: false, sleepyBubble: false, sleeping: false };
     setIdleSeconds(0);
     restoreMoodOrNeutral(180);
     dismissBubble();
