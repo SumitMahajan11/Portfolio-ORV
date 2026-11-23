@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default function DevModePage() {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_BIYOO_TEST !== "1") {
     notFound();
   }
 

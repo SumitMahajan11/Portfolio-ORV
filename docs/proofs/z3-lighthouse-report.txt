@@ -1,0 +1,14 @@
+================================================================
+ MOBILE LIGHTHOUSE AUDIT REPORT (3 RUNS, 60S IDLE)
+================================================================
+Target URL: http://localhost:3000/
+Runs: 3
+
+Run 1: Perf=81 | LCP=4.45s | CLS=0.000 | TBT=210ms
+Run 2: Perf=81 | LCP=4.41s | CLS=0.000 | TBT=206ms
+Run 3: Perf=81 | LCP=4.41s | CLS=0.000 | TBT=228ms
+
+Median Performance: 81
+Target Requirement: >= 77
+Verdict: PASS (>= 77)
+================================================================

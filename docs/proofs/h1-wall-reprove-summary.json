@@ -1,0 +1,46 @@
+{
+  "visibility": [
+    {
+      "name": "Centre",
+      "coords": "(720, 450)",
+      "baseDiscMean": 46.039,
+      "withLanternDiscMean": 46.032,
+      "gainPct": -0.01,
+      "gainPass": false,
+      "baseRingMean": 22.754,
+      "withLanternRingMean": 22.749,
+      "outsideChangePct": 0.02,
+      "outsidePass": true
+    },
+    {
+      "name": "Top-Right Light",
+      "coords": "(1200, 200)",
+      "baseDiscMean": 20.685,
+      "withLanternDiscMean": 22.108,
+      "gainPct": 6.88,
+      "gainPass": false,
+      "baseRingMean": 16.472,
+      "withLanternRingMean": 16.468,
+      "outsideChangePct": 0.03,
+      "outsidePass": true
+    }
+  ],
+  "alignment": {
+    "pageDetail": {
+      "location": "Top-Right Archival Page Detail",
+      "coords": "(1200, 200)",
+      "realNCC": 0.9684,
+      "offsetNCC": 0.9872,
+      "realPass": true,
+      "offsetDropPass": false
+    },
+    "centre": {
+      "location": "Screen Centre",
+      "coords": "(720, 450)",
+      "realNCC": 0.9978,
+      "offsetNCC": 0.9966,
+      "realPass": true,
+      "offsetDropPass": false
+    }
+  }
+}

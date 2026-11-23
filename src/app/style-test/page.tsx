@@ -83,8 +83,16 @@ const FONTS = [
   { name: "Narration (Cormorant Garamond - Italic)", fontClass: "font-narration italic", sample: "Only I know the end of this world." },
 ];
 
+export const metadata = {
+  title: "DEV: Style Test | Sumit Mahajan",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default function StyleTestPage() {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_BIYOO_TEST !== "1") {
     notFound();
   }
   return (

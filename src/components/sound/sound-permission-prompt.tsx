@@ -40,16 +40,14 @@ export function SoundPermissionPrompt({ className = "" }: SoundPermissionPromptP
 
   return (
     <div
+      id="sound-permission-prompt"
       role="region"
       aria-label="Sound permission"
-      className={`fixed z-50 bottom-20 right-4 sm:right-6 max-w-sm w-[calc(100vw-2rem)] sm:w-auto p-4 rounded-xl border border-star/40 bg-ink/95 shadow-2xl backdrop-blur-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 ${className}`}
-      style={{
-        bottom: "calc(5.5rem + env(safe-area-inset-bottom, 0px))",
-      }}
+      className={`fixed z-50 w-auto p-2 sm:p-2.5 lg:p-4 rounded-xl border border-star/40 bg-ink/95 shadow-2xl backdrop-blur-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 sound-permission-prompt-pos ${className}`}
     >
-      <div className="flex items-start gap-3">
-        {/* Biyoo mini avatar */}
-        <div className="w-9 h-9 rounded-full bg-star/15 border border-star/40 flex-shrink-0 flex items-center justify-center">
+      <div className="flex items-center gap-2 lg:items-start lg:gap-3">
+        {/* Biyoo mini avatar - hidden on mobile/tablet for compact docked bar, visible on desktop */}
+        <div className="hidden lg:flex w-9 h-9 rounded-full bg-star/15 border border-star/40 flex-shrink-0 items-center justify-center">
           <svg viewBox="0 0 40 40" className="w-6 h-6 text-star" fill="none" aria-hidden="true">
             <circle cx="20" cy="20" r="13" fill="#E2EAF4" />
             <path d="M 13 12 C 10 7 7 4 5 2 C 8 5 11 9 14 12 Z" fill="#2A0A10" />
@@ -60,24 +58,26 @@ export function SoundPermissionPrompt({ className = "" }: SoundPermissionPromptP
           </svg>
         </div>
 
-        <div className="space-y-3 flex-1">
-          <p className="font-ui text-xs sm:text-sm text-feather leading-snug">
-            Biyoo wants to say hi. Turn sound on?
+        <div className="flex items-center gap-2 lg:block lg:space-y-3 flex-1">
+          <p className="font-ui text-xs sm:text-sm text-feather leading-snug whitespace-nowrap lg:whitespace-normal">
+            <span className="lg:hidden">Sound on?</span>
+            <span className="hidden lg:inline">Biyoo wants to say hi. Turn sound on?</span>
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => dismissPrompt(true)}
-              className="min-h-[44px] px-3.5 py-2 rounded-lg border border-star bg-star/20 hover:bg-star/30 text-star font-mono text-xs font-semibold tracking-wide transition-colors focus:ring-2 focus:ring-star focus:outline-none"
+              className="px-2.5 sm:px-3.5 py-1 sm:py-2 rounded-lg border border-star bg-star/20 hover:bg-star/30 text-star font-mono text-xs font-semibold tracking-wide transition-colors focus:ring-2 focus:ring-star focus:outline-none whitespace-nowrap"
             >
-              Turn sound on
+              <span className="lg:hidden">On</span>
+              <span className="hidden lg:inline">Turn sound on</span>
             </button>
 
             <button
               type="button"
               onClick={() => dismissPrompt(false)}
-              className="min-h-[44px] px-3.5 py-2 rounded-lg border border-line bg-ink-2 hover:border-mist/40 text-mist hover:text-feather font-mono text-xs tracking-wide transition-colors focus:ring-2 focus:ring-star focus:outline-none"
+              className="px-2 sm:px-3.5 py-1 sm:py-2 rounded-lg border border-line bg-ink-2 hover:border-mist/40 text-mist hover:text-feather font-mono text-xs tracking-wide transition-colors focus:ring-2 focus:ring-star focus:outline-none whitespace-nowrap"
             >
               Not now
             </button>

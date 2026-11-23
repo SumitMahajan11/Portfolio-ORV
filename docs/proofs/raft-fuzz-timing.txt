@@ -1,0 +1,31 @@
+﻿RAFT FUZZ TIMING & BENCHMARK REPORT
+Timestamp: 2026-11-08T14:16:14Z
+Build ID: r3aQCZUz9-PG_anssUSRS
+Environment: Windows 11, Node.js v22.19.0
+
+EXECUTION TIMING BREAKDOWN:
+- External Wall-Clock Time (System.Diagnostics.Stopwatch): 0.890s
+- In-Script Execution Duration: 0.18s (180ms)
+- Seeds 1..1000 Duration: 0.12s (120ms, avg 0.12ms/seed)
+- Seeds 1001..2000 Duration: 0.06s (60ms, avg 0.06ms/seed)
+
+FUZZ VERIFICATION METRICS:
+- Total Seeds Evaluated: 2000 (seeds 1..2000)
+- Total Actions Executed: 54,813 actions (mean ~27.4 actions/seed)
+- Total Invariant Checks: 602,943 checks (11 safety invariants evaluated after EVERY single action)
+- Safety Violations Found: 0
+- Status: PASS
+
+NEGATIVE CONTROL REPRODUCIBILITY SUMMARY:
+- Negative Control (a) [Remove election restriction §5.4.1]: Fails on seed 1 (target: Invariant 10), genuine minimal sequence: 3 actions [settle, clientEntry, settle].
+- Negative Control (b) [Commit on 1 replica]: Fails on seed 1 (target: Invariant 5), genuine minimal sequence: 2 actions [settle, clientEntry].
+- Negative Control (c) [Vote twice in a term]: Fails on seed 1 (target: Invariant 1), genuine minimal sequence: 1 action [settle].
+- Real RaftModel passes all 3 minimal action sequences without error.
+
+SEED 777 ACTION TRACE SUMMARY:
+- Total Actions: 32 actions
+- Final State after 32 actions:
+  * Node 1: Term 1, Leader (in partition [1]), commitIndex=0, log=[]
+  * Node 2: Term 0, Down, commitIndex=0, log=[]
+  * Node 3: Term 1, Follower, commitIndex=0, log=[]
+- Invariants checked: 352 invariant evaluations (11 invariants * 32 actions), 0 violations.

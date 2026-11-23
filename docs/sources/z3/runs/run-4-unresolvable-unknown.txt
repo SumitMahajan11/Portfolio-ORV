@@ -1,0 +1,66 @@
+﻿# Cloud3 Commit: 6ed26e409270f296a2ecb7a1b3d01e0689ade954
+# Date: 2026-11-08
+# Command 1: python -m cli.main verify fixtures/phase3/unresolved_trust.tf
+# Command 2: python -m cli.main verify fixtures/phase3/unresolved_trust.tf --json
+# Command 3: python -m cli.main verify fixtures/phase12/gcp_corpus/case23_unresolvable_missing_org_or_folder.tf
+# Command 4: python -m pytest tests/test_unknown_outcome.py -v
+
+=== Command 1: Unresolved Trust Human Output ===
+=== Verification Report: fixtures/phase3/unresolved_trust.tf ===
+[UNRESOLVABLE] fixtures/phase3/unresolved_trust.tf: Graph contains unresolved dependencies or invalid template format
+[UNRESOLVABLE] aws_iam_role.unresolved_trust_role: Unable to verify IAM policy due to unresolved data: Evaluation scope contains unresolved policy statement: Contains unresolved reference inside jsonencode: 'jsonencode({'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Principal': {'AWS': 'module.unparsed_module.role_arn'}, 'Action': 'sts:AssumeRole'}]})'
+[UNRESOLVABLE] graph: Privilege escalation verification unresolvable due to bad/unresolved trust data: Role 'aws_iam_role.unresolved_trust_role' has unresolved rule source: Contains unresolved reference inside jsonencode: 'jsonencode({'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Principal': {'AWS': 'module.unparsed_module.role_arn'}, 'Action': 'sts:AssumeRole'}]})'
+Not modeled: none
+
+=== Command 2: Unresolved Trust JSON Output ===
+{
+  "target": "fixtures/phase3/unresolved_trust.tf",
+  "total_verifications": 3,
+  "not_modeled": [],
+  "results": [
+    {
+      "status": "UNRESOLVABLE",
+      "file": "fixtures/phase3/unresolved_trust.tf",
+      "message": "Graph contains unresolved dependencies or invalid template format"
+    },
+    {
+      "status": "UNRESOLVABLE",
+      "resource_address": "aws_iam_role.unresolved_trust_role",
+      "pattern": "IAM_WILDCARD_ALLOW",
+      "message": "Unable to verify IAM policy due to unresolved data: Evaluation scope contains unresolved policy statement: Contains unresolved reference inside jsonencode: 'jsonencode({'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Principal': {'AWS': 'module.unparsed_module.role_arn'}, 'Action': 'sts:AssumeRole'}]})'",
+      "witness": null,
+      "unsat_core": null,
+      "z3_proof_sexpr": null
+    },
+    {
+      "status": "UNRESOLVABLE",
+      "resource_address": "graph",
+      "pattern": "PRIVILEGE_ESCALATION_REACHABILITY",
+      "message": "Privilege escalation verification unresolvable due to bad/unresolved trust data: Role 'aws_iam_role.unresolved_trust_role' has unresolved rule source: Contains unresolved reference inside jsonencode: 'jsonencode({'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Principal': {'AWS': 'module.unparsed_module.role_arn'}, 'Action': 'sts:AssumeRole'}]})'",
+      "witness": null,
+      "unsat_core": null,
+      "z3_proof_sexpr": null
+    }
+  ]
+}
+
+=== Command 3: GCP Unresolvable Hierarchy Output ===
+=== Verification Report: fixtures/phase12/gcp_corpus/case23_unresolvable_missing_org_or_folder.tf ===
+[SAT] google_organization_iam_binding.org_token_creator: GCP IAM resource 'google_organization_iam_binding.org_token_creator' grants high-privilege or wildcard role permissions
+[SAT] google_project_iam_binding.orphan_owner: GCP IAM resource 'google_project_iam_binding.orphan_owner' grants high-privilege or wildcard role permissions
+[UNRESOLVABLE] graph: Privilege escalation verification unresolvable due to bad/unresolved trust data: Binding google_organization_iam_binding.org_token_creator has unresolvable scope hierarchy: Project 'google_project.orphan_proj' declares no org_id or folder_id — hierarchy cannot be confirmed; Binding google_organization_iam_binding.org_token_creator has unresolvable scope hierarchy: Project 'google_project.orphan_proj' declares no org_id or folder_id — hierarchy cannot be confirmed
+Not modeled: none
+
+=== Command 4: Test Genuine Unknown Pytest Output ===
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-9.1.1, pluggy-1.6.0 -- D:\Projects\Cloud3\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\SUMIT\AppData\Local\Temp\z3-run
+configfile: pyproject.toml
+plugins: anyio-4.14.2, cov-7.1.0
+collecting ... collected 1 item
+
+tests/test_unknown_outcome.py::test_genuine_unknown PASSED               [100%]
+
+============================== 1 passed in 0.24s ==============================
+

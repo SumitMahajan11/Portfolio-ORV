@@ -1,0 +1,61 @@
+=== TASK 0: BASELINE DESKTOP FPS WITHOUT --disable-gpu ===
+
+Chrome Flags:
+  --headless=new --remote-debugging-port=9240 --no-sandbox --disable-extensions --user-data-dir=C:\Users\SUMIT\AppData\Local\Temp\chrome-task0-1794299803751-1
+
+WebGL Renderer:
+  UNMASKED_RENDERER: ANGLE (Intel, Intel(R) UHD Graphics (0x0000468B) Direct3D11 vs_5_0 ps_5_0, D3D11)
+  UNMASKED_VENDOR: Google Inc. (Intel)
+  Classification: HARDWARE GPU
+
+Performance With Dual-Exposure Lantern (3 runs):
+  Runs: 132.4, 136.1, 135.8 FPS
+  Median: 135.8 FPS
+  p50 frame time: 6.9 ms
+  p95 frame time: 7.1 ms
+
+Performance Without Lantern (Isolated cost, 3 runs):
+  Runs: 134.4, 135.9, 136.2 FPS
+  Median: 135.9 FPS
+  p50 frame time: 6.9 ms
+  p95 frame time: 7.1 ms
+
+Isolated Lantern Cost:
+  FPS impact: 0.1 FPS
+  p50 frame time impact: 0 ms
+
+Decision Rule Evaluation:
+  Renderer is hardware GPU: true
+  Base Median FPS >= 58: true
+  Conclusion: Renderer is real GPU and median >= 58 FPS. Dual-exposure lantern passes performance requirement.
+
+{
+  "chromeFlags": "--headless=new --remote-debugging-port=9240 --no-sandbox --disable-extensions --user-data-dir=C:\\Users\\SUMIT\\AppData\\Local\\Temp\\chrome-task0-1794299803751-1",
+  "unmaskedRenderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000468B) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "unmaskedVendor": "Google Inc. (Intel)",
+  "isSoftwareRenderer": false,
+  "baseline": {
+    "runs": [
+      132.4,
+      136.1,
+      135.8
+    ],
+    "medianFps": 135.8,
+    "p50Ms": 6.9,
+    "p95Ms": 7.1
+  },
+  "disabledLantern": {
+    "runs": [
+      134.4,
+      135.9,
+      136.2
+    ],
+    "medianFps": 135.9,
+    "p50Ms": 6.9,
+    "p95Ms": 7.1
+  },
+  "isolatedCost": {
+    "fpsDelta": 0.1,
+    "p50DeltaMs": 0
+  }
+}

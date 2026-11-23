@@ -1,0 +1,14 @@
+================================================================
+ Z3 SCROLL FPS AUDIT REPORT
+================================================================
+Target Section: #iac-verifier
+Protocol: 3 runs with 60s idle between runs
+Floor requirement: >= 50 FPS
+
+Run 1: 60 FPS (avg delta: 16.67ms, jank: 0%)
+Run 2: 60 FPS (avg delta: 16.67ms, jank: 0%)
+Run 3: 59.5 FPS (avg delta: 16.8ms, jank: 0.8%)
+
+Median FPS: 60
+Verdict: PASS (>= 50 FPS)
+================================================================

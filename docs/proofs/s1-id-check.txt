@@ -1,0 +1,55 @@
+================================================================
+ TASK structure-S1: TINT ID CHECK & MUTATIONOBSERVER AUDIT
+================================================================
+Target URL: http://localhost:3000/
+Timestamp: 2026-11-10T14:57:28.191Z
+
+--- 1. BEFORE ID LIST (from old walls.ts) ---
+[
+  "hero-scene-container",
+  "scenario-select",
+  "edge-cloud",
+  "ratify",
+  "iac-verifier",
+  "side-quests",
+  "readers-record",
+  "contact"
+]
+
+--- 2. AFTER ID LIST (from updated walls.ts) ---
+[
+  "hero-scene",
+  "scenario-select",
+  "edge-cloud",
+  "ratify",
+  "iac-verifier",
+  "side-quests",
+  "readers-record",
+  "contact"
+]
+
+--- 3. SECTION EXISTENCE IN REAL DOM (after deferred worlds mount) ---
+  [PASS] #hero-scene -> <section> (aria-label: Sumit Mahajan Portfolio Archive)
+  [PASS] #scenario-select -> <section> (aria-label: none)
+  [PASS] #edge-cloud -> <section> (aria-label: none)
+  [PASS] #ratify -> <section> (aria-label: none)
+  [PASS] #iac-verifier -> <section> (aria-label: none)
+  [PASS] #side-quests -> <section> (aria-label: none)
+  [PASS] #readers-record -> <section> (aria-label: none)
+  [PASS] #contact -> <section> (aria-label: none)
+
+--- 4. MUTATIONOBSERVER DISCONNECT PROOF ---
+BEFORE (with stale hero-scene-container):
+  - hero-scene-container exists: false
+  - All IDs mounted: false
+  - Observer disconnected: false
+  - Diagnosis: Stale hero-scene-container is missing, so nowAllMounted evaluates to false and observer never disconnects.
+
+AFTER (with real hero-scene):
+  - hero-scene exists: true
+  - All IDs mounted: true
+  - Observer disconnected: true
+  - Diagnosis: Real hero-scene exists alongside all 7 other sections, so nowAllMounted evaluates to true and observer disconnects cleanly.
+
+VERDICT: PASS. Every ID in walls.ts exists on / after deferred worlds mount, and the MutationObserver disconnects cleanly.
+================================================================

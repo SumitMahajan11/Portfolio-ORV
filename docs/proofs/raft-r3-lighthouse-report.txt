@@ -1,0 +1,22 @@
+================================================================
+RAFT R3 MOBILE LIGHTHOUSE AUDIT REPORT (3 RUNS, 60s IDLE)
+================================================================
+URL: http://localhost:3000/
+Timestamp: 2026-11-08T13:18:34.455Z
+
+Raw Runs:
+Run 1: Perf=79, A11y=100, BP=96, SEO=100, LCP=4620ms, CLS=0, TBT=246ms
+Run 2: Perf=83, A11y=100, BP=96, SEO=100, LCP=4492ms, CLS=0, TBT=139ms
+Run 3: Perf=82, A11y=100, BP=96, SEO=100, LCP=4495ms, CLS=0, TBT=172ms
+
+Medians:
+- Performance: 82 (Floor Target: >= 77 -> PASS)
+- Accessibility: 100
+- Best Practices: 96
+- SEO: 100
+- LCP: 4.50s
+- CLS: 0
+- TBT: 172ms
+
+Status: PASS
+================================================================

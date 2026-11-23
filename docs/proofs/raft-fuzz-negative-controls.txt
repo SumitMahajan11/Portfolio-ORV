@@ -1,0 +1,128 @@
+================================================================
+ RAFT NEGATIVE-CONTROL REPLAY & MINIMIZATION AUDIT
+ Timestamp: 2026-11-08T14:15:23.254Z
+================================================================
+
+[Setup] Created temporary directory for mutant copies: C:\Users\SUMIT\AppData\Local\Temp\raft-mutants-1794147323255
+
+----------------------------------------------------------------
+ NEGATIVE CONTROL (a): REMOVE ELECTION RESTRICTION (§5.4.1)
+ Target Invariant: Invariant 10 (No vote granted to candidate with less up-to-date log)
+----------------------------------------------------------------
+
+1. Replay Reported Minimal List:
+   Reported actions: [1. settle]
+   Replay outcome: PASSED (Did not fail)
+   >> EVALUATION: The reported list [settle] DOES NOT reproduce Invariant 10!
+      Reason: On a fresh cluster, all 3 nodes have empty logs (length 0, term 0).
+      No node has a more up-to-date log than another, so Invariant 10 cannot be violated by a single settle.
+      (The earlier report erroneously accepted an Invariant 3 violation during greedy minimization).
+
+2. Full Original Action List from Seed 1 (18 actions to Invariant 10 violation):
+    1. crash(Node 2)
+    2. settle
+    3. recover(Node 2)
+    4. clientEntry("Entry #1")
+    5. settle
+    6. isolate(Node 1)
+    7. isolate(Node 1)
+    8. crash(Node 2)
+    9. crash(Node 2)
+    10. clientEntry("Entry #2")
+    11. recover(Node 1)
+    12. isolate(Node 2)
+    13. clientEntry("Entry #3")
+    14. recover(Node 2)
+    15. heal
+    16. recover(Node 3)
+    17. isolate(Node 3)
+    18. settle
+
+3. Delta-Debugging Minimization Loop (1-by-1 removal preserving Invariant 10):
+   Genuine Minimal Action List (3 actions):
+    1. settle
+    2. clientEntry("Entry #3")
+    3. settle
+
+4. Replay Genuine Minimized List on Mutant A:
+   Failing Invariant Message:
+   Invariant 10 Violation (Election Restriction §5.4.1): Node 1 granted vote to Node 2 in term 2 with less up-to-date log: cand(term=0, len=0) < voter(term=1, len=1) Step 3
+
+5. Replay Genuine Minimized List on REAL RaftModel (Safety Verification):
+   Outcome: All invariants held (PASS)
+
+----------------------------------------------------------------
+ NEGATIVE CONTROL (b): COMMIT WITH 1 REPLICA
+ Target Invariant: Invariant 5 (Commit requires majority + current-term entry)
+----------------------------------------------------------------
+
+1. Replay Reported Minimal List:
+   Reported actions: [1. settle, 2. clientEntry("Entry #5")]
+   Replay outcome: FAILED: Invariant 5 Violation (Commit Majority): Node 1 has committed entry at index 1 with only 1 replica (< 2 required) Step 2
+   >> EVALUATION: Successfully reproduced Invariant 5 violation.
+
+2. Full Original Action List from Seed 1 (4 actions):
+    1. crash(Node 2)
+    2. settle
+    3. recover(Node 2)
+    4. clientEntry("Entry #1")
+
+3. Delta-Debugging Minimization Loop (1-by-1 removal preserving Invariant 5):
+   Genuine Minimal Action List (2 actions):
+    1. settle
+    2. clientEntry("Entry #1")
+
+4. Replay Genuine Minimized List on Mutant B:
+   Failing Invariant Message:
+   Invariant 5 Violation (Commit Majority): Node 1 has committed entry at index 1 with only 1 replica (< 2 required) Step 2
+
+5. Replay Genuine Minimized List on REAL RaftModel (Safety Verification):
+   Outcome: All invariants held (PASS)
+
+----------------------------------------------------------------
+ NEGATIVE CONTROL (c): VOTE TWICE IN A TERM
+ Target Invariant: Invariant 1 (Leader Uniqueness) / Invariant 2 (Election Safety)
+----------------------------------------------------------------
+
+1. Replay Reported Minimal List:
+   Reported actions: [1. settle]
+   Replay outcome: FAILED: Invariant 1 Violation (Leader Uniqueness): Term 1 has multiple leaders: [1, 2] Step 1
+   >> EVALUATION: Successfully reproduced Invariant 1 violation.
+
+2. Full Original Action List from Seed 1 (2 actions):
+    1. crash(Node 2)
+    2. settle
+
+3. Delta-Debugging Minimization Loop (1-by-1 removal preserving Invariant 1):
+   Genuine Minimal Action List (1 action):
+    1. settle
+
+4. Replay Genuine Minimized List on Mutant C:
+   Failing Invariant Message:
+   Invariant 1 Violation (Leader Uniqueness): Term 1 has multiple leaders: [1, 2] Step 1
+
+5. Replay Genuine Minimized List on REAL RaftModel (Safety Verification):
+   Outcome: All invariants held (PASS)
+
+[Cleanup] Removed temporary mutant directory C:\Users\SUMIT\AppData\Local\Temp\raft-mutants-1794147323255.
+
+================================================================
+ FINAL VERIFICATION SUMMARY
+================================================================
+ Control A [Election restriction removed]:
+   - Seed: 1 (original failure at action 18)
+   - Reported minimal list [settle]: DID NOT reproduce Invariant 10
+   - Genuine minimal list (3 actions): [settle, clientEntry, settle]
+   - Replay fails Invariant 10 on Mutant A; PASSES on Real RaftModel.
+ Control B [Commit on 1 replica]:
+   - Seed: 1 (original failure at action 4)
+   - Reported minimal list [settle, clientEntry]: REPRODUCED Invariant 5
+   - Genuine minimal list (2 actions): [settle, clientEntry]
+   - Replay fails Invariant 5 on Mutant B; PASSES on Real RaftModel.
+ Control C [Vote twice in a term]:
+   - Seed: 1 (original failure at action 2)
+   - Reported minimal list [settle]: REPRODUCED Invariant 1
+   - Genuine minimal list (1 action): [settle]
+   - Replay fails Invariant 1 on Mutant C; PASSES on Real RaftModel.
+ Real RaftModel passes all 3 genuine minimized action sequences with 0 violations.
+================================================================

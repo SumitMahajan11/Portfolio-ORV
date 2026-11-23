@@ -28,10 +28,10 @@ Rules: only [VERIFIED] items may appear as claims. [VERIFY] items must be checke
 ## Flagship 3: iac-verifier (Z3)
 - Z3-based reachability proofs on Terraform IAM and network graphs. [VERIFIED]
 - Auto-repair engine and proof certificates. [VERIFIED]
-- 103 passing tests. [VERIFIED]
+- 276 passing tests. [VERIFIED]
 - Benchmark: finds a privilege-escalation path that Checkov and TFSec miss. [VERIFIED]
 - Pre-launch TODO: clean repo root (tfsec.exe, scratch/, loose checkov_*.json).
-- Repo link: [FILL].
+- Repo link: https://github.com/SumitMahajan11/iac-verifier [VERIFIED]
 
 ## Flagship 4: Backtrace (PROVISIONAL)
 - Idea: reconstructing a repo from clues. Status: [VERIFY existence, repo, demo]. If no evidence, demote to Side Quest.

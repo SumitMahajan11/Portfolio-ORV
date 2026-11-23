@@ -2,20 +2,25 @@
  * Biyoo Mascot Orchestrator Component
  *
  * Implements /docs/07-BIYOO-PERSONALITY-AND-SOUND.md and /docs/20 Section 3.
- * Manages pure state machine transitions, speech queue coordination,
- * cursor proximity lerp, audio hooks, and accessible keyboard interactions.
+ * Powered by owner's real art:
+ * - Stacked calm & excited poses (/art/biyoo/biyoo-calm-* and /art/biyoo/biyoo-excited-*)
+ * - Golden exclamation burst sprite (/art/biyoo/biyoo-burst-*)
+ * - GSAP idle bob (+-4px, 3.2s sine yoyo) with squash (scaleY 1 -> 0.985, scaleX 1 -> 1.01)
+ * - 0.18s crossfade between calm and excited + squash/stretch bounce
+ * - Burst pops in (scale 0.6 -> 1.1 -> 1, opacity 0 -> 1, 0.25s) and fades after 1.2s
+ * - Pure state machine transitions, speech queue coordination, cursor proximity lerp
  */
 
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback, useReducer } from "react";
 import { useMode } from "@/lib/flags";
-import { useScene, gsap } from "@/lib/motion";
+import { gsap } from "@/lib/motion";
 import type { PointerPosition } from "@/lib/reader/types";
+import { ART_ALT_REGISTRY } from "@/content/art-alt";
 import type { BiyooCostume, BiyooState } from "./biyoo-types";
 import { createInitialBiyooContext, biyooReducer } from "./biyoo-machine";
 import { getBiyooReaction } from "./reaction-map";
-import { BiyooRenderer } from "./biyoo-renderer";
 import { BiyooSpeech } from "./biyoo-speech";
 import { useBiyooAudio } from "./use-biyoo-audio";
 
@@ -46,7 +51,13 @@ export function Biyoo({
 }: BiyooProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const followRef = useRef<HTMLDivElement>(null);
+  const bobRef = useRef<HTMLDivElement>(null);
+  const bounceRef = useRef<HTMLDivElement>(null);
+  const calmImgRef = useRef<HTMLImageElement>(null);
+  const excitedImgRef = useRef<HTMLImageElement>(null);
+  const burstImgRef = useRef<HTMLImageElement>(null);
   const speechTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isFirstRender = useRef(true);
 
   const { mode, reducedMotion, signals } = useMode();
   const audio = useBiyooAudio();
@@ -54,9 +65,16 @@ export function Biyoo({
   // Pure state machine reducer initialization
   const [machineContext, dispatch] = useReducer(biyooReducer, localHour, createInitialBiyooContext);
   const [overrideCostume, setOverrideCostume] = useState<BiyooCostume>(null);
-  const activeCostume = overrideCostume ?? costume ?? machineContext.costume;
+  void (overrideCostume ?? costume ?? machineContext.costume); // Preserved API
 
   const currentMeta = getBiyooReaction(machineContext.state);
+
+  // Map existing states: alert, surprise, success, or reaction -> excited + burst; others -> calm
+  const isExcited =
+    machineContext.state === "startled" ||
+    machineContext.state === "happy" ||
+    machineContext.state === "proud" ||
+    machineContext.state === "curious";
 
   // Broadcast speech state to window and parent callback
   const notifySpeaking = useCallback(
@@ -173,30 +191,95 @@ export function Biyoo({
     return () => cancelAnimationFrame(rafId);
   }, [pointerPosition, signals.isTouch, reducedMotion, mode]);
 
-  // Gentle sleeping bob animation (Full mode only)
-  useScene(
-    () => {
-      if (reducedMotion || !containerRef.current) return;
-      const target = containerRef.current.querySelector(".biyoo-bob-target");
-      if (!target) return;
+  // 1. Idle Bob & Squash Motion (Full mode only)
+  useEffect(() => {
+    const el = bobRef.current;
+    if (!el || typeof window === "undefined") return;
 
-      if (machineContext.state === "sleeping") {
-        gsap.to(target, {
-          y: mode === "light" ? 0 : -6,
-          scale: 1.03,
-          duration: 2.2,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          transformOrigin: "bottom center",
-        });
-      } else {
-        gsap.killTweensOf(target);
-        gsap.to(target, { y: 0, scale: 1, duration: 0.4, ease: "power2.out" });
+    if (reducedMotion || mode === "light") {
+      gsap.set(el, { y: 0, scaleX: 1, scaleY: 1, clearProps: "transform" });
+      return;
+    }
+
+    // idle bob (+-4px, 3.2s sine yoyo) with tiny squash (scaleY 1 -> 0.985, scaleX 1 -> 1.01 in sync)
+    const tween = gsap.fromTo(
+      el,
+      { y: 4, scaleY: 0.985, scaleX: 1.01 },
+      {
+        y: -4,
+        scaleY: 1.0,
+        scaleX: 1.0,
+        duration: 1.6,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+        transformOrigin: "bottom center",
       }
-    },
-    { scope: containerRef, dependencies: [machineContext.state, reducedMotion, mode] }
-  );
+    );
+
+    return () => {
+      tween.kill();
+    };
+  }, [reducedMotion, mode]);
+
+  // 2. Calm to Excited Crossfade, Squash/Stretch Bounce, and Burst Sprite Animation
+  useEffect(() => {
+    const calmEl = calmImgRef.current;
+    const excitedEl = excitedImgRef.current;
+    const burstEl = burstImgRef.current;
+    const bounceEl = bounceRef.current;
+    if (!calmEl || !excitedEl || !burstEl || !bounceEl) return;
+
+    // Skip redundant animation on initial mount
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Reduced motion or light mode: swap instantly without animation
+    if (reducedMotion || mode === "light") {
+      if (isExcited) {
+        gsap.set(calmEl, { opacity: 0 });
+        gsap.set(excitedEl, { opacity: 1 });
+        gsap.set(burstEl, { opacity: 1, scale: 1 });
+      } else {
+        gsap.set(calmEl, { opacity: 1 });
+        gsap.set(excitedEl, { opacity: 0 });
+        gsap.set(burstEl, { opacity: 0, scale: 0.6 });
+      }
+      gsap.set(bounceEl, { y: 0, scaleX: 1, scaleY: 1, clearProps: "transform" });
+      return;
+    }
+
+    if (isExcited) {
+      // 0.18s crossfade of the two poses
+      gsap.to(calmEl, { opacity: 0, duration: 0.18, ease: "power1.inOut", overwrite: "auto" });
+      gsap.to(excitedEl, { opacity: 1, duration: 0.18, ease: "power1.inOut", overwrite: "auto" });
+
+      // Squash/stretch bounce
+      gsap.timeline({ overwrite: "auto" })
+        .to(bounceEl, { scaleX: 1.12, scaleY: 0.88, duration: 0.08, ease: "power2.out", transformOrigin: "bottom center" })
+        .to(bounceEl, { scaleX: 0.94, scaleY: 1.08, y: -10, duration: 0.18, ease: "power2.out", transformOrigin: "bottom center" })
+        .to(bounceEl, { scaleX: 1.02, scaleY: 0.98, y: 0, duration: 0.16, ease: "bounce.out", transformOrigin: "bottom center" })
+        .to(bounceEl, { scaleX: 1, scaleY: 1, duration: 0.1, ease: "power1.out", transformOrigin: "bottom center" });
+
+      // Burst pops in (scale 0.6 -> 1.1 -> 1, opacity 0 -> 1, 0.25s) and fades after 1.2s
+      gsap.timeline({ overwrite: "auto" })
+        .fromTo(
+          burstEl,
+          { scale: 0.6, opacity: 0 },
+          { scale: 1.1, opacity: 1, duration: 0.15, ease: "power2.out", transformOrigin: "bottom right" }
+        )
+        .to(burstEl, { scale: 1.0, duration: 0.1, ease: "power1.out", transformOrigin: "bottom right" })
+        .to(burstEl, { opacity: 0, duration: 0.3, ease: "power2.in", delay: 1.2 });
+    } else {
+      // Crossfade back to calm
+      gsap.to(calmEl, { opacity: 1, duration: 0.18, ease: "power1.inOut", overwrite: "auto" });
+      gsap.to(excitedEl, { opacity: 0, duration: 0.18, ease: "power1.inOut", overwrite: "auto" });
+      gsap.to(burstEl, { opacity: 0, scale: 0.6, duration: 0.18, ease: "power2.in", overwrite: "auto" });
+      gsap.to(bounceEl, { scaleX: 1, scaleY: 1, y: 0, duration: 0.2, ease: "power1.out", overwrite: "auto" });
+    }
+  }, [isExcited, reducedMotion, mode]);
 
   const handlePoke = () => {
     dispatch({ type: "POKE" });
@@ -205,7 +288,7 @@ export function Biyoo({
     }
   };
 
-  const effectiveSize = Math.max(72, Math.min(size, signals.isTouch ? 84 : 108));
+  const effectiveSize = Math.max(72, Math.min(size, 108));
 
   return (
     <aside
@@ -229,19 +312,114 @@ export function Biyoo({
         aria-label="Biyoo companion: tap to interact"
         className="biyoo-interactive-target cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1 focus:outline-none"
       >
-        <div className="biyoo-bob-target will-change-transform">
-          <BiyooRenderer
-            size={effectiveSize}
-            eyeVariant={currentMeta.eyeVariant}
-            mouthVariant={currentMeta.mouthVariant}
-            costume={activeCostume}
-            isReduced={reducedMotion}
-          />
+        <div ref={bobRef} className="biyoo-bob-target flex items-center justify-center">
+          <div ref={bounceRef} className="biyoo-bounce-target relative flex items-center justify-center">
+            {/* Real Art Stacked Wrapper: calm pose, excited pose, and burst sprite */}
+            <div
+              className="biyoo-art-wrapper relative select-none"
+              style={{
+                width: effectiveSize,
+                height: Math.round(effectiveSize * (891 / 1000)),
+                maxWidth: "clamp(72px, 10vw, 110px)",
+                aspectRatio: "1000 / 891",
+              }}
+            >
+              {/* Calm pose image */}
+              <picture className="absolute inset-0 w-full h-full pointer-events-none">
+                <source
+                  type="image/avif"
+                  srcSet="/art/biyoo/biyoo-calm-360.avif 360w, /art/biyoo/biyoo-calm-720.avif 720w"
+                  sizes="(max-width: 639px) 72px, 108px"
+                />
+                <source
+                  type="image/webp"
+                  srcSet="/art/biyoo/biyoo-calm-360.webp 360w, /art/biyoo/biyoo-calm-720.webp 720w"
+                  sizes="(max-width: 639px) 72px, 108px"
+                />
+                <img
+                  ref={calmImgRef}
+                  src="/art/biyoo/biyoo-calm-360.webp"
+                  alt={ART_ALT_REGISTRY.biyoo_calm.alt}
+                  width={100}
+                  height={89}
+                  decoding="async"
+                  loading="eager"
+                  fetchPriority="high"
+                  className="biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
+                  style={{ opacity: 1 }}
+                />
+              </picture>
+
+              {/* Excited pose image (stacked on top, opacity 0) */}
+              <picture className="absolute inset-0 w-full h-full pointer-events-none">
+                <source
+                  type="image/avif"
+                  srcSet="/art/biyoo/biyoo-excited-360.avif 1x, /art/biyoo/biyoo-excited-720.avif 2x"
+                />
+                <source
+                  type="image/webp"
+                  srcSet="/art/biyoo/biyoo-excited-360.webp 1x, /art/biyoo/biyoo-excited-720.webp 2x"
+                />
+                <img
+                  ref={excitedImgRef}
+                  src="/art/biyoo/biyoo-excited-360.webp"
+                  alt={ART_ALT_REGISTRY.biyoo_excited.alt}
+                  width={100}
+                  height={89}
+                  decoding="async"
+                  loading="lazy"
+                  className="biyoo-pose-excited absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
+                  style={{ opacity: 0 }}
+                />
+              </picture>
+
+              {/* Golden '!!' burst sprite positioned next to left horn at about -12% x, -8% y */}
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  top: "-8%",
+                  left: "-12%",
+                  width: "32%",
+                  aspectRatio: "1 / 1",
+                  zIndex: 2,
+                }}
+              >
+                <picture className="w-full h-full block">
+                  <source
+                    type="image/avif"
+                    srcSet="/art/biyoo/biyoo-burst-96.avif 1x, /art/biyoo/biyoo-burst-192.avif 2x"
+                  />
+                  <source
+                    type="image/webp"
+                    srcSet="/art/biyoo/biyoo-burst-96.webp 1x, /art/biyoo/biyoo-burst-192.webp 2x"
+                  />
+                  <img
+                    ref={burstImgRef}
+                    src="/art/biyoo/biyoo-burst-96.webp"
+                    alt={ART_ALT_REGISTRY.biyoo_burst.alt}
+                    aria-hidden="true"
+                    width={36}
+                    height={36}
+                    decoding="async"
+                    loading="lazy"
+                    className="biyoo-burst-sprite w-full h-full object-contain pointer-events-none select-none"
+                    style={{
+                      opacity: 0,
+                      transform: "scale(0.6)",
+                      transformOrigin: "bottom right",
+                    }}
+                  />
+                </picture>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {reducedMotion && (
-        <span className="font-mono text-[10px] text-mist/70 mt-1 tracking-wider uppercase" aria-hidden="true">[BIYOO_{machineContext.state.replace("-", "_")}]</span>
+        <span className="font-mono text-[10px] text-mist/70 mt-1 tracking-wider uppercase" aria-hidden="true">
+          [BIYOO_{machineContext.state.replace("-", "_")}]
+        </span>
       )}
     </aside>
   );

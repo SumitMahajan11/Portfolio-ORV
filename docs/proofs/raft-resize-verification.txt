@@ -1,0 +1,65 @@
+=== MID-PAGE RESIZE TEST: SCROLL TO RAFT & RESIZE ===
+
+Date: 2026-11-07T19:00:08.042Z
+
+BEFORE RESIZE (1440x900):
+{
+  "scrollY": 7385,
+  "viewportWidth": 1440,
+  "viewportHeight": 900,
+  "ratifyRect": {
+    "top": -850,
+    "bottom": 1750,
+    "height": 2600
+  },
+  "tints": [
+    {
+      "id": "edge-cloud",
+      "opacity": 0
+    },
+    {
+      "id": "raft",
+      "opacity": 0
+    },
+    {
+      "id": "z3",
+      "opacity": 0
+    },
+    {
+      "id": "backtrace",
+      "opacity": 0
+    }
+  ]
+}
+
+AFTER RESIZE (1280x800):
+{
+  "scrollY": 7385,
+  "viewportWidth": 1280,
+  "viewportHeight": 800,
+  "ratifyRect": {
+    "top": -1250,
+    "bottom": 1350,
+    "height": 2600
+  },
+  "tints": [
+    {
+      "id": "edge-cloud",
+      "opacity": 0
+    },
+    {
+      "id": "raft",
+      "opacity": 0.35
+    },
+    {
+      "id": "z3",
+      "opacity": 0
+    },
+    {
+      "id": "backtrace",
+      "opacity": 0
+    }
+  ]
+}
+
+VERDICT: Tint is Raft (orange) both before and after resize -> PASS

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
@@ -16,6 +16,35 @@ const DynamicRaftVizCanvas = dynamic(
     loading: () => <RaftStaticDiagram />,
   }
 );
+
+// Lazy-load the interactive consensus sandbox (desktop full-mode only)
+const DynamicRaftSandbox = dynamic(
+  () => import("./raft-sandbox").then((mod) => mod.RaftSandbox),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="p-8 rounded border border-line bg-ink-2/60 text-center font-mono text-xs text-mist animate-pulse">
+        Loading interactive consensus sandbox...
+      </div>
+    ),
+  }
+);
+
+function subscribeMediaQuery(callback: () => void) {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  const mql = window.matchMedia("(min-width: 640px)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
+function getDesktopSnapshot() {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia("(min-width: 640px)").matches;
+}
+
+function getServerSnapshot() {
+  return false;
+}
 
 export interface RaftWorldProps {
   className?: string;
@@ -37,6 +66,8 @@ export interface RaftWorldProps {
 export function RaftWorld({ className = "" }: RaftWorldProps) {
   const { reducedMotion, mode } = useMode();
   const [scenarioCleared, setScenarioCleared] = useState(false);
+  const isDesktop = useSyncExternalStore(subscribeMediaQuery, getDesktopSnapshot, getServerSnapshot);
+  const [sandboxOpen, setSandboxOpen] = useState(false);
 
   // Retrieve Ratify project data from content
   const project = projects.find((p) => p.id === "ratify") || {
@@ -47,7 +78,11 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     oneLiner: "From-scratch Rust Raft implementation.",
     claims: [],
     limits: ["3-node, correctness project, not a performance benchmark."],
-    links: { repo: null, demo: null, benchmark: null },
+    links: {
+      repo: "https://github.com/SumitMahajan11/Ratify",
+      demo: "https://github.com/SumitMahajan11/Ratify/blob/main/artifacts/demo_recording.cast",
+      benchmark: null,
+    },
     costume: "leaf headband",
     worldReady: true,
   };
@@ -63,7 +98,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     }
   };
 
-  const isStaticMode = reducedMotion || mode === "light";
+  const isStaticMode = reducedMotion || mode === "light" || !isDesktop;
 
   return (
     <section
@@ -119,6 +154,9 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
             <p className="font-mono text-xs text-mist">
               Observe leader failure, term increments, majority quorum elections, partition walls, and stale leader demotion.
             </p>
+            <p className="font-mono text-xs text-[#F28C28]/90 font-medium">
+              Simplified 3-node teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
+            </p>
           </div>
 
           {/* Conditional Progressive Enhancement: Static diagram for reduced-motion/light, dynamic for full interactive */}
@@ -126,6 +164,37 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
             <RaftStaticDiagram />
           ) : (
             <DynamicRaftVizCanvas onClearScenario={handleScenarioClear} />
+          )}
+        </div>
+
+        {/* Try It Yourself: Interactive Consensus Sandbox (Desktop Full-Mode Only) */}
+        <div className="space-y-4 max-w-4xl mx-auto w-full">
+          <div className="text-center space-y-1">
+            <h4 className="font-display text-base sm:text-lg font-bold text-feather">
+              Try It Yourself &bull; Consensus Sandbox
+            </h4>
+            <p className="font-mono text-xs text-mist">
+              Experiment with arbitrary crash, recover, partition, and client write events.
+            </p>
+          </div>
+
+          {!isDesktop || reducedMotion || mode === "light" ? (
+            <div className="p-4 rounded border border-line/60 bg-ink-2/60 text-center font-mono text-xs text-mist">
+              The interactive consensus sandbox is available on desktop.
+            </div>
+          ) : !sandboxOpen ? (
+            <div className="text-center py-2">
+              <button
+                type="button"
+                onClick={() => setSandboxOpen(true)}
+                className="px-5 py-2.5 rounded border border-[#3E8E41]/60 bg-[#3E8E41]/15 hover:bg-[#3E8E41]/25 text-[#3E8E41] font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_12px_rgba(62,142,65,0.2)]"
+                aria-label="Open interactive consensus sandbox"
+              >
+                ▶ Open sandbox
+              </button>
+            </div>
+          ) : (
+            <DynamicRaftSandbox />
           )}
         </div>
 
@@ -195,7 +264,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
                       rel="noopener noreferrer"
                       className="text-[#F28C28] hover:text-feather underline transition-colors"
                     >
-                      {url}
+                      Recorded demo (asciicast)
                     </a>
                   ))}
                 </div>

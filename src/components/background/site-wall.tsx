@@ -1,211 +1,507 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useMode } from '@/lib/flags';
-import { WALL_DEFINITIONS, DEFAULT_WALL_ID, getWallIdForSection } from '@/content/walls';
-import type { WallId } from '@/content/wall-placeholders';
+import { AtmosphericParticles } from './wall-particles';
+import {
+  WALL_DEFINITIONS,
+  DEFAULT_WALL_ID,
+  TINT_DEFINITIONS,
+  VISIBLE_TINT_IDS,
+  SECTION_TINT_MAP,
+  MONITORED_SECTION_IDS,
+  type TintId,
+} from '@/content/walls';
+import { gsap, ScrollTrigger, registerMotionPlugins, DEFAULT_SCRUB } from '@/lib/motion';
 
-export function SiteWall() {
+type IdleCallbackHandle = number | ReturnType<typeof setTimeout>;
+
+const scheduleIdle = (fn: () => void): IdleCallbackHandle => {
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    return window.requestIdleCallback((deadline) => {
+      if (deadline.timeRemaining() > 10 || deadline.didTimeout) {
+        fn();
+      } else {
+        scheduleIdle(fn);
+      }
+    });
+  }
+  return setTimeout(fn, 1000);
+};
+
+const cancelIdle = (handle: IdleCallbackHandle): void => {
+  if (typeof window !== 'undefined' && typeof handle === 'number' && 'cancelIdleCallback' in window) {
+    window.cancelIdleCallback(handle);
+    return;
+  }
+  clearTimeout(handle as ReturnType<typeof setTimeout>);
+};
+
+interface SectionSpan {
+  id: string;
+  tintId: TintId;
+  top: number;
+  bottom: number;
+}
+
+interface PaperSpriteProps {
+  className?: string;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * Original inline SVG paper shape (retired per Task 4, preserved in file):
+ * Slightly bent rectangle manuscript paper, faint text lines, 1px cyan edge glow.
+ */
+export function PaperSprite({ className = '', width = 56, height = 76 }: PaperSpriteProps) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 56 76"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M 5 4 C 18 1.5, 36 2, 50 5 C 52 24, 51 48, 49 71 C 34 74, 18 72, 4 72 C 3 49, 4 26, 5 4 Z"
+        fill="rgba(10, 15, 24, 0.72)"
+        stroke="#5EE1E6"
+        strokeWidth="1"
+        strokeOpacity="0.45"
+      />
+      <line x1="10" y1="14" x2="44" y2="15" stroke="rgba(244, 246, 250, 0.25)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="23" x2="41" y2="24" stroke="rgba(244, 246, 250, 0.2)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="32" x2="45" y2="33" stroke="rgba(244, 246, 250, 0.22)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="41" x2="33" y2="42" stroke="rgba(244, 246, 250, 0.18)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="50" x2="43" y2="51" stroke="rgba(244, 246, 250, 0.2)" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10" y1="59" x2="26" y2="60" stroke="rgba(94, 225, 230, 0.3)" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/**
+ * LivingWall:
+ * Single global living archive wall background with GSAP ScrollTrigger
+ * scrubbing a subtle zoom/drift toward the top-right light (transform-origin 100% 0%),
+ * idle breathing loop (desktop full mode), dual-exposure pointer-following lantern reveal,
+ * per-section color grading tint layers, and a fixed vignette/scrim layer for WCAG AA contrast.
+ */
+export function LivingWall() {
   const pathname = usePathname();
-  const { lightMode, reducedMotion } = useMode();
+  const { mode, lightMode, reducedMotion, signals, isHydrated } = useMode();
   const isInstant = lightMode || reducedMotion;
 
-  // Active wall currently displayed; incoming wall being crossfaded in
-  const [activeWallId, setActiveWallId] = useState<WallId>(DEFAULT_WALL_ID);
-  const [incomingWallId, setIncomingWallId] = useState<WallId | null>(null);
-  const [incomingVisible, setIncomingVisible] = useState(false);
-  const [isHeroPinned, setIsHeroPinned] = useState(true);
-
-  const activeWallRef = useRef<WallId>(activeWallId);
-  const incomingWallRef = useRef<WallId | null>(incomingWallId);
-
-  useEffect(() => {
-    activeWallRef.current = activeWallId;
-  }, [activeWallId]);
-
-  useEffect(() => {
-    incomingWallRef.current = incomingWallId;
-  }, [incomingWallId]);
-
-  // Route-aware: Plain dark background for /skip, /wanted, and /dev routes
+  // Route-aware: Plain dark background for /skip, /wanted, /dev, and /style-test routes
   const isExcludedRoute =
     pathname === '/skip' ||
     pathname === '/wanted' ||
     pathname?.startsWith('/dev') ||
     pathname?.startsWith('/style-test');
 
-  // Track hero pinned state to guarantee NO opacity transition runs while hero is pinned
+  const isDesktop =
+    typeof window !== 'undefined' &&
+    window.innerWidth >= 769 &&
+    !signals.isCoarsePointer &&
+    !signals.isTouch;
+  const isDesktopFull =
+    isHydrated &&
+    !isExcludedRoute &&
+    !isInstant &&
+    mode === 'full' &&
+    isDesktop;
+
+  const zoomRef = useRef<HTMLDivElement>(null);
+  const breathRef = useRef<HTMLDivElement>(null);
+  const brightZoomRef = useRef<HTMLDivElement>(null);
+  const brightBreathRef = useRef<HTMLDivElement>(null);
+  const lanternRef = useRef<HTMLDivElement>(null);
+  const lanternCounterRef = useRef<HTMLDivElement>(null);
+
+  const tintRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const activeTintRef = useRef<TintId>('hub');
+
   useEffect(() => {
     if (isExcludedRoute || typeof window === 'undefined') return;
+    registerMotionPlugins();
 
-    const checkHeroPinned = () => {
-      const hero = document.getElementById('hero-scene-container');
-      if (hero) {
-        const rect = hero.getBoundingClientRect();
-        // Hero is pinned/active while its bottom is visible or on-screen
-        setIsHeroPinned(rect.bottom > 50);
-      } else {
-        setIsHeroPinned(false);
+    const zoomEl = zoomRef.current;
+    const breathEl = breathRef.current;
+    if (!zoomEl || !breathEl) return;
+
+    // Collect all zoom/breath elements (both base and bright reveal layer)
+    const zoomEls: HTMLElement[] = [zoomEl];
+    const breathEls: HTMLElement[] = [breathEl];
+    if (brightZoomRef.current) zoomEls.push(brightZoomRef.current);
+    if (brightBreathRef.current) breathEls.push(brightBreathRef.current);
+
+    // Light mode and reduced motion: static wall at scale 1, no ScrollTrigger, no loops, no tints
+    if (isInstant) {
+      gsap.set(zoomEls, { scale: 1, xPercent: 0, yPercent: 0, clearProps: 'transform' });
+      gsap.set(breathEls, { scale: 1, clearProps: 'transform' });
+      return;
+    }
+
+    const mm = gsap.matchMedia();
+
+    // Desktop: Scroll zoom 1.00 -> 1.12 + translate drift toward the light (max ~1.5%) + idle breathing loop
+    mm.add('(min-width: 769px)', () => {
+      // 1. One GSAP ScrollTrigger scrubbing the whole document scroll
+      gsap.fromTo(
+        zoomEls,
+        { scale: 1.0, xPercent: 0, yPercent: 0 },
+        {
+          scale: 1.12,
+          xPercent: 1.5,
+          yPercent: -1.0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: document.documentElement,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: DEFAULT_SCRUB,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              const scrollY = self.scroll();
+              syncTint(scrollY, 0.8);
+            },
+          },
+        }
+      );
+
+      // 2. Desktop full mode only: very slow idle breathing (scale +-0.4%, ~14s sine loop)
+      gsap.fromTo(
+        breathEls,
+        { scale: 0.996 },
+        {
+          scale: 1.004,
+          duration: 7, // 7s each way = 14s full sine period
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+        }
+      );
+    });
+
+    // Mobile: Scroll zoom 1.00 -> 1.08 + translate drift toward the light (max ~1.0%), no breathing loop
+    mm.add('(max-width: 768px)', () => {
+      gsap.fromTo(
+        zoomEl,
+        { scale: 1.0, xPercent: 0, yPercent: 0 },
+        {
+          scale: 1.08,
+          xPercent: 1.0,
+          yPercent: -0.8,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: document.documentElement,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: DEFAULT_SCRUB,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => syncTint(self.scroll(), 0.8),
+          },
+        }
+      );
+
+      gsap.set(breathEl, { scale: 1.0 });
+    });
+
+    // Per-section tint crossfade controller (opacity only, 0.8s power2.inOut)
+    const crossfadeTo = (targetTint: TintId, duration = 0.8) => {
+      if (activeTintRef.current === targetTint && duration > 0) return;
+      activeTintRef.current = targetTint;
+
+      VISIBLE_TINT_IDS.forEach((tintId) => {
+        const el = tintRefs.current[tintId];
+        if (!el) return;
+
+        if (duration === 0) {
+          gsap.set(el, { opacity: tintId === targetTint ? 0.35 : 0 });
+        } else if (tintId === targetTint) {
+          gsap.to(el, {
+            opacity: 0.35,
+            duration,
+            ease: 'power2.inOut',
+            overwrite: 'auto',
+          });
+        } else {
+          gsap.to(el, {
+            opacity: 0,
+            duration,
+            ease: 'power2.inOut',
+            overwrite: 'auto',
+          });
+        }
+      });
+    };
+
+    let sectionSpans: SectionSpan[] = [];
+    let mutObserver: MutationObserver | null = null;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let idleHandle: IdleCallbackHandle | null = null;
+    let initTimer: ReturnType<typeof setTimeout> | null = null;
+    let initIdleHandle: IdleCallbackHandle | null = null;
+    let cachedVCenter = typeof window !== 'undefined' ? window.innerHeight * 0.5 : 400;
+
+    const computeOffsets = () => {
+      cachedVCenter = window.innerHeight * 0.5;
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const spans: SectionSpan[] = [];
+
+      for (const id of MONITORED_SECTION_IDS) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          spans.push({
+            id,
+            tintId: SECTION_TINT_MAP[id] || 'hub',
+            top: rect.top + scrollY,
+            bottom: rect.bottom + scrollY,
+          });
+        }
       }
+
+      spans.sort((a, b) => a.top - b.top);
+      sectionSpans = spans;
     };
 
-    checkHeroPinned();
-    window.addEventListener('scroll', checkHeroPinned, { passive: true });
-    window.addEventListener('resize', checkHeroPinned, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', checkHeroPinned);
-      window.removeEventListener('resize', checkHeroPinned);
+    const getTargetTint = (probe: number): TintId => {
+      if (sectionSpans.length === 0) return 'hub';
+      if (probe < sectionSpans[0].top) return 'hub';
+
+      for (let i = 0; i < sectionSpans.length; i++) {
+        const cur = sectionSpans[i];
+        const next = sectionSpans[i + 1];
+        const end = next ? next.top : cur.bottom;
+        if (probe >= cur.top && probe < end) {
+          return cur.tintId;
+        }
+      }
+
+      return 'hub';
     };
-  }, [isExcludedRoute]);
 
-  // IntersectionObserver to observe sections and trigger wall switches
-  useEffect(() => {
-    if (isExcludedRoute || typeof window === 'undefined') return;
+    let isInitialized = false;
 
-    // List of section IDs to observe
-    const sectionIds = [
-      'hero-scene-container',
-      'scenario-select',
-      'edge-cloud',
-      'ratify',
-      'iac-verifier',
-      'side-quests',
-      'readers-record',
-      'contact',
-    ];
-
-    const observedElements = new Set<Element>();
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // While hero is pinned or active, strictly lock to default wall-01 with no transition
-        const hero = document.getElementById('hero-scene-container');
-        if (hero && hero.getBoundingClientRect().bottom > 50) {
-          if (activeWallRef.current !== DEFAULT_WALL_ID) {
-            setActiveWallId(DEFAULT_WALL_ID);
-            setIncomingWallId(null);
-            setIncomingVisible(false);
-          }
+    const syncTint = (scrollY: number = window.scrollY || document.documentElement.scrollTop, duration = 0.8) => {
+      if (!isInitialized) {
+        if (scrollY > 10) {
+          isInitialized = true;
+          computeOffsets();
+        } else {
           return;
         }
+      }
+      if (sectionSpans.length === 0) return;
+      const probe = scrollY + cachedVCenter;
+      const targetTint = getTargetTint(probe);
+      crossfadeTo(targetTint, duration);
+    };
 
-        // Find visible or nearing sections
-        const intersecting = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    const handleScroll = () => {
+      syncTint(window.scrollY, 0.8);
+    };
 
-        if (intersecting.length > 0) {
-          const topEntry = intersecting[0];
-          const targetWallId = getWallIdForSection(topEntry.target.id);
+    const recomputeOffsets = () => {
+      computeOffsets();
+      ScrollTrigger.refresh();
+      syncTint(window.scrollY, 0);
+    };
 
-          if (targetWallId !== activeWallRef.current && targetWallId !== incomingWallRef.current) {
-            if (isInstant) {
-              setActiveWallId(targetWallId);
-              setIncomingWallId(null);
-              setIncomingVisible(false);
-            } else {
-              setIncomingWallId(targetWallId);
-              setIncomingVisible(false);
+    const debouncedRecompute = () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+        debounceTimer = null;
+      }
+      if (idleHandle !== null) {
+        cancelIdle(idleHandle);
+        idleHandle = null;
+      }
 
-              // Allow DOM to mount incoming layer at opacity 0, then fade in
-              requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  setIncomingVisible(true);
-                });
-              });
-            }
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        idleHandle = scheduleIdle(() => {
+          idleHandle = null;
+          recomputeOffsets();
+        });
+      }, 250);
+    };
+
+    const initTintController = () => {
+      isInitialized = true;
+      computeOffsets();
+      syncTint(window.scrollY, 0);
+
+      window.addEventListener('resize', debouncedRecompute);
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
+      const allMounted = MONITORED_SECTION_IDS.every(
+        (id) => document.getElementById(id) !== null
+      );
+
+      if (!allMounted) {
+        mutObserver = new MutationObserver(() => {
+          const nowAllMounted = MONITORED_SECTION_IDS.every(
+            (id) => document.getElementById(id) !== null
+          );
+          if (nowAllMounted) {
+            mutObserver?.disconnect();
+            mutObserver = null;
+            debouncedRecompute();
+          }
+        });
+        const container = document.getElementById('main-content') || document.body;
+        mutObserver.observe(container, { childList: true, subtree: true });
+      }
+    };
+
+    // Dual-Exposure Lantern: Pointer-following reveal with counter-transform (Desktop full mode only)
+    let cleanupLantern: (() => void) | null = null;
+
+    if (isDesktopFull && lanternRef.current && lanternCounterRef.current) {
+      const lanternEl = lanternRef.current;
+      const counterEl = lanternCounterRef.current;
+
+      const xTo = gsap.quickTo(lanternEl, 'x', { duration: 0.35, ease: 'power2.out' });
+      const yTo = gsap.quickTo(lanternEl, 'y', { duration: 0.35, ease: 'power2.out' });
+      const counterXTo = gsap.quickTo(counterEl, 'x', { duration: 0.35, ease: 'power2.out' });
+      const counterYTo = gsap.quickTo(counterEl, 'y', { duration: 0.35, ease: 'power2.out' });
+
+      let hasMoved = false;
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!hasMoved) {
+          hasMoved = true;
+          gsap.set(lanternEl, { x: e.clientX, y: e.clientY });
+          gsap.set(counterEl, { x: -e.clientX, y: -e.clientY });
+          gsap.to(lanternEl, { opacity: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        } else {
+          xTo(e.clientX);
+          yTo(e.clientY);
+          counterXTo(-e.clientX);
+          counterYTo(-e.clientY);
+          if (Number(gsap.getProperty(lanternEl, 'opacity')) < 1) {
+            gsap.to(lanternEl, { opacity: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
           }
         }
-      },
-      {
-        rootMargin: '20% 0px 20% 0px',
-        threshold: [0, 0.1, 0.5],
-      }
-    );
+      };
 
-    const attachElements = () => {
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el && !observedElements.has(el)) {
-          observedElements.add(el);
-          observer.observe(el);
+      const onPointerLeave = () => {
+        if (!hasMoved) return;
+        gsap.to(lanternEl, { opacity: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      };
+
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          if (hasMoved) {
+            gsap.to(lanternEl, { opacity: 0, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+          }
         }
-      }
+      };
+
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      document.addEventListener('pointerleave', onPointerLeave);
+      document.addEventListener('mouseleave', onPointerLeave);
+      document.addEventListener('visibilitychange', onVisibilityChange);
+
+      cleanupLantern = () => {
+        window.removeEventListener('pointermove', onPointerMove);
+        document.removeEventListener('pointerleave', onPointerLeave);
+        document.removeEventListener('mouseleave', onPointerLeave);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+      };
+    }
+
+    // No work during the first 2s after load
+    const scheduleInit = () => {
+      initTimer = setTimeout(() => {
+        initTimer = null;
+        initIdleHandle = scheduleIdle(() => {
+          initIdleHandle = null;
+          initTintController();
+        });
+      }, 2000);
     };
 
-    attachElements();
-
-    const mutObserver = new MutationObserver(() => {
-      attachElements();
-    });
-    mutObserver.observe(document.body, { childList: true, subtree: true });
+    if (document.readyState === 'complete') {
+      scheduleInit();
+    } else {
+      window.addEventListener('load', scheduleInit, { once: true });
+    }
 
     return () => {
-      mutObserver.disconnect();
-      observer.disconnect();
+      window.removeEventListener('load', scheduleInit);
+      if (initTimer) clearTimeout(initTimer);
+      if (initIdleHandle !== null) cancelIdle(initIdleHandle);
+      if (debounceTimer) clearTimeout(debounceTimer);
+      if (idleHandle !== null) cancelIdle(idleHandle);
+      if (mutObserver) mutObserver.disconnect();
+      window.removeEventListener('resize', debouncedRecompute);
+      window.removeEventListener('scroll', handleScroll);
+      if (cleanupLantern) cleanupLantern();
+      mm.revert();
     };
-  }, [isExcludedRoute, isInstant]);
-
-  // Clean up incoming layer after crossfade transition completes (750ms)
-  useEffect(() => {
-    if (!incomingWallId || !incomingVisible) return;
-
-    const timer = setTimeout(() => {
-      setActiveWallId(incomingWallId);
-      setIncomingWallId(null);
-      setIncomingVisible(false);
-    }, 750);
-
-    return () => clearTimeout(timer);
-  }, [incomingWallId, incomingVisible]);
+  }, [isExcludedRoute, isInstant, isDesktopFull]);
 
   if (isExcludedRoute) {
     return null;
   }
 
-  // Render at most two layers: active and incoming
-  const layers: { id: WallId; opacityClass: string; isIncoming: boolean }[] = [
-    {
-      id: activeWallId,
-      opacityClass: incomingWallId && incomingVisible ? 'opacity-0' : 'opacity-100',
-      isIncoming: false,
-    },
-  ];
-
-  if (incomingWallId && incomingWallId !== activeWallId) {
-    layers.push({
-      id: incomingWallId,
-      opacityClass: incomingVisible ? 'opacity-100' : 'opacity-0',
-      isIncoming: true,
-    });
-  }
+  const wall = WALL_DEFINITIONS[DEFAULT_WALL_ID];
 
   return (
-    <div
-      aria-hidden="true"
-      role="presentation"
-      className="site-wall-compositor fixed inset-0 h-[100dvh] w-full pointer-events-none select-none overflow-hidden"
-      style={{
-        zIndex: 'var(--z-wall, 0)',
-        backgroundColor: 'var(--void, #07080B)',
-        willChange: 'transform',
-        transform: 'translateZ(0)',
-      }}
-    >
-      {layers.map((layer) => {
-        const wall = WALL_DEFINITIONS[layer.id];
-        const isFirstWall = wall.id === 'wall-01';
+    <>
+      {/* High-priority asset preloading links for critical LCP */}
+      <link
+        rel="preload"
+        as="image"
+        href={wall.desktop.avif}
+        type="image/avif"
+        media="(min-width: 769px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href={wall.portrait.avif}
+        type="image/avif"
+        media="(max-width: 768px)"
+        fetchPriority="high"
+      />
 
-        return (
+      <div
+        aria-hidden="true"
+        role="presentation"
+        className="living-wall-compositor fixed inset-0 h-[100dvh] w-full pointer-events-none select-none overflow-hidden"
+        style={{
+          zIndex: 'var(--z-wall, 0)',
+          backgroundColor: 'var(--void, #07080B)',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+        }}
+      >
+        {/* Base dark image oversized, transform-origin near the top-right light (100% 0%) */}
+        <div
+          ref={zoomRef}
+          className="living-wall-zoom absolute -inset-[6%] w-[112%] h-[112%] pointer-events-none"
+          style={{
+            transformOrigin: '100% 0%',
+            willChange: isInstant ? 'auto' : 'transform',
+          }}
+        >
           <div
-            key={layer.id}
-            data-wall-id={layer.id}
-            className={`absolute inset-0 w-full h-full ${
-              isInstant || isHeroPinned ? '' : 'transition-opacity duration-700 ease-in-out'
-            } ${layer.opacityClass}`}
+            ref={breathRef}
+            className="living-wall-breath w-full h-full pointer-events-none"
+            style={{
+              transformOrigin: '100% 0%',
+              willChange: isInstant ? 'auto' : 'transform',
+            }}
           >
-            <picture className="absolute inset-0 w-full h-full">
+            <picture className="w-full h-full block">
               {/* Mobile portrait sources */}
               <source
                 media="(max-width: 768px)"
@@ -232,28 +528,125 @@ export function SiteWall() {
               <img
                 src={wall.desktop.webp}
                 alt=""
-                width={1920}
-                height={1080}
+                width={2560}
+                height={1440}
                 decoding="async"
-                loading={isFirstWall ? 'eager' : 'lazy'}
-                fetchPriority={isFirstWall ? 'high' : 'low'}
+                loading="eager"
+                fetchPriority="high"
                 className="w-full h-full object-cover object-center"
               />
             </picture>
           </div>
-        );
-      })}
+        </div>
 
-      {/* Dim and vignette as one static layer with CSS gradients only (no blur filters, no backdrop-filter) */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse at 50% 35%, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) - 0.2)) 0%, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) + 0.25)) 100%),
-            linear-gradient(to bottom, rgba(7, 8, 11, var(--wall-dim, 0.55)), rgba(7, 8, 11, var(--wall-dim, 0.55)))
-          `,
-        }}
-      />
-    </div>
+        {/* Dual-exposure lantern: ~520px pointer-following aperture revealing the derived bright layer (Desktop full only) */}
+        {isDesktopFull && (
+          <div
+            ref={lanternRef}
+            aria-hidden="true"
+            className="living-wall-lantern pointer-events-none fixed"
+            style={{
+              width: 520,
+              height: 520,
+              top: 0,
+              left: 0,
+              marginTop: -260,
+              marginLeft: -260,
+              maskImage: 'radial-gradient(circle 260px at center, black 0%, rgba(0, 0, 0, 0.5) 45%, transparent 70%)',
+              WebkitMaskImage: 'radial-gradient(circle 260px at center, black 0%, rgba(0, 0, 0, 0.5) 45%, transparent 70%)',
+              overflow: 'hidden',
+              opacity: 0,
+              willChange: 'transform, opacity',
+            }}
+          >
+            {/* Counter-transform container: keeps bright layer stationary at viewport (0,0) */}
+            <div
+              ref={lanternCounterRef}
+              className="living-wall-lantern-counter pointer-events-none absolute"
+              style={{
+                top: 260,
+                left: 260,
+                width: '100vw',
+                height: '100vh',
+                willChange: 'transform',
+              }}
+            >
+              <div
+                ref={brightZoomRef}
+                className="living-wall-zoom absolute -inset-[6%] w-[112%] h-[112%] pointer-events-none"
+                style={{
+                  transformOrigin: '100% 0%',
+                  willChange: 'transform',
+                }}
+              >
+                <div
+                  ref={brightBreathRef}
+                  className="living-wall-breath w-full h-full pointer-events-none"
+                  style={{
+                    transformOrigin: '100% 0%',
+                    willChange: 'transform',
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/art/wall/archive-desktop-bright.avif"
+                    alt=""
+                    width={2560}
+                    height={1440}
+                    decoding="async"
+                    loading="eager"
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tint Layer: One fixed layer above the wall and below the scrim; one stacked child per tint */}
+        {!isInstant && (
+          <div
+            aria-hidden="true"
+            className="living-wall-tints absolute inset-0 pointer-events-none"
+            style={{ willChange: 'opacity' }}
+          >
+            {VISIBLE_TINT_IDS.map((tintId: TintId) => {
+              const def = TINT_DEFINITIONS[tintId];
+              return (
+                <div
+                  key={tintId}
+                  ref={(el) => {
+                    tintRefs.current[tintId] = el;
+                  }}
+                  data-tint={tintId}
+                  data-tint-id={tintId}
+                  className="absolute inset-0 pointer-events-none opacity-0"
+                  style={{
+                    background: def.gradient ?? undefined,
+                    willChange: 'opacity',
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {/* Atmospheric Particles Canvas: ONE fixed Canvas 2D layer between tints and scrim */}
+        {!isInstant && !isExcludedRoute && (
+          <AtmosphericParticles />
+        )}
+
+        {/* Fixed scrim layer above the wall: vignette + soft dark gradient */}
+        <div
+          className="living-wall-scrim absolute inset-0 pointer-events-none"
+          style={{
+            background: `
+              radial-gradient(ellipse at 75% 20%, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) - 0.25)) 0%, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) + 0.15)) 65%, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) + 0.35)) 100%),
+              linear-gradient(to bottom, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) - 0.1)) 0%, rgba(7, 8, 11, var(--wall-dim, 0.55)) 45%, rgba(7, 8, 11, calc(var(--wall-dim, 0.55) + 0.2)) 100%)
+            `,
+          }}
+        />
+      </div>
+    </>
   );
 }

@@ -1,3 +1,5 @@
+> **SUPERSEDED**: Dokja hero components superseded per owner override in hero-H1 (Dokja out of site; Biyoo companion preserved).
+
 # 20 Hero & Biyoo Rebuild Structure Spec
 
 ## Overview

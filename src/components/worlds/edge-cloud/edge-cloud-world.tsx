@@ -144,7 +144,11 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
     oneLiner: "carbon-aware workload routing across edge and cloud.",
     claims: [],
     limits: [],
-    links: { repo: null, demo: null, benchmark: null },
+    links: {
+      repo: "https://github.com/SumitMahajan11/Edge-Cloud-Orchestrator",
+      demo: "https://edge-cloud-orchestrator-web-swart.vercel.app/",
+      benchmark: null,
+    },
     costume: "star goggles",
     worldReady: true,
   };
@@ -259,7 +263,7 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-mist">Demo:</span>
+                  <span className="text-mist">Live Preview:</span>
                   {renderField(project.links.demo, (url) => (
                     <a
                       href={url}

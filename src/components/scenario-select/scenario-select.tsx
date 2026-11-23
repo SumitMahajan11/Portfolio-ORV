@@ -100,11 +100,35 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
         </div>
       </div>
 
-      {/* Footer / Begin Action */}
-      <div className="relative z-10 pt-5 mt-4 border-t border-line/60 flex items-center justify-between">
-        <span className="font-mono text-[11px] text-mist/70 uppercase tracking-widest">
-          {isReady ? "Branch: Active" : "Phase 2 Branch"}
-        </span>
+      {/* Footer / Proof & Explore Actions */}
+      <div className="relative z-10 pt-5 mt-4 border-t border-line/60 flex items-center justify-between gap-3">
+        {/* Direct Proof Links for immediate recruiter access */}
+        <div className="flex items-center gap-3">
+          {project.links.repo && (
+            <a
+              href={project.links.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-xs text-star hover:text-feather underline underline-offset-4 transition-colors"
+              title={`View ${project.title} on GitHub`}
+            >
+              GitHub ↗
+            </a>
+          )}
+          {project.links.demo && (
+            <a
+              href={project.links.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-xs text-star hover:text-feather underline underline-offset-4 transition-colors"
+              title={`View preview / demo for ${project.title}`}
+            >
+              {project.id === "edge-cloud" ? "Live Preview ↗" : "Demo ↗"}
+            </a>
+          )}
+        </div>
 
         {isReady ? (
           <a
@@ -114,9 +138,9 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
               onClick();
             }}
             className="min-h-[44px] min-w-[44px] px-4 py-2 rounded border border-[var(--world-primary,var(--star))] bg-[var(--world-primary,var(--star))]/10 text-[var(--world-primary,var(--star))] font-mono text-xs tracking-wider uppercase inline-flex items-center justify-center gap-1.5 transition-colors hover:bg-[var(--world-primary,var(--star))]/20 focus:outline-none focus:ring-2 focus:ring-[var(--world-primary,var(--star))]"
-            aria-label={`Begin Scenario: ${project.title}`}
+            aria-label={`Explore Scenario: ${project.title}`}
           >
-            <span>Begin</span>
+            <span>Explore</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
         ) : (
@@ -126,7 +150,7 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
             aria-disabled="true"
             className="min-h-[44px] min-w-[44px] px-4 py-2 rounded border border-line bg-ink-2/50 text-mist/50 font-mono text-xs tracking-wider uppercase inline-flex items-center justify-center cursor-not-allowed select-none"
           >
-            Opens in Phase 2
+            Coming Soon
           </button>
         )}
       </div>
