@@ -1,0 +1,50 @@
+========================================================================================
+ CLEAN INTERLEAVED MOBILE LIGHTHOUSE A/B VERIFICATION REPORT
+ Date: 2026-11-10T13:31:54.671Z
+ Target A: http://127.0.0.1:3010/ (normal build with particles)
+ Target B: http://127.0.0.1:3011/ (clean build, particles removed)
+ Runs: 8 A vs 8 B interleaved, 60s idle between runs
+========================================================================================
+
+----------------------------------------------------------------------------------------
+ 1. ALL 16 RUNS: PERF, TBT, LCP VALUES
+----------------------------------------------------------------------------------------
+GROUP A (WITH PARTICLES):
+  Run 1 (A): Perf=100 | TBT=68ms | LCP=0.91s
+  Run 2 (A): Perf=100 | TBT=82ms | LCP=0.91s
+  Run 3 (A): Perf=100 | TBT=77ms | LCP=0.91s
+  Run 4 (A): Perf=99 | TBT=94ms | LCP=0.91s
+  Run 5 (A): Perf=99 | TBT=94ms | LCP=0.91s
+  Run 6 (A): Perf=99 | TBT=94ms | LCP=0.91s
+  Run 7 (A): Perf=100 | TBT=88ms | LCP=0.91s
+  Run 8 (A): Perf=100 | TBT=81ms | LCP=0.91s
+  Range: Perf [99, 100] | TBT [68ms, 94ms] | LCP [0.91s, 0.91s]
+  Median: Perf=100 | TBT=85ms | LCP=0.91s
+  Runs with TBT > 200ms: 0 of 8
+
+GROUP B (WITHOUT PARTICLES):
+  Run 1 (B): Perf=100 | TBT=83ms | LCP=0.91s
+  Run 2 (B): Perf=100 | TBT=79ms | LCP=0.91s
+  Run 3 (B): Perf=100 | TBT=69ms | LCP=0.91s
+  Run 4 (B): Perf=100 | TBT=70ms | LCP=0.91s
+  Run 5 (B): Perf=100 | TBT=64ms | LCP=0.91s
+  Run 6 (B): Perf=100 | TBT=68ms | LCP=0.91s
+  Run 7 (B): Perf=100 | TBT=72ms | LCP=0.91s
+  Run 8 (B): Perf=100 | TBT=65ms | LCP=0.91s
+  Range: Perf [100, 100] | TBT [64ms, 83ms] | LCP [0.91s, 0.91s]
+  Median: Perf=100 | TBT=69.5ms | LCP=0.91s
+  Runs with TBT > 200ms: 0 of 8
+
+----------------------------------------------------------------------------------------
+ 2. STATISTICAL DIFFERENCE & OVERLAP EVALUATION
+----------------------------------------------------------------------------------------
+Perf Ranges Overlap: YES (A: [99, 100] vs B: [100, 100])
+TBT Ranges Overlap:  YES (A: [68ms, 94ms] vs B: [64ms, 83ms])
+LCP Ranges Overlap:  YES (A: [0.91s, 0.91s] vs B: [0.91s, 0.91s])
+
+VERDICT: no detectable difference at n=8
+
+----------------------------------------------------------------------------------------
+ 3. LONG TASKS FOR RUNS WITH TBT > 200ms
+----------------------------------------------------------------------------------------
+None of the 16 runs had TBT > 200ms.

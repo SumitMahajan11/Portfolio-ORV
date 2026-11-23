@@ -1,0 +1,79 @@
+========================================================================================
+ TASK 1: MOBILE LIGHTHOUSE A/B VERIFICATION REPORT
+ Target: http://127.0.0.1:3001/
+ Runs: 6 WITH particles vs 6 WITHOUT particles (60s idle between runs)
+ Date: 2026-11-10T12:13:45.579Z
+========================================================================================
+
+----------------------------------------------------------------------------------------
+ 1. ALL 12 RUNS: PERF AND TBT VALUES & SHA-256 HASHES
+----------------------------------------------------------------------------------------
+GROUP A: WITH PARTICLES (6 RUNS)
+  Run 1 (WITH):    Perf=92 | TBT=218ms | LCP=1.39s | CLS=0 | A11y=100 | BP=96 | SEO=100 | sha256=18a76ac8c43e264d23d6e416293eb70e63108455e66ab6fac58fe566f9fc0698
+  Run 2 (WITH):    Perf=100 | TBT=74ms | LCP=0.91s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=7d579d92923391309144104b90691cf2ccd7f74ee356b26cc62e128dc4974096
+  Run 3 (WITH):    Perf=100 | TBT=79ms | LCP=0.91s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=00ccdfc797b8d1b7090572abf21c3cd4fbf49b9a4e7da2ff63c286f5529fcfc3
+  Run 4 (WITH):    Perf=100 | TBT=79ms | LCP=0.91s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=9e987814194b6ddfea54f074e5af24791989526605c48252e5dd373ab6199517
+  Run 5 (WITH):    Perf=99 | TBT=103ms | LCP=0.91s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=3e63087448df2a7c94e0050530b2eca93d5123ec7d7b49cf20aed46022b883a3
+  Run 6 (WITH):    Perf=100 | TBT=89ms | LCP=0.91s | CLS=0 | A11y=100 | BP=96 | SEO=100 | sha256=453694b003153fb44f7e1ec2def04dcca374d094eba89e3bdbe19076f7da5a97
+  Median (WITH):      Perf=100 | TBT=84ms
+
+GROUP B: WITHOUT PARTICLES (6 RUNS)
+  Run 1 (WITHOUT): Perf=78 | TBT=258ms | LCP=4.52s | CLS=0 | A11y=100 | BP=96 | SEO=100 | sha256=3d983406efef53af9189e8936b2cce82f22c079fce2751f1de7365cf727b81d8
+  Run 2 (WITHOUT): Perf=80 | TBT=220ms | LCP=4.51s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=c876c5a05768451861b43b423f5e755231bf4d7a53748405e8fd282c355ca8e4
+  Run 3 (WITHOUT): Perf=79 | TBT=255ms | LCP=4.54s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=f1d1bcc1a481eed72fc1e39f55b73ccea04ee4501bceddca2c10b41dd3d08126
+  Run 4 (WITHOUT): Perf=81 | TBT=181ms | LCP=4.49s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=6f3576691288d0063307ce58fc26f1e827a5614fd70a722f9a8eccf6b54efd59
+  Run 5 (WITHOUT): Perf=81 | TBT=187ms | LCP=4.50s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=86ee5eceb33e41cd654c133d44a8256629aea32e62dbdf2800d5f2593a50d63c
+  Run 6 (WITHOUT): Perf=81 | TBT=213ms | LCP=4.51s | CLS=0 | A11y=97 | BP=96 | SEO=100 | sha256=10a3aa28587366767942b1c8c354075cc353fc19b577ca6073c499157b6a538b
+  Median (WITHOUT):   Perf=80.5 | TBT=216.5ms
+
+----------------------------------------------------------------------------------------
+ 2. SUMMARY & MEDIANS COMPARISON
+----------------------------------------------------------------------------------------
+WITH Particles:    Median Perf = 100 | Median TBT = 84ms
+WITHOUT Particles: Median Perf = 80.5 | Median TBT = 216.5ms
+Delta (With - Without): Perf Delta = 19.5 | TBT Delta = -132.5ms
+
+----------------------------------------------------------------------------------------
+ 3. LONG TASKS ANALYSIS FOR RUNS WITH TBT > 200ms
+ Particles Chunk Identifier: 0ty___o_-32x2.js
+----------------------------------------------------------------------------------------
+[Run 1 (WITH particles)] TBT=218ms:
+  Task #1: duration=216ms | startTime=3635.4ms | script=http://127.0.0.1:3001/_next/static/chunks/107i8ab907rvg.js
+  Task #2: duration=128ms | startTime=3943.4ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #3: duration=109ms | startTime=3197.2ms | script=http://127.0.0.1:3001/_next/static/chunks/107i8ab907rvg.js
+  Task #4: duration=97ms | startTime=4426.2ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #5: duration=68ms | startTime=4523.2ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Did particles chunk (0ty___o_-32x2.js) appear in top 5? NO
+
+[Run 1 (WITHOUT particles)] TBT=258ms:
+  Task #1: duration=238ms | startTime=4382ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #2: duration=138ms | startTime=3780.4ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #3: duration=121ms | startTime=3953.4ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #4: duration=67ms | startTime=657.6ms | script=http://127.0.0.1:3001/
+  Task #5: duration=59ms | startTime=4620ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Did particles chunk (0ty___o_-32x2.js) appear in top 5? NO
+
+[Run 2 (WITHOUT particles)] TBT=220ms:
+  Task #1: duration=136ms | startTime=3777.1ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #2: duration=123ms | startTime=3942.1ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #3: duration=100ms | startTime=4371.8ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #4: duration=72ms | startTime=691.8ms | script=http://127.0.0.1:3001/
+  Task #5: duration=68ms | startTime=606.8ms | script=Unattributable
+  Did particles chunk (0ty___o_-32x2.js) appear in top 5? NO
+
+[Run 3 (WITHOUT particles)] TBT=255ms:
+  Task #1: duration=149ms | startTime=3777.9ms | script=http://127.0.0.1:3001/_next/static/chunks/107i8ab907rvg.js
+  Task #2: duration=132ms | startTime=3960.9ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #3: duration=126ms | startTime=4399.9ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #4: duration=83ms | startTime=704ms | script=http://127.0.0.1:3001/
+  Did particles chunk (0ty___o_-32x2.js) appear in top 5? NO
+
+[Run 6 (WITHOUT particles)] TBT=213ms:
+  Task #1: duration=132ms | startTime=3934.5ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #2: duration=130ms | startTime=3772.5ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #3: duration=94ms | startTime=4372.1ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Task #4: duration=75ms | startTime=660.6ms | script=http://127.0.0.1:3001/
+  Task #5: duration=57ms | startTime=4177.5ms | script=http://127.0.0.1:3001/_next/static/chunks/2-3bcc782c_pu.js
+  Did particles chunk (0ty___o_-32x2.js) appear in top 5? NO
+
+========================================================================================

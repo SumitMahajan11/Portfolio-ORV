@@ -1,0 +1,279 @@
+================================================================================
+BIYOO-B1c: ANCESTOR HIERARCHY & COMPUTED STYLES DIAGNOSIS
+================================================================================
+Generated: 2026-11-08T02:41:58.784Z
+Target: http://localhost:3000/
+LCP Element: section#hero-scene img.biyoo-pose-calm
+Viewport: 390x844 (Mobile, DPR 2)
+
+--------------------------------------------------------------------------------
+PART 1: PRODUCTION SERVER-RENDERED HTML ANCESTORS (up to <body>)
+--------------------------------------------------------------------------------
+[0] <img.biyoo-pose-calm>
+    Class:        biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none
+    Inline Style: opacity:1
+    Raw Snippet:  <img src="/art/biyoo/biyoo-calm-360.webp" alt="Biyoo, a fluffy spherical cotton mascot with two striped amber horns floating in a calm, cheerful pose" width="100" height="89" decoding="async" loading="eager" fetchPriority="high" class="biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none" style="opacity:1"/>
+
+[1] <picture>
+    Class:        absolute inset-0 w-full h-full pointer-events-none
+    Inline Style: (none)
+    Raw Snippet:  <picture class="absolute inset-0 w-full h-full pointer-events-none">...</picture>
+
+[2] <div.biyoo-art-wrapper>
+    Class:        biyoo-art-wrapper relative select-none
+    Inline Style: width:108px;height:96px;max-width:clamp(72px, 10vw, 110px);aspect-ratio:1000 / 891
+    Raw Snippet:  <div class="biyoo-art-wrapper relative select-none" style="width:108px;height:96px;max-width:clamp(72px, 10vw, 110px);aspect-ratio:1000 / 891">...</div>
+
+[3] <div.biyoo-bounce-target>
+    Class:        biyoo-bounce-target relative flex items-center justify-center
+    Inline Style: (none)
+    Raw Snippet:  <div class="biyoo-bounce-target relative flex items-center justify-center">...</div>
+
+[4] <div.biyoo-bob-target>
+    Class:        biyoo-bob-target flex items-center justify-center
+    Inline Style: (none)
+    Raw Snippet:  <div class="biyoo-bob-target flex items-center justify-center">...</div>
+
+[5] <div.biyoo-interactive-target>
+    Class:        biyoo-interactive-target cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1 focus:outline-none
+    Inline Style: (none)
+    Raw Snippet:  <div tabindex="0" role="button" aria-label="Biyoo companion: tap to interact" class="biyoo-interactive-target cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1 focus:outline-none">...</div>
+
+[6] <aside>
+    Class:        relative inline-flex flex-col items-center justify-center select-none max-w-[clamp(72px,10vw,110px)] 
+    Inline Style: (none)
+    Raw Snippet:  <aside aria-label="Biyoo companion mascot" class="relative inline-flex flex-col items-center justify-center select-none max-w-[clamp(72px,10vw,110px)] ">...</aside>
+
+[7] <div#hero-biyoo-companion>
+    Class:        pointer-events-auto absolute z-40 transition-transform duration-300
+    Inline Style: left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom))
+    Raw Snippet:  <div id="hero-biyoo-companion" class="pointer-events-auto absolute z-40 transition-transform duration-300" style="left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom))">...</div>
+
+[8] <section#hero-scene>
+    Class:        relative w-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-void select-none flex items-center justify-center 
+    Inline Style: (none)
+    Raw Snippet:  <section id="hero-scene" class="relative w-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-void select-none flex items-center justify-center " aria-label="Omniscient Reader&#x27;s Viewpoint Hero Prologue">...</section>
+
+[9] <div#hero-scene-container>
+    Class:        w-full relative z-10 overflow-x-clip
+    Inline Style: (none)
+    Raw Snippet:  <div id="hero-scene-container" class="w-full relative z-10 overflow-x-clip">...</div>
+
+[10] <main#main-content>
+    Class:        relative bg-transparent text-feather overflow-x-hidden
+    Inline Style: (none)
+    Raw Snippet:  <main id="main-content" class="relative bg-transparent text-feather overflow-x-hidden">...</main>
+
+[11] <div.flex-1>
+    Class:        flex-1
+    Inline Style: (none)
+    Raw Snippet:  <div class="flex-1">...</div>
+
+[12] <body>
+    Class:        min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden
+    Inline Style: (none)
+    Raw Snippet:  <body class="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">...</body>
+
+--------------------------------------------------------------------------------
+PART 2: COMPUTED STYLES AT THREE TIMESTAMPS (Headless Chrome @ 390x844)
+Timestamps: DOMContentLoaded, First Paint, After Hydration
+--------------------------------------------------------------------------------
+
+=== SNAPSHOT: DOMContentLoaded ===
+[0] <img>
+     Class:        biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none
+     Inline Style: opacity:1
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[1] <picture>
+     Class:        absolute inset-0 w-full h-full pointer-events-none
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[2] <div>
+     Class:        biyoo-art-wrapper relative select-none
+     Inline Style: width:108px;height:96px;max-width:clamp(72px, 10vw, 110px);aspect-ratio:1000 / 891
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[3] <div>
+     Class:        biyoo-bounce-target relative flex items-center justify-center
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[4] <div>
+     Class:        biyoo-bob-target flex items-center justify-center
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[5] <div>
+     Class:        biyoo-interactive-target cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1 focus:outline-none
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[6] <aside>
+     Class:        relative inline-flex flex-col items-center justify-center select-none max-w-[clamp(72px,10vw,110px)] 
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=inline-flex, transform=none, clip-path=none
+[7] <div#hero-biyoo-companion>
+     Class:        pointer-events-auto absolute z-40 transition-transform duration-300
+     Inline Style: left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom))
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[8] <section#hero-scene>
+     Class:        relative w-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-void select-none flex items-center justify-center 
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[9] <div#hero-scene-container>
+     Class:        w-full relative z-10 overflow-x-clip
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[10] <main#main-content>
+     Class:        relative bg-transparent text-feather overflow-x-hidden
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[11] <div>
+     Class:        flex-1
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[12] <body>
+     Class:        min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+
+=== SNAPSHOT: firstPaint ===
+[0] <img>
+     Class:        biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none
+     Inline Style: opacity:1
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[1] <picture>
+     Class:        absolute inset-0 w-full h-full pointer-events-none
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[2] <div>
+     Class:        biyoo-art-wrapper relative select-none
+     Inline Style: width:108px;height:96px;max-width:clamp(72px, 10vw, 110px);aspect-ratio:1000 / 891
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[3] <div>
+     Class:        biyoo-bounce-target relative flex items-center justify-center
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[4] <div>
+     Class:        biyoo-bob-target flex items-center justify-center
+     Inline Style: translate: none; rotate: none; scale: none; transform: translate3d(0px, 3.4228px, 0px) scale(1.0093, 0.9861); transform-origin: 50% 100%;
+     Computed:     opacity=1, visibility=visible, display=flex, transform=matrix(1.0093, 0, 0, 0.9861, 0, 3.4228), clip-path=none
+[5] <div>
+     Class:        biyoo-interactive-target cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1 focus:outline-none
+     Inline Style: transform: translate3d(2.75px, -2.07px, 0px);
+     Computed:     opacity=1, visibility=visible, display=flex, transform=matrix(1, 0, 0, 1, 2.75, -2.07), clip-path=none
+[6] <aside>
+     Class:        relative inline-flex flex-col items-center justify-center select-none max-w-[clamp(72px,10vw,110px)] 
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=inline-flex, transform=none, clip-path=none
+[7] <div#hero-biyoo-companion>
+     Class:        pointer-events-auto absolute z-40 transition-transform duration-300
+     Inline Style: left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom))
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[8] <section#hero-scene>
+     Class:        relative w-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-void select-none flex items-center justify-center 
+     Inline Style: translate: none; rotate: none; scale: none; inset: 0px auto auto 0px; margin: 0px; max-width: 390px; width: 390px; max-height: 844px; height: 844px; padding: 0px; transform: translate(0px, 0px); opacity: 1;
+     Computed:     opacity=1, visibility=visible, display=flex, transform=matrix(1, 0, 0, 1, 0, 0), clip-path=none
+[9] <div>
+     Class:        pin-spacer
+     Inline Style: order: 0; place-self: auto; grid-area: auto; z-index: auto; float: none; flex-shrink: 1; display: flex; margin: 0px; inset: 0px; position: relative; flex-basis: auto; overflow: visible; box-sizing: border-box; width: 390px; height: 3376px; padding: 0px 0px 2532px;
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[10] <div#hero-scene-container>
+     Class:        w-full relative z-10 overflow-x-clip
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[11] <main#main-content>
+     Class:        relative bg-transparent text-feather overflow-x-hidden
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[12] <div>
+     Class:        flex-1
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[13] <body>
+     Class:        min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+
+=== SNAPSHOT: afterHydration ===
+[0] <img>
+     Class:        biyoo-pose-calm absolute inset-0 w-full h-full object-contain pointer-events-none select-none
+     Inline Style: opacity:1
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[1] <picture>
+     Class:        absolute inset-0 w-full h-full pointer-events-none
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[2] <div>
+     Class:        biyoo-art-wrapper relative select-none
+     Inline Style: width:108px;height:96px;max-width:clamp(72px, 10vw, 110px);aspect-ratio:1000 / 891
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[3] <div>
+     Class:        biyoo-bounce-target relative flex items-center justify-center
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[4] <div>
+     Class:        biyoo-bob-target flex items-center justify-center
+     Inline Style: translate: none; rotate: none; scale: none; transform: translate3d(0px, -3.8967px, 0px) scale(1.0001, 0.9998); transform-origin: 50% 100%;
+     Computed:     opacity=1, visibility=visible, display=flex, transform=matrix(1.0001, 0, 0, 0.9998, 0, -3.8967), clip-path=none
+[5] <div>
+     Class:        biyoo-interactive-target cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-star p-1 focus:outline-none
+     Inline Style: transform: translate3d(17.92px, -13.49px, 0px);
+     Computed:     opacity=1, visibility=visible, display=flex, transform=matrix(1, 0, 0, 1, 17.92, -13.49), clip-path=none
+[6] <aside>
+     Class:        relative inline-flex flex-col items-center justify-center select-none max-w-[clamp(72px,10vw,110px)] 
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=inline-flex, transform=none, clip-path=none
+[7] <div#hero-biyoo-companion>
+     Class:        pointer-events-auto absolute z-40 transition-transform duration-300
+     Inline Style: left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom))
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[8] <section#hero-scene>
+     Class:        relative w-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-void select-none flex items-center justify-center 
+     Inline Style: translate: none; rotate: none; scale: none; inset: 0px auto auto 0px; margin: 0px; max-width: 390px; width: 390px; max-height: 844px; height: 844px; padding: 0px; transform: translate(0px, 0px); opacity: 1;
+     Computed:     opacity=1, visibility=visible, display=flex, transform=matrix(1, 0, 0, 1, 0, 0), clip-path=none
+[9] <div>
+     Class:        pin-spacer
+     Inline Style: order: 0; place-self: auto; grid-area: auto; z-index: auto; float: none; flex-shrink: 1; display: flex; margin: 0px; inset: 0px; position: relative; flex-basis: auto; overflow: visible; box-sizing: border-box; width: 390px; height: 3376px; padding: 0px 0px 2532px;
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+[10] <div#hero-scene-container>
+     Class:        w-full relative z-10 overflow-x-clip
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[11] <main#main-content>
+     Class:        relative bg-transparent text-feather overflow-x-hidden
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[12] <div>
+     Class:        flex-1
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=block, transform=none, clip-path=none
+[13] <body>
+     Class:        min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden
+     Inline Style: (none)
+     Computed:     opacity=1, visibility=visible, display=flex, transform=none, clip-path=none
+
+--------------------------------------------------------------------------------
+PART 3: GATING ANCESTOR ANALYSIS & ROOT CAUSE IDENTIFICATION
+--------------------------------------------------------------------------------
+1. Are any ancestors of img.biyoo-pose-calm in #hero-scene hidden before hydration?
+   ANSWER: NO.
+   - At DOMContentLoaded: Every ancestor from <img> to <body> has opacity=1, visibility=visible, display!=none, transform=none, clip-path=none.
+   - At First Paint:      Every ancestor has opacity=1, visibility=visible, display!=none.
+   - After Hydration:    Every ancestor has opacity=1, visibility=visible, display!=none.
+   There is ZERO CSS or JS gating on the active Biyoo companion mascot.
+
+2. Secondary Biyoo instance (HeroReduced fallback):
+   - File: src/components/dokja/HeroScene.tsx (lines 141-143)
+   - Code: <div style={{ display: reducedMotion ? "block" : "none" }}><HeroReduced className={className} /></div>
+   - Server HTML: style="display:none"
+   - Analysis: This is the reduced-motion alternative storyboard required by Rule 5. In standard SSR, reducedMotion is false, so this branch is hidden with display:none. The active companion is in #hero-biyoo-companion within #hero-scene, which is completely unhidden and visible.
+
+3. Explanation of Real-Chrome LCP "Element Render Delay" (~397ms):
+   - In Chrome, an element cannot be rendered until the page performs its First Contentful Paint.
+   - From Lighthouse timing breakdown:
+       Observed TTFB:                   20.89 ms
+       Observed Resource Load Duration: 20.81 ms
+       Image downloaded and decoded at: 41.70 ms
+       Observed FCP:                   438.45 ms
+       Observed LCP:                   438.45 ms
+       Observed Element Render Delay:  396.74 ms (438.45 ms - 41.70 ms)
+   - The ~397ms delay is strictly the browser's pipeline latency while parsing HTML, stylesheets, and web fonts to complete layout for First Paint.
+   - Once First Paint occurs at 438.45 ms, Biyoo renders immediately in the very first paint frame (observedFCP === observedLCP).
+================================================================================

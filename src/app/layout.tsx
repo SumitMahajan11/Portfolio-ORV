@@ -1,14 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Cinzel, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { ModeProvider } from "@/lib/flags";
 import { SoundProvider } from "@/lib/sound";
 import { MotionToggle } from "@/components/ui/motion-toggle";
 import { SoundToggle, SoundPermissionPrompt } from "@/components/sound";
 import { CornerBountyButton } from "@/components/biyoo/corner-bounty-button";
-import { SiteWall } from "@/components/background/site-wall";
+import { LivingWall } from "@/components/background/site-wall";
 import { identity } from "@/content";
 import "@/styles/globals.css";
+
+const GlobalBiyoo = dynamic(
+  () => import("@/components/biyoo/puppet/global-biyoo").then((m) => m.GlobalBiyoo)
+);
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -32,7 +37,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sumitmahajan.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -110,6 +115,16 @@ export default function RootLayout({
       lang="en"
       className={`${cinzel.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          imageSrcSet="/art/biyoo/biyoo-calm-360.avif 360w, /art/biyoo/biyoo-calm-720.avif 720w"
+          imageSizes="(max-width: 639px) 72px, 108px"
+          fetchPriority="high"
+        />
+      </head>
       <body className="min-h-screen bg-void text-feather antialiased font-ui flex flex-col overflow-x-hidden">
         {/* Skip to Main Content Link (Keyboard accessible, first focusable item) */}
         <nav aria-label="Skip navigation">
@@ -128,14 +143,15 @@ export default function RootLayout({
         />
         <ModeProvider>
           <SoundProvider>
-            {/* Global Background Wall Layer (PRE-4) */}
-            <SiteWall />
+            {/* Global Living Wall Background */}
+            <LivingWall />
 
             {/* Persistent Accessible Header */}
             <header className="sticky top-0 z-50 w-full border-b border-line bg-void/90 backdrop-blur-md">
               <div className="mx-auto flex max-w-7xl items-center justify-between px-2.5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
                 <Link
                   href="/"
+                  data-biyoo-point
                   prefetch={false}
                   className={`${cinzel.className} font-display text-xs sm:text-base font-bold tracking-tight sm:tracking-wider text-feather hover:text-star transition-colors shrink-0`}
                 >
@@ -143,33 +159,46 @@ export default function RootLayout({
                 </Link>
 
                 <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 shrink-0">
+                  {/* Recruiter Navigation */}
+                  <nav aria-label="Main navigation" className="hidden md:flex items-center gap-3 lg:gap-5 font-mono text-xs text-mist">
+                    <Link
+                      href="/#scenario-select"
+                      className="hover:text-star transition-colors"
+                    >
+                      Projects
+                    </Link>
+                    <Link
+                      href="/#readers-record"
+                      className="hover:text-star transition-colors"
+                    >
+                      Skills
+                    </Link>
+                    <Link
+                      href="/#contact"
+                      className="hover:text-star transition-colors"
+                    >
+                      Contact
+                    </Link>
+                    <a
+                      href={identity.contact.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-star hover:text-feather transition-colors"
+                    >
+                      GitHub ↗
+                    </a>
+                  </nav>
+
                   {/* Motion mode toggle: Full / Light */}
                   <MotionToggle />
 
                   {/* Sound toggle: On / Off */}
                   <SoundToggle />
 
-                  {/* Bounty board link (desktop header; corner Biyoo covers mobile & tablet) */}
-                  <Link
-                    href="/wanted"
-                    prefetch={false}
-                    className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-                  >
-                    Bounty board
-                  </Link>
-
-                  {/* Skip to contact link (desktop only to prevent tablet header overflow) */}
-                  <Link
-                    href="/#contact"
-                    prefetch={false}
-                    className="hidden lg:inline-flex font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1"
-                  >
-                    Skip to contact &rarr;
-                  </Link>
-
                   {/* Skip to plain version link - visible on first paint, keyboard focusable */}
                   <Link
                     href="/skip"
+                    data-biyoo-point
                     prefetch={false}
                     className="font-mono text-xs sm:text-sm text-mist hover:text-star underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-2 py-1 shrink-0"
                   >
@@ -184,6 +213,9 @@ export default function RootLayout({
 
             {/* Persistent Corner Bounty Button */}
             <CornerBountyButton />
+
+            {/* Step 5: Persistent Fixed Bottom-Right Global Biyoo Puppet */}
+            <GlobalBiyoo />
 
             {/* Non-blocking Sound Permission Prompt ("Biyoo wants to say hi. Turn sound on?") */}
             <SoundPermissionPrompt />

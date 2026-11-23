@@ -15,11 +15,11 @@ export const metadata: Metadata = {
 export default function SkipPage() {
   const isDev = process.env.NODE_ENV !== "production";
 
-  // In production: hide any scenario that has no verified content (at least 1 verified claim)
+  // In production: hide any scenario that has no verified content (at least 1 verified claim or published flagship)
   // In development: show all scenarios for review
   const visibleProjects = projects.filter((p) => {
     if (isDev) return true;
-    return p.claims.some((c) => c.evidence === "verified");
+    return p.published && (p.status === "flagship" || p.claims.some((c) => c.evidence === "verified"));
   });
 
   const verifiedProjectIds = new Set(visibleProjects.map((p) => p.id));
@@ -451,7 +451,7 @@ export default function SkipPage() {
               Direct Contact Notice
             </h3>
             <p>
-              The direct contact form arrives in Phase 3. In strict compliance with privacy guidelines, no personal email address, telephone number, or physical street address is published on this domain.
+              The direct contact form is accessible on the main page (#contact). In strict compliance with privacy guidelines, no personal email address, telephone number, or physical street address is published on this domain.
             </p>
           </div>
         </section>

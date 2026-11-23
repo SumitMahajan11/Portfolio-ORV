@@ -168,6 +168,30 @@ export const ART_ALT_REGISTRY: Record<string, ArtAssetMetadata> = {
   // =========================================================================
   // BIYOO MASCOT LAYERS & STATES
   // =========================================================================
+  "biyoo_calm": {
+    id: "biyoo_calm",
+    category: "biyoo",
+    alt: "Biyoo, a fluffy spherical cotton mascot with two striped amber horns floating in a calm, cheerful pose",
+    ariaHidden: false,
+    decorative: false,
+    description: "Biyoo companion in calm default floating pose",
+  },
+  "biyoo_excited": {
+    id: "biyoo_excited",
+    category: "biyoo",
+    alt: "Biyoo excited and cheering with outstretched arms and smiling eyes",
+    ariaHidden: false,
+    decorative: false,
+    description: "Biyoo companion in excited reaction pose",
+  },
+  "biyoo_burst": {
+    id: "biyoo_burst",
+    category: "biyoo",
+    alt: "Golden exclamation alert marks beside Biyoo's horn",
+    ariaHidden: true,
+    decorative: true,
+    description: "Golden exclamation burst mark icon indicating alert or reaction",
+  },
   "biyoo_body_base": {
     id: "biyoo_body_base",
     category: "biyoo",
@@ -284,37 +308,13 @@ export const ART_ALT_REGISTRY: Record<string, ArtAssetMetadata> = {
   // =========================================================================
   // WALL BACKGROUNDS
   // =========================================================================
-  "wall-01": {
-    id: "wall-01",
+  "archive": {
+    id: "archive",
     category: "wall",
     alt: "Dark starlit cosmic void with ethereal blue nebula and floating pages",
     ariaHidden: false,
     decorative: false,
-    description: "Story Wall background for Hero through Scenario Select",
-  },
-  "wall-02": {
-    id: "wall-02",
-    category: "wall",
-    alt: "Digital neon archive with illuminated terminal screens and grid corridors",
-    ariaHidden: false,
-    decorative: false,
-    description: "Worlds Wall background for Worlds, Side Quests, and Skills",
-  },
-  "wall-03": {
-    id: "wall-03",
-    category: "wall",
-    alt: "Cyan-lit paper wall with cascading manuscript sheets and constellation lines",
-    ariaHidden: false,
-    decorative: false,
-    description: "Finale Wall background for Finale and Contact Form",
-  },
-  "wall-04": {
-    id: "wall-04",
-    category: "wall",
-    alt: "Alternative starlit paper archive background",
-    ariaHidden: false,
-    decorative: false,
-    description: "Alternative wall intake asset",
+    description: "Living Wall background for the site",
   },
 
   // =========================================================================

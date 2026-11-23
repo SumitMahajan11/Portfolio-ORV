@@ -1,0 +1,52 @@
+=== TINT CORRECTNESS VERIFICATION: DIRECT LOAD AT /#ratify & RESIZE ===
+
+{
+  "testA_directLoadRatify": {
+    "scrollY": 0,
+    "viewportHeight": 900,
+    "ratifyTop": 4550.59375,
+    "ratifyBottom": 7150.21875,
+    "tints": [
+      {
+        "id": "edge-cloud",
+        "opacity": 0
+      },
+      {
+        "id": "raft",
+        "opacity": 0
+      },
+      {
+        "id": "z3",
+        "opacity": 0
+      },
+      {
+        "id": "backtrace",
+        "opacity": 0
+      }
+    ]
+  },
+  "testB_windowResize": {
+    "scrollY": 0,
+    "viewportHeight": 800,
+    "ratifyTop": 4150.59375,
+    "ratifyBottom": 6750.21875,
+    "tints": [
+      {
+        "id": "edge-cloud",
+        "opacity": 0
+      },
+      {
+        "id": "raft",
+        "opacity": 0
+      },
+      {
+        "id": "z3",
+        "opacity": 0
+      },
+      {
+        "id": "backtrace",
+        "opacity": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,229 @@
+========================================================================================
+ archive-P2c: VALID A/B AND VISIBILITY VERIFICATION REPORT
+ Date: 2026-11-10T13:35:00Z
+ Workspace: D:\Projects\Portfolio-ORV-main
+========================================================================================
+
+----------------------------------------------------------------------------------------
+ 1. DIAGNOSIS OF OLD "WITHOUT" GROUP (P-2b PROXY INVESTIGATION)
+----------------------------------------------------------------------------------------
+Target:
+  - Direct Next.js server on port 3000
+  - Proxy server on port 3001 (scripts/p2b-proxy.mjs)
+
+HTML Comparison:
+  - Direct (port 3000):  46,501 bytes
+  - Proxy WITH (port 3001): 46,501 bytes
+  - Proxy WITHOUT (port 3001): 46,501 bytes
+  - Result: HTML direct === proxyWith === proxyWithout (100% byte identical)
+
+Chunk Header & Transport Comparison (0ty___o_-32x2.js):
+  - WITH particles:
+      Status: 200
+      Content-Encoding: gzip
+      Content-Length: 12128
+      Cache-Control: public, max-age=31536000, immutable
+      Transfer bytes: 36,965 B
+  - WITHOUT particles:
+      Status: 200
+      Content-Encoding: undefined (raw identity text, uncompressed)
+      Content-Length: 36977
+      Cache-Control: no-store, no-cache, must-revalidate
+      Transfer bytes: 36,977 B
+
+Lighthouse Runs via Proxy (2 WITH vs 2 WITHOUT):
+  - WITH Run 1:    Perf=98 | TBT=124ms | LCP=0.94s | Requests=29 | Transfer=499,468 B
+  - WITH Run 2:    Perf=99 | TBT=105ms | LCP=0.96s | Requests=29 | Transfer=499,468 B
+  - WITHOUT Run 1: Perf=77 | TBT=244ms | LCP=4.93s | Requests=30 | Transfer=525,937 B
+  - WITHOUT Run 2: Perf=81 | TBT=202ms | LCP=4.54s | Requests=30 | Transfer=525,937 B
+
+LCP Subparts Analysis:
+  - WITH runs:    TTFB ~280ms, Load Delay ~0ms, Load Time ~260ms, Render Delay ~380ms (Total LCP ~920-960ms)
+  - WITHOUT runs: TTFB ~280ms, Load Delay ~0ms, Load Time ~3500ms, Render Delay ~800ms (Total LCP ~4500-4930ms)
+
+Request Count & URL Diff:
+  - WITH: 29 network requests
+  - WITHOUT: 30 network requests (+1 duplicate request for chunk 0ty___o_-32x2.js caused by cache-control stripping)
+
+Plain Statement of Proxy Changes:
+  Beyond substituting the particles function body with `return null`, the proxy:
+  1. Stripped gzip compression on the target chunk (`Content-Encoding: gzip` -> raw text, adding ~25 KB uncompressed transfer).
+  2. Overwrote `Cache-Control` from `public, max-age=31536000, immutable` to `no-store, no-cache, must-revalidate`.
+  3. Stripped `Content-Length`, breaking HTTP keep-alive framing and browser preload discovery.
+  4. Caused Chromium to fail preload cache reuse, resulting in a duplicate chunk fetch (30 requests vs 29) and delaying script execution/hydration by ~3.6 seconds.
+
+VERDICT:
+  The old P-2b A/B measurement was completely INVALID because the proxy altered transport encoding, caching headers, request count, and hydration timing.
+
+----------------------------------------------------------------------------------------
+ 2. CLEAN A/B BENCHMARK (INTERLEAVED N=8, 60S IDLE, NO PROXY)
+----------------------------------------------------------------------------------------
+Setup:
+  - Built two independent production builds in temp folder outside repo:
+      (A) Normal build with AtmosphericParticles (port 3010)
+      (B) Clean build with particles import and JSX removed from site-wall.tsx (port 3011)
+  - Pre-flight verification:
+      App A LCP Element: main#main-content > section#hero-scene > div.w-full > h1.font-display ("SUMIT MAHAJAN")
+      App B LCP Element: main#main-content > section#hero-scene > div.w-full > h1.font-display ("SUMIT MAHAJAN")
+      Match: TRUE
+      App A Requests: Exactly 29 requests (HTML, 3 fonts, 1 css, 11 js chunks, 4 avif images, 1 svg, 2 rsc)
+      App B Requests: Exactly 29 requests (identical structure, resource types, and sizes)
+
+Interleaved Mobile Lighthouse Results (A1, B1, A2, B2 ... A8, B8 with 60s idle):
+  GROUP A (WITH PARTICLES):
+    Run 1 (A): Perf=100 | TBT=68ms | LCP=0.91s
+    Run 2 (A): Perf=100 | TBT=82ms | LCP=0.91s
+    Run 3 (A): Perf=100 | TBT=77ms | LCP=0.91s
+    Run 4 (A): Perf=99  | TBT=94ms | LCP=0.91s
+    Run 5 (A): Perf=99  | TBT=94ms | LCP=0.91s
+    Run 6 (A): Perf=99  | TBT=94ms | LCP=0.91s
+    Run 7 (A): Perf=100 | TBT=88ms | LCP=0.91s
+    Run 8 (A): Perf=100 | TBT=81ms | LCP=0.91s
+    Range: Perf [99, 100] | TBT [68ms, 94ms] | LCP [0.91s, 0.91s]
+    Median: Perf=100 | TBT=85ms | LCP=0.91s
+    Runs with TBT > 200ms: 0 of 8
+
+  GROUP B (WITHOUT PARTICLES):
+    Run 1 (B): Perf=100 | TBT=83ms | LCP=0.91s
+    Run 2 (B): Perf=100 | TBT=79ms | LCP=0.91s
+    Run 3 (B): Perf=100 | TBT=69ms | LCP=0.91s
+    Run 4 (B): Perf=100 | TBT=70ms | LCP=0.91s
+    Run 5 (B): Perf=100 | TBT=64ms | LCP=0.91s
+    Run 6 (B): Perf=100 | TBT=68ms | LCP=0.91s
+    Run 7 (B): Perf=100 | TBT=72ms | LCP=0.91s
+    Run 8 (B): Perf=100 | TBT=65ms | LCP=0.91s
+    Range: Perf [100, 100] | TBT [64ms, 83ms] | LCP [0.91s, 0.91s]
+    Median: Perf=100 | TBT=69.5ms | LCP=0.91s
+    Runs with TBT > 200ms: 0 of 8
+
+Statistical Difference & Overlap:
+  - Perf Ranges Overlap: YES (A: [99, 100] vs B: [100, 100])
+  - TBT Ranges Overlap:  YES (A: [68ms, 94ms] vs B: [64ms, 83ms])
+  - LCP Ranges Overlap:  YES (A: [0.91s, 0.91s] vs B: [0.91s, 0.91s])
+
+VERDICT:
+  no detectable difference at n=8
+
+----------------------------------------------------------------------------------------
+ 3. WHAT RUNS AT 3-4.6s (MODULE MAPPING OF LONG TASKS)
+----------------------------------------------------------------------------------------
+Module Mapping:
+  - Chunk 107i8ab907rvg.js:
+      Origin: Listed in `.next/build-manifest.json` under `rootMainFiles`
+      Contents: React 19 core runtime, React DOM Fiber reconciler / hydration, Next.js client router state tree
+      Site / Wall / Particles code present: NONE (0%)
+  - Chunk 2-3bcc782c_pu.js:
+      Origin: Listed in `.next/build-manifest.json` under `rootMainFiles`
+      Contents: React DOM scheduler, Next.js App Router client bootstrap, GSAP core vendor library
+      Site / Wall / Particles code present: NONE (0%)
+
+Explanation:
+  In P-2b, when TBT spiked over 200ms during the invalid proxy runs, the long tasks at 3.0s - 4.6s were 100% vendor framework evaluation:
+  React DOM client hydration and Next.js App Router bootstrap taking ~120-238ms under 4x CPU throttling.
+  Neither chunk belongs to wall-particles or site-wall.
+  In the clean A/B runs (without proxy interference), hydration completes in <100ms, and ZERO runs exceeded 200ms TBT.
+
+----------------------------------------------------------------------------------------
+ 4. UNCAPPED FPS CHECK & SCRIPT COST
+----------------------------------------------------------------------------------------
+Chrome Flags Tested:
+  `--headless=new --disable-frame-rate-limit --disable-gpu-vsync`
+
+Blank Page Measurement (about:blank + rAF loop):
+  - Samples collected: 480 frames
+  - p50 frame time: 17.500 ms (~57.1 FPS)
+  - p95 frame time: 18.100 ms
+  - mean frame time: 17.485 ms
+  - Evaluation: p50 is NOT below 6.9 ms. In Chrome headless on Windows, `requestAnimationFrame` is driven by the internal BeginFrame compositor clock which defaults to 60 Hz software vsync when GPU vsync is disabled.
+  - Verdict per prompt instruction: "otherwise say the uncapping failed and stop this step" -> UNCAPPING FAILED, STOPPED.
+
+In-Page Script Cost (Particles ON at 6x CPU Throttle):
+  - Measurement method: monkey-patching `ctx.clearRect` over 290 clean animation frames at 6x CPU throttle (CDP `Emulation.setCPUThrottlingRate: 6`)
+  - Total frames measured: 290
+  - Average script execution cost: 0.540 ms
+  - p50 script execution cost:     0.400 ms
+  - p95 script execution cost:     1.100 ms
+  - Min / Max script cost:         0.000 ms / 2.300 ms
+  - Budget: <= 1.5 ms -> PASS (0.400 ms p50 / 0.540 ms avg is well within the 1.5 ms budget even under 6x CPU throttle).
+
+----------------------------------------------------------------------------------------
+ 5. CLEAN VISIBILITY AND 6X NEAREST-NEIGHBOUR PARTICLE AUDIT
+----------------------------------------------------------------------------------------
+Setup:
+  - Viewport: 1440x900
+  - Pointer fixed at: (720, 450)
+  - Screenshots captured:
+      OFF1: Particles disabled (App B)
+      OFF2: Particles disabled after 1000ms delay (App B)
+      ON: Particles enabled (App A)
+      Canvas: Synchronized transparent Canvas 2D snapshot taken at the exact frame of ON
+
+Pixel Difference Analysis (delta > 8 levels in R, G, or B):
+  - Canvas particle pixels (alpha > 0): 1,211 px
+  - Dilated canvas mask (2px dilation radius): 3,189 px
+  - Noise floor (OFF1 vs OFF2): 72,485 px
+  - ON vs OFF1 changed pixels INSIDE dilated mask: 981 px
+  - ON vs OFF1 changed pixels OUTSIDE dilated mask: 7,626 px
+  - Outside count vs Noise floor comparison: Outside (7,626) != Noise floor (72,485)
+  - Verdict: The diff is still contaminated by background infinite CSS keyframe animations (Tailwind `animate-pulse` and `animate-ping` on UI badge and status elements across the page).
+
+Crop & Visual Inspection:
+  - Identified 5 distinct brightest particles:
+      Particle #1: x=718, y=536 | delta=213 | rgb=(92, 220, 226)
+      Particle #2: x=1144, y=674 | delta=210 | rgb=(92, 219, 224)
+      Particle #3: x=55, y=788 | delta=210 | rgb=(92, 217, 222)
+      Particle #4: x=1011, y=295 | delta=209 | rgb=(92, 220, 225)
+      Particle #5: x=292, y=845 | delta=208 | rgb=(90, 215, 221)
+  - Saved 6x nearest-neighbour cropped composite of all 5 particles to:
+      docs/proofs/screens/p2c-particles-brightest-5-6x.png (1500x300 px)
+  - Opened image: YES, opened directly using read_file.
+  - Visual description:
+      The image contains 5 side-by-side cropped panels upscaled 6x via nearest-neighbour.
+      Each panel clearly displays an authentic, luminous cyan particle (rgb ~92, 219, 224) against its surrounding environment:
+      Panel 1 shows a particle hovering right next to the white text "and".
+      Panels 2, 3, 4, and 5 show isolated particles glowing against the dark blue-gray textures of the living archive wall.
+      The 6x nearest-neighbour scaling reveals the pixelated circular disc geometry of the particles with soft anti-aliased edges, proving they are genuinely rendered and distinctly visible at 1x.
+
+----------------------------------------------------------------------------------------
+ 6. REAL BUNDLE COST
+----------------------------------------------------------------------------------------
+Comparison of chunk containing `site-wall.tsx`:
+  - Build A (with AtmosphericParticles):
+      Chunk file: 0nz948ks9ai6h.js
+      Raw size:   36,959 bytes
+      Gzip size:  12,122 bytes
+      Contains wall-particles: TRUE
+  - Build B (without AtmosphericParticles import & JSX):
+      Chunk file: 3i19pnm1z0z_x.js
+      Raw size:   33,498 bytes
+      Gzip size:  10,971 bytes
+      Contains wall-particles: FALSE
+
+True Added Size of Atmospheric Particles:
+  - Raw delta:  +3,461 bytes (+3.46 KB)
+  - Gzip delta: +1,151 bytes (+1.15 KB)
+
+----------------------------------------------------------------------------------------
+ 7. GIT AUDIT OF P-2b SESSION
+----------------------------------------------------------------------------------------
+List of every git command run during P-2b other than status, add, commit:
+  1. `git diff scripts/measure-task0-baseline.mjs`
+  2. `git log -n 5 --oneline`
+  3. `git show 11c0dd8 --stat`
+  4. `git diff 46f21fc~1 46f21fc -- CLAUDE.md`
+  5. `git checkout scripts/measure-task0-baseline.mjs`
+
+Exact command run for "discard stray whitespace on measure-task0-baseline.mjs":
+  `git checkout scripts/measure-task0-baseline.mjs`
+
+Exact diff discarded:
+```diff
+--- a/scripts/measure-task0-baseline.mjs
++++ b/scripts/measure-task0-baseline.mjs
+@@ -299,3 +299,4 @@ main().catch((err) => {
+   console.error(err);
+   process.exit(1);
+ });
++
+```
+========================================================================================

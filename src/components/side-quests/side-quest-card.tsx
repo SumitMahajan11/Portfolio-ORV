@@ -34,7 +34,7 @@ export function SideQuestCard({ project, className = "" }: SideQuestCardProps) {
   const isDev = process.env.NODE_ENV !== "production";
   const hasLinks = Boolean(project.links.repo || project.links.demo);
   const isExplicitlyInDesign = Boolean(project.inDesign);
-  const shouldRender = isDev || hasLinks || isExplicitlyInDesign;
+  const shouldRender = isDev || (project.published && (hasLinks || isExplicitlyInDesign));
 
   // Viewport intersection observer for 6-10s one-shot micro-animation
   useEffect(() => {

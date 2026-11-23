@@ -1,0 +1,93 @@
+================================================================
+ ARCHIVE-A1b: LANTERN VERIFICATION & CONTROLS PROOF
+================================================================
+Timestamp: 2026-11-10T07:20:33.107Z
+
+1. VISIBILITY POSITIVE CONTROL (at scroll 0):
+----------------------------------------------------------------
+[
+  {
+    "location": "Screen Centre",
+    "coords": "(720, 450)",
+    "baseDiscMean": 21.925,
+    "withLanternDiscMean": 21.926,
+    "insideGainPct": 0,
+    "insideGainPass": false,
+    "baseRingMean": 13.253,
+    "withLanternRingMean": 13.252,
+    "outsideChangePct": 0.01,
+    "outsideChangePass": true,
+    "note": "Lower than +8% on real page at scroll 0 because #hero-scene is styled with bg-void (rgb(7, 8, 11)) at z-index: 10, occluding the z-index: 0 living wall."
+  },
+  {
+    "location": "Near Top-Right Light",
+    "coords": "(1200, 200)",
+    "baseDiscMean": 15.151,
+    "withLanternDiscMean": 15.126,
+    "insideGainPct": -0.16,
+    "insideGainPass": false,
+    "baseRingMean": 14.592,
+    "withLanternRingMean": 14.592,
+    "outsideChangePct": 0,
+    "outsideChangePass": true,
+    "note": "Lower than +8% on real page at scroll 0 because #hero-scene is styled with bg-void (rgb(7, 8, 11)) at z-index: 10, occluding the z-index: 0 living wall."
+  }
+]
+
+Plain Analysis: Inside gain is lower than +8% on the real page at scroll 0 (measured between -0.04% and +0.19%).
+Root Cause: #hero-scene is styled with className="... bg-void ..." which applies background-color: var(--void, #07080B)
+at z-index: 10, completely occluding the z-index: 0 LivingWall compositor and the lantern reveal beam at scroll 0.
+Outside change strictly obeys <= 1% (0.01% - 0.03%).
+
+2. ALIGNMENT NEGATIVE CONTROL (6px offset vs Real Code):
+----------------------------------------------------------------
+[
+  {
+    "point": "Center",
+    "scrollPct": 0,
+    "realNCC": 0.9727,
+    "offsetNCC": 0.9459,
+    "droppedBelow90": false
+  },
+  {
+    "point": "Center",
+    "scrollPct": 50,
+    "realNCC": 0.9922,
+    "offsetNCC": 0.9657,
+    "droppedBelow90": false
+  },
+  {
+    "point": "Center",
+    "scrollPct": 100,
+    "realNCC": 0.6489,
+    "offsetNCC": 0.4655,
+    "droppedBelow90": true
+  },
+  {
+    "point": "Top-Right Light",
+    "scrollPct": 0,
+    "realNCC": 1,
+    "offsetNCC": 1,
+    "droppedBelow90": false
+  },
+  {
+    "point": "Top-Right Light",
+    "scrollPct": 50,
+    "realNCC": 1,
+    "offsetNCC": 1,
+    "droppedBelow90": false
+  },
+  {
+    "point": "Top-Right Light",
+    "scrollPct": 100,
+    "realNCC": 0.9826,
+    "offsetNCC": 0.9769,
+    "droppedBelow90": false
+  }
+]
+
+3. MOBILE WALL SCREENSHOTS (390x844 @ dsf 3):
+----------------------------------------------------------------
+- docs/proofs/screens/mobile-wall-scroll-0-390x844.png
+- docs/proofs/screens/mobile-wall-scroll-50-390x844.png
+================================================================

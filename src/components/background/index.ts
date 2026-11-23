@@ -1,1 +1,1 @@
-export { SiteWall } from './site-wall';
+export { LivingWall } from './site-wall';

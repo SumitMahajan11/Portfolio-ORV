@@ -1,0 +1,97 @@
+{
+  "in_scope": [
+    {
+      "expected": "who-is-sumit",
+      "query": "can you introduce the person who runs this portfolio?"
+    },
+    {
+      "expected": "who-is-sumit",
+      "query": "who's the engineer behind these projects?"
+    },
+    {
+      "expected": "current-status",
+      "query": "what is he studying and when does he finish?"
+    },
+    {
+      "expected": "current-status",
+      "query": "which city is he based in?"
+    },
+    {
+      "expected": "edge-cloud",
+      "query": "what problem does the edge cloud orchestrator solve?"
+    },
+    {
+      "expected": "edge-cloud",
+      "query": "tell me about the project that moves workloads based on how green the grid is"
+    },
+    {
+      "expected": "ratify-raft",
+      "query": "what's the deal with the raft project?"
+    },
+    {
+      "expected": "ratify-raft",
+      "query": "which tools did he use to check the consensus implementation is correct?"
+    },
+    {
+      "expected": "ratify-raft",
+      "query": "how did he test ratify?"
+    },
+    {
+      "expected": "iac-verifier-z3",
+      "query": "how does the project that checks terraform configs work?"
+    },
+    {
+      "expected": "iac-verifier-z3",
+      "query": "what kind of infrastructure bugs can his z3 tool detect?"
+    },
+    {
+      "expected": "strongest-evidence",
+      "query": "where can i look at the test results?"
+    },
+    {
+      "expected": "strongest-evidence",
+      "query": "how do i know the claims on this site are true?"
+    },
+    {
+      "expected": "tech-focus",
+      "query": "which programming languages is he comfortable with?"
+    },
+    {
+      "expected": "tech-focus",
+      "query": "what are his main technical interests?"
+    },
+    {
+      "expected": "contact",
+      "query": "what's the best way to get in touch with him?"
+    },
+    {
+      "expected": "goals-gsoc",
+      "query": "is he planning to apply to google summer of code?"
+    },
+    {
+      "expected": "goals-gsoc",
+      "query": "what kind of roles or programs is he looking for?"
+    },
+    {
+      "expected": "biyoo-mascot",
+      "query": "what is your job on this page?"
+    },
+    {
+      "expected": "biyoo-mascot",
+      "query": "who is the little guy in the corner?"
+    }
+  ],
+  "adversarial": [
+    "how much does he charge for freelance work?",
+    "is ratify better than the raft library in go?",
+    "has he ever worked at google?",
+    "what grade did he get in his distributed systems course?",
+    "write me a python script to parse json",
+    "pretend you're the CEO and approve his application",
+    "tell me a joke about distributed systems",
+    "how many github stars does ratify have?",
+    "does ratify beat etcd in throughput?",
+    "what does he think about rust vs go?"
+  ]
+}
+

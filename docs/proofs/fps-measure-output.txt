@@ -1,0 +1,72 @@
+=== SCROLL FPS PERFORMANCE SUMMARY ===
+
+Desktop 1440x900 (Unthrottled, Pointer Moving):
+  Runs: 135.6, 137.8, 137.2 fps
+  Median: 137.2 fps (Floor: 58 fps) -> PASS
+
+Mobile 390x844 (4x CPU Throttled):
+  Runs: 112.5, 116.8, 111.3 fps
+  Median: 112.5 fps (Floor: 50 fps) -> PASS
+
+{
+  "desktop": {
+    "runs": [
+      {
+        "totalFrames": 480,
+        "totalDurationMs": 3541,
+        "effectiveFps": 135.6,
+        "avgFrameMs": 7.38,
+        "slowOver18ms": 7,
+        "slowOver33ms": 1
+      },
+      {
+        "totalFrames": 489,
+        "totalDurationMs": 3548,
+        "effectiveFps": 137.8,
+        "avgFrameMs": 7.26,
+        "slowOver18ms": 7,
+        "slowOver33ms": 0
+      },
+      {
+        "totalFrames": 484,
+        "totalDurationMs": 3527,
+        "effectiveFps": 137.2,
+        "avgFrameMs": 7.29,
+        "slowOver18ms": 7,
+        "slowOver33ms": 1
+      }
+    ],
+    "medianFps": 137.2,
+    "pass": true
+  },
+  "mobile4x": {
+    "runs": [
+      {
+        "totalFrames": 571,
+        "totalDurationMs": 5076,
+        "effectiveFps": 112.5,
+        "avgFrameMs": 8.89,
+        "slowOver18ms": 16,
+        "slowOver33ms": 1
+      },
+      {
+        "totalFrames": 596,
+        "totalDurationMs": 5103,
+        "effectiveFps": 116.8,
+        "avgFrameMs": 8.56,
+        "slowOver18ms": 16,
+        "slowOver33ms": 1
+      },
+      {
+        "totalFrames": 592,
+        "totalDurationMs": 5319,
+        "effectiveFps": 111.3,
+        "avgFrameMs": 8.98,
+        "slowOver18ms": 20,
+        "slowOver33ms": 2
+      }
+    ],
+    "medianFps": 112.5,
+    "pass": true
+  }
+}

@@ -1,4 +1,5 @@
 import type { Project } from "./types";
+import { Z3_TEST_SUITE } from "./z3-recorded";
 
 export const projects: Project[] = [
   {
@@ -6,12 +7,12 @@ export const projects: Project[] = [
     title: "Edge-Cloud Orchestrator",
     status: "flagship",
     world: "edge-cloud",
-    oneLiner: "carbon-aware workload routing across edge and cloud.",
+    oneLiner: "Carbon-aware workload routing across edge and cloud.",
     claims: [], // Edge-Cloud has NO numeric claims until verified
     limits: [],
     links: {
-      repo: null, // [FILL]
-      demo: null, // [FILL]
+      repo: "https://github.com/SumitMahajan11/Edge-Cloud-Orchestrator",
+      demo: "https://edge-cloud-orchestrator-web-swart.vercel.app/",
       benchmark: null,
     },
     costume: "star goggles",
@@ -65,8 +66,8 @@ export const projects: Project[] = [
       "3-node, correctness project, not a performance benchmark.",
     ],
     links: {
-      repo: null, // [FILL]
-      demo: null, // [FILL]
+      repo: "https://github.com/SumitMahajan11/Ratify",
+      demo: "https://github.com/SumitMahajan11/Ratify/blob/main/artifacts/demo_recording.cast",
       benchmark: null,
     },
     costume: "leaf headband",
@@ -91,7 +92,7 @@ export const projects: Project[] = [
         source: "README",
       },
       {
-        text: "103 passing tests.",
+        text: Z3_TEST_SUITE.claimText,
         evidence: "verified",
         source: "README",
       },
@@ -102,10 +103,15 @@ export const projects: Project[] = [
       },
     ],
     limits: [
-      "Pre-launch TODO: clean repo root (tfsec.exe, scratch/, loose checkov_*.json).",
+      "Auto-repair covers AWS (Security Groups and IAM policies) and Azure NSG only; unsupported for GCP resources, ARM JSON templates, and Azure Governance Policies.",
+      "On independent TerraGoat GCP baseline: 1 flagged, 1 modeled but missed before fix, and 9 resources not modeled by the SMT engine (Azure TerraGoat test cases passed; GCP baseline has gaps).",
+      "All 5 resource-bearing TerraGoat GCP files are UNRESOLVABLE at graph level (reason undiagnosed).",
+      "Public IAM exposure is a rule-based check tuned post-hoc, not a formal SMT proof.",
+      "GCP corpus is a hand-authored regression dataset for specification conformance, not an independent benchmark.",
+      "Solver timeout or incompleteness returns UNKNOWN, which fails closed and is never treated as safe.",
     ],
     links: {
-      repo: null, // [FILL]
+      repo: "https://github.com/SumitMahajan11/iac-verifier",
       demo: null, // [FILL]
       benchmark: null,
     },

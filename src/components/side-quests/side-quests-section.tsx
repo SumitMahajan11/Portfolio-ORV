@@ -20,7 +20,14 @@ export interface SideQuestsSectionProps {
  * - In development: shows dev badge for all candidates
  */
 export function SideQuestsSection({ className = "" }: SideQuestsSectionProps) {
-  const sideQuests = projects.filter((p) => p.status === "sidequest");
+  const isDev = process.env.NODE_ENV !== "production";
+  const sideQuests = projects.filter(
+    (p) => p.status === "sidequest" && (isDev || (p.published && Boolean(p.links.repo || p.links.demo)))
+  );
+
+  if (sideQuests.length === 0) {
+    return null;
+  }
 
   return (
     <section

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
 import { SystemWindow } from "@/components/system-window";
 import { useMode } from "@/lib/flags";
+import { Z3_TEST_SUITE } from "@/lib/worlds/z3-viz";
 import { Z3StaticDiagram } from "./z3-static-diagram";
 
 // Lazy-load the interactive Z3 visualizer canvas
@@ -16,6 +17,22 @@ const DynamicZ3VizCanvas = dynamic(
     loading: () => <Z3StaticDiagram />,
   }
 );
+
+function subscribeMediaQuery(callback: () => void) {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  const mql = window.matchMedia("(min-width: 640px)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
+function getDesktopSnapshot() {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia("(min-width: 640px)").matches;
+}
+
+function getServerSnapshot() {
+  return false;
+}
 
 export interface Z3WorldProps {
   className?: string;
@@ -28,14 +45,15 @@ export interface Z3WorldProps {
  * Rules:
  * - Scoped via data-world="z3"
  * - Server-rendered text content for SEO & accessibility
- * - Dynamic client-only visualization with static fallback (4 captioned frames)
- * - Label: "illustrative example, not real Z3 execution"
+ * - Dynamic client-only visualization with static fallback (5 captioned frames)
+ * - Label: "Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, 2026-11-08)"
  * - Proof panel from verified content only (/docs/03-CONTENT-BIBLE.md)
  * - Biyoo costume hook: chain bracelet
  */
 export function Z3World({ className = "" }: Z3WorldProps) {
   const { reducedMotion, mode } = useMode();
   const [scenarioCleared, setScenarioCleared] = useState(false);
+  const isDesktop = useSyncExternalStore(subscribeMediaQuery, getDesktopSnapshot, getServerSnapshot);
 
   // Retrieve iac-verifier project data from content
   const project = projects.find((p) => p.id === "iac-verifier") || {
@@ -44,9 +62,22 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     status: "flagship",
     world: "z3",
     oneLiner: "Z3-based reachability proofs on Terraform IAM and network graphs.",
-    claims: [],
-    limits: ["Pre-launch TODO: clean repo root (tfsec.exe, scratch/, loose checkov_*.json)."],
-    links: { repo: null, demo: null, benchmark: null },
+    claims: [
+      {
+        text: Z3_TEST_SUITE.claimText,
+        evidence: "verified",
+        source: "README",
+      },
+    ],
+    limits: [
+      "Auto-repair covers AWS (Security Groups and IAM policies) and Azure NSG only; unsupported for GCP resources, ARM JSON templates, and Azure Governance Policies.",
+      "On independent TerraGoat GCP baseline: 1 flagged, 1 modeled but missed before fix, and 9 resources not modeled by the SMT engine (Azure TerraGoat test cases passed; GCP baseline has gaps).",
+      "All 5 resource-bearing TerraGoat GCP files are UNRESOLVABLE at graph level (reason undiagnosed).",
+      "Public IAM exposure is a rule-based check tuned post-hoc, not a formal SMT proof.",
+      "GCP corpus is a hand-authored regression dataset for specification conformance, not an independent benchmark.",
+      "Solver timeout or incompleteness returns UNKNOWN, which fails closed and is never treated as safe.",
+    ],
+    links: { repo: "https://github.com/SumitMahajan11/iac-verifier", demo: null, benchmark: null },
     costume: "chain bracelet",
     worldReady: true,
   };
@@ -62,7 +93,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     }
   };
 
-  const isStaticMode = reducedMotion || mode === "light";
+  const isStaticMode = reducedMotion || mode === "light" || !isDesktop;
 
   return (
     <section
@@ -113,10 +144,10 @@ export function Z3World({ className = "" }: Z3WorldProps) {
         <div className="space-y-6">
           <div className="text-center space-y-2 max-w-xl mx-auto">
             <h3 className="font-display text-lg sm:text-xl font-bold text-feather">
-              Z3 Nen Vows &amp; Reachability Engine
+              Z3 Reachability &amp; Auto-Repair Engine
             </h3>
             <p className="font-mono text-xs text-mist">
-              Observe how SMT constraint solving traces transitive privilege escalation paths missed by local AST linters, followed by auto-repair and proof certification.
+              Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, 2026-11-08). Nothing is computed in the browser.
             </p>
           </div>
 
@@ -157,6 +188,23 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                   </div>
                 )}
               </div>
+
+              {/* Verified Limitations (FACTS.md) */}
+              {project.limits && project.limits.length > 0 && (
+                <div data-testid="z3-limitations-block" className="space-y-3 pt-4 border-t border-line/60">
+                  <span className="font-mono text-[11px] text-mist uppercase tracking-wider">
+                    VERIFIED LIMITATIONS (docs/sources/z3/FACTS.md):
+                  </span>
+                  <ul className="space-y-2 font-mono text-xs text-feather/90">
+                    {project.limits.map((limit, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
+                        <span className="text-[#EF4444] font-bold">&bull;</span>
+                        <span>{limit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Links */}
               <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">

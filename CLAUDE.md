@@ -18,4 +18,5 @@ Project: ORV story-portfolio for Sumit Mahajan. Single source of truth lives in 
 13. Final report format (always): (a) what you did, (b) files created/changed, (c) commands run with results, (d) deviations from the prompt and why, (e) known issues, (f) the exact proof I must capture.
 14. Commit once at the end of the task: `phaseN-task: short description`. Do not push.
 15. Do not edit /docs except /docs/proofs/*. If a doc needs a change, tell me.
-16. Biyoo's look and the wall art are approved and frozen. Never redraw, recolor, restyle or replace them. Only crop, resize, compress and position them.
+16. Biyoo's look is approved and frozen: only crop, resize, compress and position his art. The wall art is the Living Archive image (archive-*); the bright layer is derived from it by script. Kim Dokja is removed from the site and must not return.
+17. Never delete, move or overwrite any file you did not create in the current task. Never run destructive git commands (git reset --hard, git clean, git stash drop, git checkout -- <path> on files with real changes, git branch -D, filter-branch) without asking me first. If a file looks stray, list it and ask.

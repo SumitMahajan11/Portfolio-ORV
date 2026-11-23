@@ -1,0 +1,191 @@
+================================================================
+ TASK structure-S1b: PERSISTENCE, /skip, & Z-ORDER AUDIT
+================================================================
+Timestamp: 2026-11-10T16:52:28.232Z
+
+----------------------------------------------------------------
+ 1. PERSISTENCE AUDIT: Desktop (1440x900)
+----------------------------------------------------------------
+
+--- Section: #hero-scene ---
+  Scroll Y: 21px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 9
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #scenario-select ---
+  Scroll Y: 864px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 10
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #edge-cloud ---
+  Scroll Y: 2297px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 7
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #ratify ---
+  Scroll Y: 4904px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 12
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #iac-verifier ---
+  Scroll Y: 7907px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 8
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #side-quests ---
+  Scroll Y: 9789px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 7
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #readers-record ---
+  Scroll Y: 10807px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 16
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #contact ---
+  Scroll Y: 11815px
+  Biyoo getBoundingClientRect: {"x":16,"y":680.4,"width":110,"height":107.6,"top":680.4,"right":126,"bottom":788,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 11
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+----------------------------------------------------------------
+ 1. PERSISTENCE AUDIT: Mobile (390x844)
+----------------------------------------------------------------
+
+--- Section: #hero-scene ---
+  Scroll Y: 17px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 6
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #scenario-select ---
+  Scroll Y: 1038px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 6
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #edge-cloud ---
+  Scroll Y: 2422px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 4
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #ratify ---
+  Scroll Y: 5584px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 4
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #iac-verifier ---
+  Scroll Y: 11300px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 7
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #side-quests ---
+  Scroll Y: 9243px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 5
+  Overlap with buttons/links: NONE (PASS - 0 overlaps)
+
+--- Section: #readers-record ---
+  Scroll Y: 16153px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 13
+  [OVERLAP DETECTED] Overlaps with 2 elements:
+    - <div> "[ITEM_RECORD] INSPECT → Terraf" at [top:544.2, left:16, w:457, h:110]
+    - <div> "[ITEM_RECORD] INSPECT → IaC Se" at [top:670.2, left:16, w:457, h:110]
+
+--- Section: #contact ---
+  Scroll Y: 17279px
+  Biyoo getBoundingClientRect: {"x":16,"y":624.4,"width":72,"height":107.6,"top":624.4,"right":88,"bottom":732,"left":16}
+  Inside Viewport: YES (PASS)
+  Visible buttons/links in viewport: 9
+  [OVERLAP DETECTED] Overlaps with 1 elements:
+    - <a> "GitHub (@SumitMahajan11) →" at [top:708.6, left:51.9, w:226.2, h:44]
+
+----------------------------------------------------------------
+ 2. /skip DOM QUERY AUDIT
+----------------------------------------------------------------
+Navigated to: http://localhost:3000/skip
+Query #fixed-biyoo-companion: NULL (PASS - ABSENT)
+Other Biyoo selector count: 0
+Biyoo image elements count: 0
+HTML includes fixed-biyoo-companion: NO (PASS)
+Verdict: PASS - Biyoo is completely absent on /skip
+
+----------------------------------------------------------------
+ 3. Z-ORDER & STACKING CONTEXT AUDIT (LIVE PAGE COMPUTED STYLES)
+----------------------------------------------------------------
+Live page computed styles and stacking context breakdown:
+
+* Element: Biyoo Companion
+  Tag: <div> id="#fixed-biyoo-companion"
+  Computed position: fixed
+  Computed z-index:  40
+  Creates stacking context: YES
+  Stacking context trigger(s): positioned (fixed) with z-index (40), position: fixed
+  Parent stacking context: <html> (html (root))
+
+* Element: Biyoo Speech Bubble
+  Tag: <div> 
+  Computed position: absolute
+  Computed z-index:  30
+  Creates stacking context: YES
+  Stacking context trigger(s): positioned (absolute) with z-index (30)
+  Parent stacking context: <div #fixed-biyoo-companion> (positioned (fixed) with z-index (40), position: fixed)
+
+* Element: Sound Banner
+  Tag: <div> id="#sound-permission-prompt"
+  Computed position: fixed
+  Computed z-index:  50
+  Creates stacking context: YES
+  Stacking context trigger(s): positioned (fixed) with z-index (50), position: fixed
+  Parent stacking context: <html> (html (root))
+
+* Element: Accessible Header
+  Tag: <header> 
+  Computed position: sticky
+  Computed z-index:  50
+  Creates stacking context: YES
+  Stacking context trigger(s): positioned (sticky) with z-index (50), position: sticky
+  Parent stacking context: <html> (html (root))
+
+* Element: Corner Bounty Button
+  Rendered on live page: NO (returns null in React / not in DOM)
+  Notes: Hidden until /wanted page exists (structure-S1 requirement 4a: hasWantedPage = false)
+
+Stacking Order Hierarchy (Highest to Lowest):
+1. Header: z-index 50 (sticky, top of page)
+2. Sound Permission Banner: z-index 50 (fixed, bottom right on desktop / bottom elevated on mobile)
+3. Biyoo Companion: z-index 40 (fixed, bottom-left corner)
+   -> Biyoo Speech Bubble: child of Biyoo Companion (z-index 30 within Biyoo's stacking context)
+4. Corner Bounty Button: null on live page (hidden; when active: z-index 40 fixed bottom-right)
+5. Interactive Section Content / Portals: z-index 10..30
+6. Living Wall Background Canvas & Tints: z-index 0..3
+
+================================================================
+ VERIFICATION COMPLETE
+================================================================
