@@ -163,7 +163,7 @@ const STEP3_IDLE_STATES: {
 ];
 
 export default function BiyooTestPage() {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_BIYOO_TEST !== '1') {
     notFound();
   }
 
