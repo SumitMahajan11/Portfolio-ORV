@@ -58,7 +58,7 @@ export function DeferredWorlds() {
       {/* Act 3 Flagship World: iac-verifier (Z3) */}
       <div
         data-biyoo-linger
-        data-biyoo-line="formal verification keeps things airtight"
+        data-biyoo-line="formal verification active!"
         style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}
       >
         <Z3World />

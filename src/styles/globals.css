@@ -328,7 +328,7 @@ body.biyoo-qa-open #sound-permission-prompt {
   .biyoo-bubble-dock {
     position: absolute !important;
     right: calc(100% + 6px) !important;
-    top: 6px !important;
+    top: -6px !important;
     bottom: auto !important;
     left: auto !important;
     max-width: 140px !important;
@@ -371,8 +371,8 @@ body.biyoo-qa-open #sound-permission-prompt {
 
   .biyoo-bubble-dock {
     position: absolute !important;
-    right: calc(100% + 6px) !important;
-    bottom: 30px !important;
+    right: calc(100% + 36px) !important;
+    bottom: 4px !important;
     top: auto !important;
     left: auto !important;
     max-width: 130px !important;
@@ -432,13 +432,17 @@ body.biyoo-qa-open #sound-permission-prompt {
   }
 
   .biyoo-bubble-dock {
-    max-width: 55px !important;
-    top: 4px !important;
-    bottom: auto !important;
+    max-width: 130px !important;
+    top: auto !important;
+    bottom: 0px !important;
     right: calc(100% + 28px) !important;
     padding: 2px 4px !important;
+    border-radius: 10px !important;
+  }
+
+  .biyoo-bubble-dock span {
     font-size: 10px !important;
-    line-height: 1.1 !important;
+    line-height: 1.15 !important;
   }
 }
 

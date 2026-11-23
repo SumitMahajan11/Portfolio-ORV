@@ -113,7 +113,7 @@ export const BiyooPuppet: React.FC<BiyooPuppetProps> = ({
             className="text-xs font-semibold tracking-wide text-cyan-200 text-center leading-snug break-words"
             style={{
               display: '-webkit-box',
-              WebkitLineClamp: 2,
+              WebkitLineClamp: 3,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               maxWidth: '210px',
