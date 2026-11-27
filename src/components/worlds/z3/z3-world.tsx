@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useSyncExternalStore } from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
@@ -17,22 +17,6 @@ const DynamicZ3VizCanvas = dynamic(
     loading: () => <Z3StaticDiagram />,
   }
 );
-
-function subscribeMediaQuery(callback: () => void) {
-  if (typeof window === "undefined" || !window.matchMedia) return () => {};
-  const mql = window.matchMedia("(min-width: 640px)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
-}
-
-function getDesktopSnapshot() {
-  if (typeof window === "undefined" || !window.matchMedia) return false;
-  return window.matchMedia("(min-width: 640px)").matches;
-}
-
-function getServerSnapshot() {
-  return false;
-}
 
 export interface Z3WorldProps {
   className?: string;
@@ -51,9 +35,8 @@ export interface Z3WorldProps {
  * - Biyoo costume hook: chain bracelet
  */
 export function Z3World({ className = "" }: Z3WorldProps) {
-  const { reducedMotion, mode } = useMode();
+  const { reducedMotion } = useMode();
   const [scenarioCleared, setScenarioCleared] = useState(false);
-  const isDesktop = useSyncExternalStore(subscribeMediaQuery, getDesktopSnapshot, getServerSnapshot);
 
   // Retrieve iac-verifier project data from content
   const project = projects.find((p) => p.id === "iac-verifier") || {
@@ -93,7 +76,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     }
   };
 
-  const isStaticMode = reducedMotion || mode === "light" || !isDesktop;
+  const isStaticMode = reducedMotion;
 
   return (
     <section
@@ -140,18 +123,18 @@ export function Z3World({ className = "" }: Z3WorldProps) {
           </SystemWindow>
         </div>
 
-        {/* Beats 2-4: Interactive Graph & Vow Table */}
+        {/* Beats 2-4: Interactive Cut the chain model */}
         <div className="space-y-6">
           <div className="text-center space-y-2 max-w-xl mx-auto">
             <h3 className="font-display text-lg sm:text-xl font-bold text-feather">
-              Z3 Reachability &amp; Auto-Repair Engine
+              Every role passes the linter. The chain still reaches admin.
             </h3>
             <p className="font-mono text-xs text-mist">
-              Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, 2026-11-08). Nothing is computed in the browser.
+              Seal admin_role from the outside. The verifier proves reachability across transitive IAM roles using SMT constraints.
             </p>
           </div>
 
-          {/* Conditional Progressive Enhancement: Static diagram for reduced-motion/light, dynamic for full interactive */}
+          {/* Conditional Progressive Enhancement: Static diagram for reduced-motion, dynamic for full interactive */}
           {isStaticMode ? (
             <Z3StaticDiagram />
           ) : (
