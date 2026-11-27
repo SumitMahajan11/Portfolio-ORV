@@ -1,103 +1,69 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useMode } from "@/lib/flags";
-import { useScene, gsap } from "@/lib/motion";
-
-// Deterministic ambient star node coordinates (viewBox 0 0 600 320)
-const AMBIENT_STAR_NODES = [
-  { cx: 110, cy: 75, r: 2 },
-  { cx: 155, cy: 45, r: 1.5 },
-  { cx: 275, cy: 50, r: 2 },
-  { cx: 330, cy: 35, r: 1.5 },
-  { cx: 420, cy: 60, r: 2 },
-  { cx: 480, cy: 40, r: 1.5 },
-  { cx: 515, cy: 80, r: 2 },
-  { cx: 90, cy: 240, r: 1.5 },
-  { cx: 140, cy: 280, r: 2 },
-  { cx: 230, cy: 290, r: 1.5 },
-  { cx: 270, cy: 270, r: 2 },
-  { cx: 375, cy: 290, r: 1.5 },
-  { cx: 410, cy: 270, r: 2 },
-  { cx: 495, cy: 275, r: 1.5 },
-  { cx: 545, cy: 235, r: 2 },
-  { cx: 200, cy: 160, r: 1.5 },
-  { cx: 260, cy: 180, r: 1.5 },
-  { cx: 350, cy: 140, r: 1.5 },
-  { cx: 400, cy: 170, r: 1.5 },
-  { cx: 470, cy: 130, r: 1.5 },
-  // Extended nodes up to 54 ambient + 6 key = 60 total
-  { cx: 40, cy: 60, r: 1.5 },
-  { cx: 75, cy: 100, r: 1.5 },
-  { cx: 130, cy: 115, r: 1.5 },
-  { cx: 180, cy: 85, r: 2 },
-  { cx: 240, cy: 30, r: 1.5 },
-  { cx: 310, cy: 70, r: 1.5 },
-  { cx: 360, cy: 55, r: 1.5 },
-  { cx: 450, cy: 30, r: 1.5 },
-  { cx: 560, cy: 60, r: 1.5 },
-  { cx: 575, cy: 110, r: 2 },
-  { cx: 35, cy: 215, r: 1.5 },
-  { cx: 65, cy: 270, r: 1.5 },
-  { cx: 115, cy: 295, r: 1.5 },
-  { cx: 175, cy: 270, r: 1.5 },
-  { cx: 215, cy: 250, r: 2 },
-  { cx: 300, cy: 295, r: 1.5 },
-  { cx: 345, cy: 270, r: 1.5 },
-  { cx: 440, cy: 295, r: 1.5 },
-  { cx: 470, cy: 250, r: 2 },
-  { cx: 530, cy: 285, r: 1.5 },
-  { cx: 565, cy: 210, r: 1.5 },
-  { cx: 145, cy: 180, r: 1.5 },
-  { cx: 235, cy: 130, r: 1.5 },
-  { cx: 290, cy: 135, r: 1.5 },
-  { cx: 315, cy: 195, r: 1.5 },
-  { cx: 380, cy: 190, r: 1.5 },
-  { cx: 430, cy: 165, r: 1.5 },
-  { cx: 460, cy: 185, r: 1.5 },
-  { cx: 490, cy: 160, r: 1.5 },
-  { cx: 510, cy: 190, r: 1.5 },
-  { cx: 160, cy: 140, r: 1.5 },
-  { cx: 210, cy: 200, r: 1.5 },
-  { cx: 370, cy: 230, r: 1.5 },
-  { cx: 520, cy: 130, r: 1.5 },
-];
+import {
+  ALL_EDGE_CLOUD_NODES,
+  CONSTELLATION_BG,
+  PATH_A_D,
+  PATH_C_D,
+  PIPELINE_STEPS,
+  TIMING_THRESHOLDS,
+  TOTAL_CYCLE_MS,
+  TRAVEL_WINDOW,
+  BASE_STEP_LOGS,
+  type EdgeCloudNode,
+  type LogLine,
+} from "@/lib/worlds/edge-cloud-data";
 
 export interface EdgeCloudNetworkProps {
   className?: string;
   onClearScenario?: () => void;
 }
 
-/**
- * EdgeCloudNetwork:
- * Interactive Star-Network SVG with scroll-scrubbed packet travel.
- *
- * Rules:
- * - Star network with node caps: desktop 60, mobile 30, light mode 20
- * - Shortest path: dim amber (#D4B15F)
- * - Greener path: teal-green (#6EE7A8), wins and labeled "carbon-aware"
- * - Packet travels via transforms along greener path
- * - Labeled "illustrative routing diagram"
- * - ZERO numeric metrics (no percentages, no latency ms)
- * - Only transform and opacity animated (strokeDashoffset allowed exception)
- */
+function easeInOutQuad(x: number): number {
+  return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+}
+
 export function EdgeCloudNetwork({
   className = "",
   onClearScenario,
 }: EdgeCloudNetworkProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const clearedRef = useRef(false);
+  const { reducedMotion } = useMode();
 
-  const { mode, reducedMotion, signals } = useMode();
+  // Route mode: true = carbon-aware (Route C wins), false = shortest path (Route A wins)
+  const [carbonAware, setCarbonAware] = useState(true);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [logs, setLogs] = useState<LogLine[]>([
+    { text: BASE_STEP_LOGS[0] },
+  ]);
 
-  // Star network node caps per /docs/02, /docs/09 & P1-7:
-  // Desktop full: 54 ambient + 6 key = 60 total
-  // Mobile full: 24 ambient + 6 key = 30 total
-  // Light mode: 14 ambient + 6 key = 20 total
-  const ambientCap = mode === "light" ? 14 : signals.isTouch ? 24 : 54;
-  const activeAmbientNodes = AMBIENT_STAR_NODES.slice(0, ambientCap);
+  // Interactive tooltip state
+  const [activeTooltip, setActiveTooltip] = useState<{
+    node: EdgeCloudNode;
+    lx: number;
+    ly: number;
+  } | null>(null);
 
-  // Trigger star goggles costume on mount, reset on unmount
+  // SVG & DOM refs
+  const stageRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const pathARef = useRef<SVGPathElement>(null);
+  const pathCRef = useRef<SVGPathElement>(null);
+  const cometRef = useRef<SVGCircleElement>(null);
+  const trailRefs = useRef<(SVGCircleElement | null)[]>([]);
+
+  // Animation timeline refs
+  const t0Ref = useRef<number>(0);
+  const curStepRef = useRef<number>(-1);
+  const carbonAwareRef = useRef(carbonAware);
+  const clearedTriggeredRef = useRef(false);
+
+  useEffect(() => {
+    carbonAwareRef.current = carbonAware;
+  }, [carbonAware]);
+
+  // Biyoo costume hook: star goggles
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
@@ -117,329 +83,601 @@ export function EdgeCloudNetwork({
     };
   }, []);
 
-  // ScrollTrigger animation for path draw and packet travel
-  useScene(
-    () => {
-      if (reducedMotion || !containerRef.current) return;
+  // Update step and execution logs
+  const advanceStep = useCallback((step: number, isGreen: boolean) => {
+    if (step === curStepRef.current) return;
 
-      const pathShortest = containerRef.current.querySelector("#path_shortest");
-      const pathGreener = containerRef.current.querySelector("#path_greener");
-      const packet = containerRef.current.querySelector("#routing_packet");
-      const greenBadge = containerRef.current.querySelector("#badge_carbon_aware");
-      const destPulse = containerRef.current.querySelector("#dest_pulse");
+    curStepRef.current = step;
+    setCurrentStep(step);
 
-      if (!pathShortest || !pathGreener || !packet) return;
+    if (step === 0 || step < curStepRef.current) {
+      setLogs([{ text: BASE_STEP_LOGS[0] }]);
+    } else {
+      const nextLogs: LogLine[] = [];
+      for (let i = 0; i <= step; i++) {
+        if (i === 2) {
+          nextLogs.push({
+            text: isGreen
+              ? `Carbon-aware ON: ${BASE_STEP_LOGS[2]}`
+              : `Carbon-aware OFF: ${BASE_STEP_LOGS[2]}`,
+          });
+          nextLogs.push({
+            text: isGreen
+              ? "Selected: greener route, slightly longer."
+              : "Selected: shortest route, carbon ignored.",
+            isAmber: !isGreen,
+          });
+        } else {
+          nextLogs.push({ text: BASE_STEP_LOGS[i] });
+        }
+      }
+      setLogs(nextLogs);
+    }
 
-      const shortestLength = 520;
-      const greenerLength = 620;
+    if (step === 5 && !clearedTriggeredRef.current) {
+      clearedTriggeredRef.current = true;
+      onClearScenario?.();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("biyoo:action", {
+            detail: { state: "proud", line: "Evidence found." },
+          })
+        );
+      }
+    }
+  }, [onClearScenario]);
 
-      // Set initial path offsets
-      gsap.set(pathShortest, {
-        strokeDasharray: shortestLength,
-        strokeDashoffset: shortestLength,
-      });
-      gsap.set(pathGreener, {
-        strokeDasharray: greenerLength,
-        strokeDashoffset: greenerLength,
-      });
-      gsap.set(greenBadge, { opacity: 0, scale: 0.85 });
-      gsap.set(packet, { opacity: 0, x: 60, y: 160 });
-      gsap.set(destPulse, { scale: 1, opacity: 0.3 });
+  // Main animation frame handler
+  useEffect(() => {
+    if (reducedMotion) {
+      advanceStep(5, carbonAware);
+      return;
+    }
 
-      // Master scroll-scrub timeline for routing visualization
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 65%",
-          end: "bottom 35%",
-          scrub: 0.6,
-          onUpdate: (self) => {
-            // Exit celebration trigger when scrub crosses 88%
-            if (self.progress >= 0.88 && !clearedRef.current) {
-              clearedRef.current = true;
-              onClearScenario?.();
-              if (typeof window !== "undefined") {
-                window.dispatchEvent(
-                  new CustomEvent("biyoo:action", {
-                    detail: { state: "proud", line: "Evidence found." },
-                  })
-                );
-              }
-            } else if (self.progress < 0.88) {
-              clearedRef.current = false;
-            }
-          },
-        },
-      });
+    t0Ref.current = performance.now();
+    curStepRef.current = -1;
+    let animId: number;
 
-      // 0 - 35%: Both paths begin evaluating
-      tl.to(
-        packet,
-        {
-          opacity: 1,
-          duration: 10,
-        },
-        0
-      );
+    const tick = (now: number) => {
+      const isGreen = carbonAwareRef.current;
+      const elapsed = (now - t0Ref.current) % TOTAL_CYCLE_MS;
 
-      // Shortest path draws partially, then dims
-      tl.to(
-        pathShortest,
-        {
-          strokeDashoffset: shortestLength * 0.4,
-          duration: 35,
-          ease: "none",
-        },
-        0
-      );
+      // Determine current pipeline step
+      let s = 0;
+      for (let i = 0; i < 6; i++) {
+        if (elapsed >= TIMING_THRESHOLDS[i]) s = i;
+      }
+      if (s === 3 && elapsed > (TRAVEL_WINDOW[0] + TRAVEL_WINDOW[1]) / 2) {
+        s = 4;
+      }
+      advanceStep(s, isGreen);
 
-      // Greener path draws completely from ingress to destination
-      tl.to(
-        pathGreener,
-        {
-          strokeDashoffset: 0,
-          duration: 75,
-          ease: "none",
-        },
-        10
-      );
+      // Path opacity & packet travel along active curve
+      const activePath = isGreen ? pathCRef.current : pathARef.current;
+      const otherPath = isGreen ? pathARef.current : pathCRef.current;
+      const comet = cometRef.current;
 
-      // Packet moves through greener waypoints (180,220) -> (320,250) -> (440,210) -> (540,160)
-      tl.to(
-        packet,
-        {
-          x: 180,
-          y: 220,
-          duration: 20,
-          ease: "power1.inOut",
-        },
-        15
-      );
+      if (activePath && otherPath && comet) {
+        const totalLen = activePath.getTotalLength();
+        let p = 0;
 
-      tl.to(
-        packet,
-        {
-          x: 320,
-          y: 250,
-          duration: 25,
-          ease: "power1.inOut",
-        },
-        35
-      );
+        if (elapsed < TIMING_THRESHOLDS[2]) {
+          p = 0;
+          activePath.style.opacity = "0.55";
+          otherPath.style.opacity = "0.55";
+        } else if (elapsed < TIMING_THRESHOLDS[3]) {
+          const phase = Math.floor((elapsed - TIMING_THRESHOLDS[2]) / 300) % 2;
+          if (phase === 1) {
+            activePath.style.opacity = "1";
+            otherPath.style.opacity = "0.25";
+          } else {
+            activePath.style.opacity = "0.25";
+            otherPath.style.opacity = "1";
+          }
+          p = 0;
+        } else {
+          activePath.style.opacity = "1";
+          otherPath.style.opacity = "0.2";
 
-      tl.to(
-        packet,
-        {
-          x: 440,
-          y: 210,
-          duration: 25,
-          ease: "power1.inOut",
-        },
-        60
-      );
+          if (elapsed < TRAVEL_WINDOW[1]) {
+            const travelProgress =
+              (elapsed - TRAVEL_WINDOW[0]) / (TRAVEL_WINDOW[1] - TRAVEL_WINDOW[0]);
+            p = easeInOutQuad(travelProgress);
+          } else if (elapsed >= TIMING_THRESHOLDS[5]) {
+            p = 1 - (elapsed - TIMING_THRESHOLDS[5]) / (TOTAL_CYCLE_MS - TIMING_THRESHOLDS[5]);
+          } else {
+            p = 1;
+          }
+        }
 
-      tl.to(
-        packet,
-        {
-          x: 540,
-          y: 160,
-          duration: 15,
-          ease: "power2.out",
-        },
-        85
-      );
+        const clampedP = Math.max(0, Math.min(1, p));
+        const pt = activePath.getPointAtLength(clampedP * totalLen);
+        comet.setAttribute("cx", pt.x.toFixed(2));
+        comet.setAttribute("cy", pt.y.toFixed(2));
 
-      // Greener wins: badge fades in
-      tl.to(
-        greenBadge,
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 15,
-          ease: "power2.out",
-        },
-        70
-      );
+        // Update trail particles
+        trailRefs.current.forEach((trailEl, idx) => {
+          if (!trailEl) return;
+          const trailLag =
+            p - (idx + 1) * 0.014 * (elapsed >= TIMING_THRESHOLDS[5] ? -1 : 1);
+          const clampedLag = Math.max(0, Math.min(1, trailLag));
+          const tPt = activePath.getPointAtLength(clampedLag * totalLen);
+          trailEl.setAttribute("cx", tPt.x.toFixed(2));
+          trailEl.setAttribute("cy", tPt.y.toFixed(2));
+          trailEl.style.opacity =
+            p <= 0 || elapsed >= TIMING_THRESHOLDS[5] ? "0" : "";
+        });
+      }
 
-      // Destination arrival pulse
-      tl.to(
-        destPulse,
-        {
-          scale: 1.8,
-          opacity: 0.9,
-          duration: 15,
-          yoyo: true,
-          repeat: 1,
-          ease: "sine.inOut",
-        },
-        85
-      );
-    },
-    { scope: containerRef, dependencies: [reducedMotion, mode, ambientCap] }
-  );
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [carbonAware, reducedMotion, advanceStep]);
+
+  // Handle route toggle
+  const handleToggleCarbonAware = () => {
+    setCarbonAware((prev) => !prev);
+    t0Ref.current = performance.now();
+    curStepRef.current = -1;
+    clearedTriggeredRef.current = false;
+  };
+
+  // Node tooltip trigger
+  const handleNodeInspect = (node: EdgeCloudNode) => {
+    if (!svgRef.current || !stageRef.current) return;
+    const svgRect = svgRef.current.getBoundingClientRect();
+    const stageWidth = stageRef.current.getBoundingClientRect().width;
+    const scale = svgRect.width / 1000;
+
+    let lx = node.x * scale + 14;
+    let ly = node.y * scale - 110;
+    if (lx + 240 > stageWidth) {
+      lx = node.x * scale - 250;
+    }
+    if (ly < 4) {
+      ly = node.y * scale + 26;
+    }
+
+    setActiveTooltip({ node, lx, ly });
+  };
+
+  const handleNodeLeave = () => {
+    setActiveTooltip(null);
+  };
 
   return (
-    <div
-      ref={containerRef}
-      className={`relative w-full rounded border border-line/80 bg-ink/80 p-4 sm:p-6 backdrop-blur-md shadow-2xl overflow-hidden select-none ${className}`}
-      aria-label="Edge-Cloud Constellation Star-Network Routing Diagram"
+    <section
+      className={`w-full rounded-md border border-[#1b2a36] bg-gradient-to-b from-[#0b141d] to-[#0a1119] text-[#e8f1f5] shadow-2xl overflow-hidden select-none ${className}`}
+      aria-label="Edge-Cloud Orchestrator mission view"
     >
-      {/* Top Header Tag: explicitly labeled "illustrative routing diagram" */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3 mb-4">
+      {/* Header bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[#1b2a36]">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-star animate-pulse" />
-          <span className="font-mono text-xs text-star tracking-widest uppercase font-semibold">
-            [CONSTELLATION_STAR_NETWORK]
+          <span className="w-2 h-2 rounded-full bg-[#5eead4] animate-pulse" />
+          <span className="font-mono text-xs uppercase tracking-wider text-[#5eead4] font-medium">
+            [Constellation_Star_Network]
           </span>
         </div>
-        <span className="font-mono text-[10px] sm:text-xs text-mist/80 uppercase px-2 py-0.5 border border-line bg-ink-2/60 rounded">
-          illustrative routing diagram
-        </span>
-      </div>
 
-      {/* Main SVG Star Network */}
-      <div className="relative w-full aspect-[600/320] flex items-center justify-center">
-        <svg
-          viewBox="0 0 600 320"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full overflow-hidden"
-        >
-          <defs>
-            {/* Greener path gradient (teal to soft green) */}
-            <linearGradient id="ec_greener_grad" x1="60" y1="160" x2="540" y2="160" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#5EE1E6" />
-              <stop offset="60%" stopColor="#6EE7A8" />
-              <stop offset="100%" stopColor="#5EE1E6" />
-            </linearGradient>
-
-            {/* Amber shortest path gradient */}
-            <linearGradient id="ec_shortest_grad" x1="60" y1="160" x2="540" y2="160" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#D4B15F" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#F28C28" stopOpacity="0.4" />
-            </linearGradient>
-          </defs>
-
-          {/* Ambient Constellation Network Lines */}
-          <g id="ambient_constellation_lines" opacity="0.2">
-            <line x1="110" y1="75" x2="155" y2="45" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="155" y1="45" x2="275" y2="50" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="275" y1="50" x2="330" y2="35" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="330" y1="35" x2="420" y2="60" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="420" y1="60" x2="515" y2="80" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="90" y1="240" x2="140" y2="280" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="140" y1="280" x2="230" y2="290" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="270" y1="270" x2="375" y2="290" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="375" y1="290" x2="495" y2="275" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="495" y1="275" x2="545" y2="235" stroke="#9AA7BD" strokeWidth="0.8" />
-          </g>
-
-          {/* Ambient Star Nodes */}
-          <g id="ambient_star_nodes">
-            {activeAmbientNodes.map((star, idx) => (
-              <circle
-                key={`amb-node-${idx}`}
-                cx={star.cx}
-                cy={star.cy}
-                r={star.r}
-                fill="#9AA7BD"
-                opacity={0.4}
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={carbonAware}
+            onClick={handleToggleCarbonAware}
+            className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-[#1b2a36] bg-[#0d1a24] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] focus-visible:border-[#5eead4] focus-visible:outline-none transition-colors cursor-pointer"
+          >
+            <span>Carbon-aware</span>
+            <span
+              className={`relative inline-block w-8 h-4 rounded-full transition-colors duration-300 ${
+                carbonAware ? "bg-[#5eead4]" : "bg-[#2a2f36]"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform duration-300 ${
+                  carbonAware ? "translate-x-4" : "translate-x-0"
+                }`}
               />
-            ))}
-          </g>
+            </span>
+          </button>
 
-          {/* SHORTEST PATH: Dim Amber (M 60 160 L 220 100 L 380 100 L 540 160) */}
-          <g id="shortest_path_group">
-            <path
-              id="path_shortest_guide"
-              d="M 60 160 L 220 100 L 380 100 L 540 160"
-              stroke="#243044"
-              strokeWidth="1.5"
-              strokeDasharray="3 4"
-            />
-            <path
-              id="path_shortest"
-              d="M 60 160 L 220 100 L 380 100 L 540 160"
-              stroke="url(#ec_shortest_grad)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-            {/* Waypoint nodes */}
-            <circle cx="220" cy="100" r="4.5" fill="#0E1118" stroke="#D4B15F" strokeWidth="1.5" />
-            <circle cx="380" cy="100" r="4.5" fill="#0E1118" stroke="#D4B15F" strokeWidth="1.5" />
-            <text x="300" y="85" fill="#D4B15F" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.8">
-              shortest path (higher carbon)
-            </text>
-          </g>
-
-          {/* GREENER PATH: Teal-Green (M 60 160 L 180 220 L 320 250 L 440 210 L 540 160) */}
-          <g id="greener_path_group">
-            <path
-              id="path_greener_guide"
-              d="M 60 160 L 180 220 L 320 250 L 440 210 L 540 160"
-              stroke="#243044"
-              strokeWidth="1.5"
-              strokeDasharray="2 3"
-            />
-            <path
-              id="path_greener"
-              d="M 60 160 L 180 220 L 320 250 L 440 210 L 540 160"
-              stroke="url(#ec_greener_grad)"
-              strokeWidth="3"
-              fill="none"
-              strokeLinecap="round"
-            />
-            {/* Waypoint nodes */}
-            <circle cx="180" cy="220" r="5" fill="#0E1118" stroke="#6EE7A8" strokeWidth="1.8" />
-            <circle cx="320" cy="250" r="5" fill="#0E1118" stroke="#6EE7A8" strokeWidth="1.8" />
-            <circle cx="440" cy="210" r="5" fill="#0E1118" stroke="#6EE7A8" strokeWidth="1.8" />
-          </g>
-
-          {/* INGRESS NODE: Workload Source (60, 160) */}
-          <g id="ingress_node">
-            <circle cx="60" cy="160" r="16" fill="#5EE1E6" opacity="0.15" />
-            <circle cx="60" cy="160" r="9" fill="#0E1118" stroke="#5EE1E6" strokeWidth="2" />
-            <circle cx="60" cy="160" r="3.5" fill="#5EE1E6" />
-            <text x="60" y="195" fill="#5EE1E6" fontSize="10" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-              EDGE INGRESS
-            </text>
-          </g>
-
-          {/* DESTINATION NODE: Target Region (540, 160) */}
-          <g id="destination_node">
-            <circle id="dest_pulse" cx="540" cy="160" r="18" fill="#6EE7A8" opacity="0.25" />
-            <circle cx="540" cy="160" r="10" fill="#0E1118" stroke="#6EE7A8" strokeWidth="2" />
-            <circle cx="540" cy="160" r="4" fill="#6EE7A8" />
-            <text x="540" y="195" fill="#6EE7A8" fontSize="10" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-              CLEAN COMPUTE
-            </text>
-          </g>
-
-          {/* TRAVELING PACKET: Animated along greener path */}
-          <g id="routing_packet">
-            <circle cx="0" cy="0" r="8" fill="#6EE7A8" opacity="0.35" />
-            <circle cx="0" cy="0" r="4" fill="#FFFFFF" />
-          </g>
-        </svg>
-
-        {/* CARBON-AWARE BADGE (Floats over winning greener route) */}
-        <div
-          id="badge_carbon_aware"
-          className="absolute bottom-6 sm:bottom-8 inset-x-0 mx-auto w-fit px-3 py-1 bg-ink/95 border border-[#6EE7A8] rounded text-[#6EE7A8] font-mono text-xs tracking-wider uppercase shadow-xl flex items-center gap-1.5 pointer-events-none"
-        >
-          <span className="w-2 h-2 rounded-full bg-[#6EE7A8] animate-ping" />
-          <span>carbon-aware (selected)</span>
+          <span className="font-mono text-[11px] text-[#8aa0ad] border border-[#1b2a36] px-2.5 py-1 rounded">
+            Illustrative diagram
+          </span>
         </div>
       </div>
 
-      {/* Footer Navigation Notice */}
-      <div className="mt-4 pt-3 border-t border-line/40 flex items-center justify-end text-[11px] font-mono text-mist">
-        <span className="text-[#6EE7A8]">PATH: GREENER ROUTE SELECTED</span>
+      {/* Main 3-column grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)_270px] gap-4 p-4">
+        {/* Column 1: Pipeline Steps */}
+        <ol
+          className="flex flex-row lg:flex-col gap-2 m-0 p-0 overflow-x-auto list-none"
+          aria-label="Task pipeline"
+        >
+          {PIPELINE_STEPS.map((stepName, idx) => {
+            const isCurrent = currentStep === idx;
+            const isDone = currentStep > idx;
+
+            return (
+              <li
+                key={stepName}
+                className={`flex items-center gap-3 px-3 py-2 rounded text-sm transition-all whitespace-nowrap border ${
+                  isCurrent
+                    ? "text-[#e8f1f5] bg-[#0d1a24] border-[#5eead4] shadow-[0_0_18px_rgba(94,234,212,0.18)]"
+                    : isDone
+                    ? "text-[#cfe0e8] bg-transparent border-transparent"
+                    : "text-[#8aa0ad] bg-transparent border-transparent"
+                }`}
+              >
+                <b
+                  className={`w-5 h-5 rounded-full border text-[11px] font-mono grid place-items-center transition-colors ${
+                    isCurrent
+                      ? "bg-[#5eead4] text-[#05080d] border-[#5eead4]"
+                      : isDone
+                      ? "border-[#5eead4] text-[#5eead4]"
+                      : "border-[#1b2a36] text-[#8aa0ad]"
+                  }`}
+                >
+                  {idx + 1}
+                </b>
+                <span className="font-sans font-medium">{stepName}</span>
+              </li>
+            );
+          })}
+        </ol>
+
+        {/* Column 2: Interactive SVG Stage */}
+        <div className="overflow-x-auto">
+          <div ref={stageRef} className="relative min-w-[600px] w-full">
+            <svg
+              ref={svgRef}
+              viewBox="0 0 1000 560"
+              role="img"
+              aria-label="Routing diagram: a short higher-carbon route through a coal-grid hub and gas relay, and a longer low-carbon route through solar, wind and hydro nodes, both from Edge Ingress to Clean Compute."
+              className="w-full h-auto block select-none"
+            >
+              <defs>
+                <filter id="ec-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="5" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <radialGradient id="ec-hA">
+                  <stop offset="0%" stopColor="#d9a850" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="#d9a850" stopOpacity="0" />
+                </radialGradient>
+                <radialGradient id="ec-hC">
+                  <stop offset="0%" stopColor="#5eead4" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#5eead4" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+
+              {/* Background Constellation Stars & Lines */}
+              <g id="ec-stars">
+                {CONSTELLATION_BG.stars.map((star, i) => (
+                  <circle
+                    key={`star-${i}`}
+                    cx={star.cx}
+                    cy={star.cy}
+                    r={star.r}
+                    fill="#7fa3b5"
+                    opacity={star.opacity}
+                  />
+                ))}
+                {CONSTELLATION_BG.lines.map((ln, i) => (
+                  <line
+                    key={`line-${i}`}
+                    x1={ln.x1}
+                    y1={ln.y1}
+                    x2={ln.x2}
+                    y2={ln.y2}
+                    stroke="#2a4150"
+                    opacity={0.5}
+                  />
+                ))}
+              </g>
+
+              {/* Ambient Regional Energy Glows */}
+              <ellipse
+                cx="450"
+                cy="165"
+                rx="270"
+                ry="110"
+                fill="url(#ec-hA)"
+                opacity={carbonAware ? 0.35 : 0.8}
+              />
+              <ellipse
+                cx="540"
+                cy="430"
+                rx="300"
+                ry="120"
+                fill="url(#ec-hC)"
+                opacity={carbonAware ? 0.8 : 0.35}
+              />
+
+              {/* Path A: Shortest / High-Carbon (Amber) */}
+              <path
+                ref={pathARef}
+                d={PATH_A_D}
+                fill="none"
+                stroke="#d9a850"
+                strokeWidth={4}
+                strokeLinecap="round"
+                opacity={carbonAware ? 0.2 : 1}
+                className="transition-opacity duration-300"
+              />
+
+              {/* Path C: Greener / Low-Carbon (Cyan) */}
+              <path
+                ref={pathCRef}
+                d={PATH_C_D}
+                fill="none"
+                stroke="#5eead4"
+                strokeWidth={4}
+                strokeLinecap="round"
+                filter="url(#ec-glow)"
+                opacity={carbonAware ? 1 : 0.2}
+                className="transition-opacity duration-300"
+              />
+
+              {/* Trail particles behind the comet */}
+              <g id="ec-trail">
+                {[...Array(9)].map((_, i) => (
+                  <circle
+                    key={`trail-${i}`}
+                    ref={(el) => {
+                      trailRefs.current[i] = el;
+                    }}
+                    r={7 - i * 0.7}
+                    fill={carbonAware ? "#5eead4" : "#d9a850"}
+                    opacity={0.5 - i * 0.05}
+                  />
+                ))}
+              </g>
+
+              {/* Traveling Comet Packet */}
+              <circle
+                ref={cometRef}
+                id="ec-comet"
+                r={8}
+                fill={carbonAware ? "#d9fff7" : "#ffe9bd"}
+                filter="url(#ec-glow)"
+              />
+
+              {/* Star-Network Nodes */}
+              <g id="ec-nodes">
+                {ALL_EDGE_CLOUD_NODES.map((node) => {
+                  const isBig = node.id === "ingress" || node.id === "compute";
+                  const isAmber = node.category === "a";
+                  const col = isAmber ? "#d9a850" : "#5eead4";
+                  const isNodeActive = isAmber ? !carbonAware : carbonAware;
+
+                  const isUpper = isAmber;
+                  const ty = isBig
+                    ? node.y + 52
+                    : isUpper
+                    ? node.y - 32
+                    : node.y + 36;
+
+                  return (
+                    <g
+                      key={node.id}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`${node.name}: ${node.description}`}
+                      onMouseEnter={() => handleNodeInspect(node)}
+                      onMouseLeave={handleNodeLeave}
+                      onFocus={() => handleNodeInspect(node)}
+                      onBlur={handleNodeLeave}
+                      onClick={() => handleNodeInspect(node)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleNodeInspect(node);
+                        }
+                      }}
+                      className="cursor-pointer outline-none group"
+                    >
+                      {/* Big ambient ring for terminal nodes */}
+                      {isBig && (
+                        <circle
+                          cx={node.x}
+                          cy={node.y}
+                          r={34}
+                          fill={col}
+                          opacity={0.14}
+                        />
+                      )}
+
+                      {/* Main node ring */}
+                      <circle
+                        cx={node.x}
+                        cy={node.y}
+                        r={isBig ? 20 : 13}
+                        fill="#05080d"
+                        stroke={col}
+                        strokeWidth={2.5}
+                        className="transition-all duration-200 group-hover:stroke-[3.5px] group-focus-visible:stroke-[3.5px]"
+                      />
+
+                      {/* Center core */}
+                      <circle
+                        cx={node.x}
+                        cy={node.y}
+                        r={isBig ? 8 : 4.5}
+                        fill={col}
+                      />
+
+                      {/* Node name label */}
+                      <text
+                        x={node.x}
+                        y={ty}
+                        textAnchor="middle"
+                        className={`font-sans text-[15px] font-medium transition-colors ${
+                          isNodeActive
+                            ? "fill-[#cfe0e8]"
+                            : "fill-[#5d7280] opacity-75"
+                        }`}
+                      >
+                        {node.name}
+                      </text>
+
+                      {/* Secondary node badge (e.g. HIGH CARBON, LOW CARBON) */}
+                      {!isBig && (
+                        <text
+                          x={node.x}
+                          y={ty + (isUpper ? -17 : 17)}
+                          textAnchor="middle"
+                          className="font-mono text-[11px] fill-[#8aa0ad]"
+                        >
+                          {node.kind}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </g>
+            </svg>
+
+            {/* Interactive Tooltip Popover */}
+            {activeTooltip && (
+              <div
+                role="tooltip"
+                style={{
+                  left: `${activeTooltip.lx}px`,
+                  top: `${activeTooltip.ly}px`,
+                }}
+                className={`absolute z-10 pointer-events-none w-[230px] p-3 rounded bg-[#0d1822] border border-[#1b2a36] shadow-xl text-xs leading-relaxed transition-opacity duration-150 ${
+                  activeTooltip.node.category === "a"
+                    ? "border-l-4 border-l-[#d9a850]"
+                    : "border-l-4 border-l-[#5eead4]"
+                }`}
+              >
+                <div
+                  className="font-mono text-[11px] uppercase tracking-wider font-semibold"
+                  style={{
+                    color:
+                      activeTooltip.node.category === "a"
+                        ? "#d9a850"
+                        : "#5eead4",
+                  }}
+                >
+                  [{activeTooltip.node.kind}]
+                </div>
+                <div className="font-semibold text-sm text-[#e8f1f5] mt-0.5">
+                  {activeTooltip.node.name}
+                </div>
+                <div className="text-[#8aa0ad] text-xs mt-1">
+                  {activeTooltip.node.description}
+                </div>
+
+                {/* Meters for speed, cost, green */}
+                <div className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1.5 mt-2.5 font-mono text-[11px] text-[#8aa0ad]">
+                  <span className="text-[10px] uppercase">speed</span>
+                  <div className="h-1.5 w-full bg-[#1b2a36] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        activeTooltip.node.category === "a"
+                          ? "bg-[#d9a850]"
+                          : "bg-[#5eead4]"
+                      }`}
+                      style={{
+                        width: `${activeTooltip.node.meters[0] * 100}%`,
+                      }}
+                    />
+                  </div>
+
+                  <span className="text-[10px] uppercase">cost</span>
+                  <div className="h-1.5 w-full bg-[#1b2a36] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        activeTooltip.node.category === "a"
+                          ? "bg-[#d9a850]"
+                          : "bg-[#5eead4]"
+                      }`}
+                      style={{
+                        width: `${activeTooltip.node.meters[1] * 100}%`,
+                      }}
+                    />
+                  </div>
+
+                  <span className="text-[10px] uppercase">green</span>
+                  <div className="h-1.5 w-full bg-[#1b2a36] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        activeTooltip.node.category === "a"
+                          ? "bg-[#d9a850]"
+                          : "bg-[#5eead4]"
+                      }`}
+                      style={{
+                        width: `${activeTooltip.node.meters[2] * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="italic text-[10px] text-[#8aa0ad]/80 mt-2 font-mono">
+                  Illustrative scores
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Column 3: Decision Log */}
+        <div
+          className="p-3 flex flex-col gap-2.5 font-mono text-xs text-[#8aa0ad] min-h-[300px] border-l border-[#1b2a36]/50"
+          aria-live="polite"
+        >
+          {logs.map((entry, idx) => {
+            const isLast = idx === logs.length - 1;
+            return (
+              <div
+                key={`log-${idx}-${entry.text.slice(0, 15)}`}
+                className={`pl-2.5 border-l-2 transition-all duration-300 ${
+                  isLast
+                    ? entry.isAmber
+                      ? "text-[#e8f1f5] border-[#d9a850] font-medium"
+                      : "text-[#e8f1f5] border-[#5eead4] font-medium"
+                    : "border-[#1b2a36] text-[#8aa0ad]"
+                }`}
+              >
+                {entry.text}
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+
+      {/* Footer Status Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-[#1b2a36] font-mono text-xs text-[#8aa0ad]">
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#d9a850] inline-block" />
+            <span>Shortest path, higher carbon</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#5eead4] inline-block" />
+            <span>Greener route</span>
+          </span>
+        </div>
+
+        <span
+          className={`font-semibold tracking-wider ${
+            carbonAware ? "text-[#5eead4]" : "text-[#d9a850]"
+          }`}
+        >
+          {carbonAware
+            ? "PATH: GREENER ROUTE SELECTED"
+            : "PATH: SHORTEST ROUTE (CARBON IGNORED)"}
+        </span>
+      </div>
+    </section>
   );
 }
 
 export default EdgeCloudNetwork;
-

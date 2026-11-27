@@ -2,109 +2,176 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import { projects } from "@/content/projects";
-import { renderField } from "@/components/ui/fill-badge";
-import { SystemWindow } from "@/components/system-window";
 import { useMode } from "@/lib/flags";
+import {
+  ALL_EDGE_CLOUD_NODES,
+  CONSTELLATION_BG,
+  PATH_A_D,
+  PATH_C_D,
+  LEDGER_DATA,
+  PROJECT_LINKS,
+} from "@/lib/worlds/edge-cloud-data";
 
 // Static SVG Diagram for SSR, SEO, noscript, and reduced motion
 export function EdgeCloudStaticDiagram() {
   return (
     <div
-      className="relative w-full rounded border border-line/80 bg-ink/80 p-4 sm:p-6 backdrop-blur-md shadow-2xl overflow-hidden select-none"
+      className="relative w-full rounded-md border border-[#1b2a36] bg-gradient-to-b from-[#0b141d] to-[#0a1119] p-4 text-[#e8f1f5] shadow-2xl overflow-hidden select-none"
       role="img"
-      aria-label="Edge-Cloud Static Star-Network Routing Diagram"
+      aria-label="Edge-Cloud Static Star-Network Routing Diagram: shortest path in amber and carbon-aware path in teal"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1b2a36] pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-star" />
-          <span className="font-mono text-xs text-star tracking-widest uppercase font-semibold">
-            [CONSTELLATION_STAR_NETWORK]
+          <span className="h-2 w-2 rounded-full bg-[#5eead4]" />
+          <span className="font-mono text-xs text-[#5eead4] tracking-wider uppercase font-semibold">
+            [Constellation_Star_Network]
           </span>
         </div>
-        <span className="font-mono text-[10px] sm:text-xs text-mist/80 uppercase px-2 py-0.5 border border-line bg-ink-2/60 rounded">
-          illustrative routing diagram
+        <span className="font-mono text-[11px] text-[#8aa0ad] border border-[#1b2a36] px-2.5 py-1 rounded">
+          Illustrative diagram (Static accessible view)
         </span>
       </div>
 
-      <div className="relative w-full aspect-[600/320] flex items-center justify-center">
-        <svg
-          viewBox="0 0 600 320"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full overflow-hidden"
-        >
-          {/* Ambient constellation stars */}
-          <g opacity="0.3">
-            <circle cx="110" cy="75" r="2" fill="#9AA7BD" />
-            <circle cx="275" cy="50" r="2" fill="#9AA7BD" />
-            <circle cx="420" cy="60" r="2" fill="#9AA7BD" />
-            <circle cx="140" cy="280" r="2" fill="#9AA7BD" />
-            <circle cx="270" cy="270" r="2" fill="#9AA7BD" />
-            <circle cx="410" cy="270" r="2" fill="#9AA7BD" />
-            <line x1="110" y1="75" x2="275" y2="50" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="275" y1="50" x2="420" y2="60" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="140" y1="280" x2="270" y2="270" stroke="#9AA7BD" strokeWidth="0.8" />
-            <line x1="270" y1="270" x2="410" y2="270" stroke="#9AA7BD" strokeWidth="0.8" />
-          </g>
+      <div className="relative w-full overflow-x-auto">
+        <div className="min-w-[600px] w-full">
+          <svg
+            viewBox="0 0 1000 560"
+            role="img"
+            aria-label="Routing diagram: high-carbon shortest path through coal-grid hub and gas relay, and greener path through solar, wind, and hydro nodes."
+            className="w-full h-auto block"
+          >
+            <defs>
+              <radialGradient id="static-hA">
+                <stop offset="0%" stopColor="#d9a850" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#d9a850" stopOpacity="0" />
+              </radialGradient>
+              <radialGradient id="static-hC">
+                <stop offset="0%" stopColor="#5eead4" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#5eead4" stopOpacity="0" />
+              </radialGradient>
+            </defs>
 
-          {/* Shortest Path (Dim Amber) */}
-          <g>
+            {/* Constellation Stars and Lines */}
+            <g opacity="0.4">
+              {CONSTELLATION_BG.stars.map((star, i) => (
+                <circle
+                  key={`static-star-${i}`}
+                  cx={star.cx}
+                  cy={star.cy}
+                  r={star.r}
+                  fill="#7fa3b5"
+                  opacity={star.opacity}
+                />
+              ))}
+              {CONSTELLATION_BG.lines.map((ln, i) => (
+                <line
+                  key={`static-line-${i}`}
+                  x1={ln.x1}
+                  y1={ln.y1}
+                  x2={ln.x2}
+                  y2={ln.y2}
+                  stroke="#2a4150"
+                  opacity={0.5}
+                />
+              ))}
+            </g>
+
+            {/* Regional Glows */}
+            <ellipse cx="450" cy="165" rx="270" ry="110" fill="url(#static-hA)" />
+            <ellipse cx="540" cy="430" rx="300" ry="120" fill="url(#static-hC)" />
+
+            {/* Shortest Path (Dim Amber, dashed) */}
             <path
-              d="M 60 160 L 220 100 L 380 100 L 540 160"
-              stroke="#D4B15F"
-              strokeWidth="2"
-              strokeDasharray="4 4"
-              opacity="0.65"
+              d={PATH_A_D}
+              fill="none"
+              stroke="#d9a850"
+              strokeWidth={3}
+              strokeDasharray="6 6"
+              opacity="0.45"
             />
-            <circle cx="220" cy="100" r="4.5" fill="#0E1118" stroke="#D4B15F" strokeWidth="1.5" />
-            <circle cx="380" cy="100" r="4.5" fill="#0E1118" stroke="#D4B15F" strokeWidth="1.5" />
-            <text x="300" y="85" fill="#D4B15F" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.8">
-              shortest path (higher carbon)
-            </text>
-          </g>
 
-          {/* Greener Path (Teal-Green, selected) */}
-          <g>
+            {/* Greener Route (Cyan, solid) */}
             <path
-              d="M 60 160 L 180 220 L 320 250 L 440 210 L 540 160"
-              stroke="#6EE7A8"
-              strokeWidth="3"
+              d={PATH_C_D}
+              fill="none"
+              stroke="#5eead4"
+              strokeWidth={4}
+              strokeLinecap="round"
             />
-            <circle cx="180" cy="220" r="5" fill="#0E1118" stroke="#6EE7A8" strokeWidth="1.8" />
-            <circle cx="320" cy="250" r="5" fill="#0E1118" stroke="#6EE7A8" strokeWidth="1.8" />
-            <circle cx="440" cy="210" r="5" fill="#0E1118" stroke="#6EE7A8" strokeWidth="1.8" />
-          </g>
 
-          {/* Edge Ingress */}
-          <circle cx="60" cy="160" r="9" fill="#0E1118" stroke="#5EE1E6" strokeWidth="2" />
-          <circle cx="60" cy="160" r="3.5" fill="#5EE1E6" />
-          <text x="60" y="195" fill="#5EE1E6" fontSize="10" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-            EDGE INGRESS
-          </text>
+            {/* Nodes */}
+            {ALL_EDGE_CLOUD_NODES.map((node) => {
+              const isBig = node.id === "ingress" || node.id === "compute";
+              const isAmber = node.category === "a";
+              const col = isAmber ? "#d9a850" : "#5eead4";
+              const isUpper = isAmber;
+              const ty = isBig
+                ? node.y + 52
+                : isUpper
+                ? node.y - 32
+                : node.y + 36;
 
-          {/* Clean Compute Destination */}
-          <circle cx="540" cy="160" r="10" fill="#0E1118" stroke="#6EE7A8" strokeWidth="2" />
-          <circle cx="540" cy="160" r="4" fill="#6EE7A8" />
-          <text x="540" y="195" fill="#6EE7A8" fontSize="10" fontFamily="monospace" textAnchor="middle" fontWeight="bold">
-            CLEAN COMPUTE
-          </text>
-        </svg>
-
-        <div className="absolute bottom-6 inset-x-0 mx-auto w-fit px-3 py-1 bg-ink/95 border border-[#6EE7A8] rounded text-[#6EE7A8] font-mono text-xs tracking-wider uppercase">
-          carbon-aware (selected)
+              return (
+                <g key={`static-node-${node.id}`}>
+                  {isBig && (
+                    <circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={34}
+                      fill={col}
+                      opacity={0.14}
+                    />
+                  )}
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={isBig ? 20 : 13}
+                    fill="#05080d"
+                    stroke={col}
+                    strokeWidth={2.5}
+                  />
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={isBig ? 8 : 4.5}
+                    fill={col}
+                  />
+                  <text
+                    x={node.x}
+                    y={ty}
+                    textAnchor="middle"
+                    className="font-sans text-[15px] font-medium fill-[#cfe0e8]"
+                  >
+                    {node.name}
+                  </text>
+                  {!isBig && (
+                    <text
+                      x={node.x}
+                      y={ty + (isUpper ? -17 : 17)}
+                      textAnchor="middle"
+                      className="font-mono text-[11px] fill-[#8aa0ad]"
+                    >
+                      {node.kind}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
         </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-line/40 flex items-center justify-between text-[11px] font-mono text-mist">
-        <span>STAR NETWORK (STATIC ACCESSIBLE VIEW)</span>
-        <span className="text-[#6EE7A8]">CARBON-AWARE PATH SELECTED</span>
+      <div className="mt-4 pt-3 border-t border-[#1b2a36] flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-[#8aa0ad]">
+        <span>Shortest path (amber) vs Greener path (cyan)</span>
+        <span className="text-[#5eead4] font-semibold">
+          PATH: GREENER ROUTE SELECTED (CARBON-AWARE)
+        </span>
       </div>
     </div>
   );
 }
 
-// Lazy-loaded interactive star network (ssr: false only for the canvas/animation)
+// Lazy-loaded interactive star network mission view
 const DynamicEdgeCloudNetwork = dynamic(
   () => import("./edge-cloud-network").then((mod) => mod.EdgeCloudNetwork),
   {
@@ -117,41 +184,9 @@ export interface EdgeCloudWorldProps {
   className?: string;
 }
 
-/**
- * EdgeCloudWorld Component:
- * Phase 1 Flagship World Template: Edge-Cloud Orchestrator.
- *
- * Rules:
- * - Scoped via data-world="edge-cloud"
- * - Server-rendered text content for SEO & accessibility
- * - Dynamic client-only routing diagram with static fallback
- * - Star network with packet animation labeled "illustrative routing diagram"
- * - Zero numeric claims (qualitative only per /docs/03)
- * - Proof panel with repo/demo links and claims
- * - "Scenario cleared" stamp with Biyoo celebration hook
- * - Anchor id="edge-cloud" and return link
- */
 export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
   const { reducedMotion } = useMode();
   const [scenarioCleared, setScenarioCleared] = useState(false);
-
-  // Retrieve Edge-Cloud project data from content
-  const project = projects.find((p) => p.id === "edge-cloud") || {
-    id: "edge-cloud",
-    title: "Edge-Cloud Orchestrator",
-    status: "flagship",
-    world: "edge-cloud",
-    oneLiner: "carbon-aware workload routing across edge and cloud.",
-    claims: [],
-    limits: [],
-    links: {
-      repo: "https://github.com/SumitMahajan11/Edge-Cloud-Orchestrator",
-      demo: "https://edge-cloud-orchestrator-web-swart.vercel.app/",
-      benchmark: null,
-    },
-    costume: "star goggles",
-    worldReady: true,
-  };
 
   const handleScenarioClear = () => {
     setScenarioCleared(true);
@@ -161,59 +196,43 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
     <section
       id="edge-cloud"
       data-world="edge-cloud"
-      className={`relative z-20 w-full min-h-screen py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_top,_rgba(10,17,40,0.65)_0%,_rgba(7,8,11,0.55)_75%)] text-feather ${className}`}
-      aria-labelledby="edge-cloud-title"
+      className={`relative z-20 w-full min-h-screen py-20 sm:py-28 px-4 sm:px-6 bg-[radial-gradient(900px_400px_at_50%_0,#0e2a33,transparent_70%)] text-[#e8f1f5] ${className}`}
+      aria-labelledby="edge-cloud-heading"
     >
-      <div className="max-w-5xl mx-auto space-y-16 sm:space-y-24">
-        {/* Navigation & Breadcrumb */}
-        <div className="flex items-center justify-between border-b border-line/60 pb-4 font-mono text-xs">
-          <div className="flex items-center gap-2 text-star">
-            <span className="w-2 h-2 rounded-full bg-star animate-pulse" />
+      <div className="max-w-[1180px] mx-auto space-y-12 sm:space-y-16">
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center justify-between border-b border-[#1b2a36] pb-4 font-mono text-xs">
+          <div className="flex items-center gap-2 text-[#5eead4]">
+            <span className="w-2 h-2 rounded-full bg-[#5eead4] animate-pulse" />
             <span className="uppercase tracking-widest">[ACT 3 &bull; WORLD: EDGE-CLOUD]</span>
           </div>
           <a
             href="#scenario-select"
-            className="text-mist hover:text-star transition-colors underline underline-offset-4 decoration-mist/40 hover:decoration-star"
+            className="text-[#8aa0ad] hover:text-[#5eead4] transition-colors underline underline-offset-4 decoration-[#8aa0ad]/40 hover:decoration-[#5eead4]"
           >
             &uarr; Back to Scenario Select
           </a>
         </div>
 
-        {/* Beat 1: Scenario Card "Scenario: Route the Workload" */}
-        <div className="max-w-2xl mx-auto">
-          <SystemWindow title="SYSTEM PROMPT: SCENARIO ASSIGNMENT">
-            <div className="space-y-4 py-2">
-              <div className="space-y-1">
-                <span className="font-mono text-xs text-[#6EE7A8] uppercase tracking-widest font-semibold">
-                  [SCENARIO 1: ROUTE THE WORKLOAD]
-                </span>
-                <h2
-                  id="edge-cloud-title"
-                  className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-feather"
-                >
-                  {project.title}
-                </h2>
-              </div>
-
-              <div className="font-ui text-sm sm:text-base text-mist leading-relaxed">
-                {renderField(project.oneLiner)}
-              </div>
-            </div>
-          </SystemWindow>
+        {/* Header & Scenario Introduction */}
+        <div className="space-y-3">
+          <div className="font-mono text-xs uppercase tracking-widest text-[#5eead4] font-medium">
+            [Scenario 1: route the workload]
+          </div>
+          <h2
+            id="edge-cloud-heading"
+            className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-wide text-[#e8f1f5] drop-shadow-[0_0_28px_rgba(94,234,212,0.35)]"
+          >
+            Edge-Cloud Orchestrator
+          </h2>
+          <p className="font-sans text-base sm:text-lg text-[#8aa0ad] leading-relaxed max-w-2xl">
+            One task, two possible routes. Watch the scheduler weigh them, then
+            send the work where the energy is cleanest.
+          </p>
         </div>
 
-        {/* Beats 2 & 3: Star Network Routing Visualization */}
-        <div className="space-y-6">
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h3 className="font-display text-lg sm:text-xl font-bold text-feather">
-              Star-Network Routing Engine
-            </h3>
-            <p className="font-mono text-xs text-mist">
-              Observe packet evaluation between the shortest distance route and the cleaner, carbon-aware star path.
-            </p>
-          </div>
-
-          {/* Conditional Progressive Enhancement: Static on reduced motion or initial SSR */}
+        {/* Interactive Mission View */}
+        <div>
           {reducedMotion ? (
             <EdgeCloudStaticDiagram />
           ) : (
@@ -221,82 +240,107 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
           )}
         </div>
 
-        {/* Beat 4: Proof Panel (Verification) */}
-        <div data-proof-panel="true" className="max-w-2xl mx-auto w-full">
-          <SystemWindow title="[READER'S RECORD &bull; VERIFICATION]">
-            <div className="space-y-5 py-2">
-              {/* Claims / Findings */}
-              <div className="space-y-2">
-                <span className="font-mono text-[11px] text-mist uppercase tracking-wider">
-                  VERIFIED CLAIMS:
-                </span>
-                {project.claims && project.claims.length > 0 ? (
-                  <ul className="space-y-2 font-mono text-xs text-feather">
-                    {project.claims.map((claim, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-star">&bull;</span>
-                        <span>{claim.text}</span>
+        {/* Ledger: What is Real */}
+        <section className="space-y-4" aria-label="What is real">
+          <div className="font-mono text-xs uppercase tracking-widest text-[#8aa0ad]">
+            [SYSTEM LEDGER &bull; VERIFICATION]
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {LEDGER_DATA.map((cat) => {
+              const headingCol =
+                cat.badgeColor === "cyan"
+                  ? "text-[#5eead4]"
+                  : cat.badgeColor === "amber"
+                  ? "text-[#d9a850]"
+                  : "text-[#a78bfa]";
+
+              const bulletBg =
+                cat.badgeColor === "cyan"
+                  ? "bg-[#5eead4]"
+                  : cat.badgeColor === "amber"
+                  ? "bg-[#d9a850]"
+                  : "bg-[#a78bfa]";
+
+              return (
+                <div
+                  key={cat.title}
+                  className="rounded-md border border-[#1b2a36] bg-gradient-to-b from-[#0b141d] to-[#0a1119] p-5 shadow-lg"
+                >
+                  <h3
+                    className={`font-mono text-xs font-semibold tracking-widest mb-3 ${headingCol}`}
+                  >
+                    {cat.title}
+                  </h3>
+                  <ul className="space-y-2.5 m-0 p-0 list-none text-sm leading-snug">
+                    {cat.items.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 text-[#e8f1f5]">
+                        <span
+                          className={`w-2 h-2 rounded-[2px] mt-1.5 shrink-0 ${bulletBg}`}
+                        />
+                        <span>{item}</span>
                       </li>
                     ))}
                   </ul>
-                ) : (
-                  <div className="font-ui text-sm text-mist/90">
-                    {renderField(project.oneLiner)}
-                  </div>
-                )}
-              </div>
-
-              {/* Links */}
-              <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-mist">Repository:</span>
-                  {renderField(project.links.repo, (url) => (
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-star hover:text-feather underline transition-colors"
-                    >
-                      {url}
-                    </a>
-                  ))}
                 </div>
+              );
+            })}
+          </div>
+        </section>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-mist">Live Preview:</span>
-                  {renderField(project.links.demo, (url) => (
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-star hover:text-feather underline transition-colors"
-                    >
-                      {url}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </SystemWindow>
-        </div>
+        {/* Project Links */}
+        <nav
+          className="flex flex-wrap items-center gap-3 pt-2"
+          aria-label="Project links"
+        >
+          <a
+            href={PROJECT_LINKS.repo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
+          >
+            <span>REPO</span>
+            <span aria-hidden="true">&nearr;</span>
+          </a>
+          <a
+            href={PROJECT_LINKS.architecture}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
+          >
+            <span>ARCHITECTURE</span>
+            <span aria-hidden="true">&nearr;</span>
+          </a>
+          {PROJECT_LINKS.demo && (
+            <a
+              href={PROJECT_LINKS.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
+            >
+              <span>LIVE DEMO</span>
+              <span aria-hidden="true">&nearr;</span>
+            </a>
+          )}
+        </nav>
 
-        {/* Beat 5: Exit Stamp "Scenario cleared" */}
-        <div className="flex flex-col items-center justify-center text-center space-y-4 pt-6">
+        {/* Exit Stamp: Scenario Cleared */}
+        <div className="flex flex-col items-center justify-center text-center space-y-4 pt-6 border-t border-[#1b2a36]/60">
           <div
             className={`transition-all duration-500 transform ${
               scenarioCleared ? "scale-100 opacity-100" : "scale-95 opacity-80"
             }`}
           >
-            <div className="inline-flex items-center gap-3 border-2 border-[#6EE7A8] bg-[#6EE7A8]/10 px-6 py-3 rounded-sm font-mono text-sm sm:text-base uppercase tracking-widest text-[#6EE7A8] font-bold shadow-[0_0_24px_rgba(110,231,168,0.2)]">
+            <div className="inline-flex items-center gap-3 border-2 border-[#5eead4] bg-[#5eead4]/10 px-6 py-3 rounded-sm font-mono text-sm sm:text-base uppercase tracking-widest text-[#5eead4] font-bold shadow-[0_0_24px_rgba(94,234,212,0.2)]">
               <span className="text-lg sm:text-xl">&#10003;</span>
               <span>Scenario cleared</span>
             </div>
           </div>
 
-          <div className="pt-6">
+          <div className="pt-2">
             <a
               href="#scenario-select"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-star/40 bg-ink-2/60 hover:bg-ink text-star font-mono text-xs tracking-wider uppercase transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-[#5eead4]/40 bg-[#0d1a24] hover:bg-[#0b141d] text-[#5eead4] font-mono text-xs tracking-wider uppercase transition-colors"
             >
               &uarr; Return to Scenario Select
             </a>
