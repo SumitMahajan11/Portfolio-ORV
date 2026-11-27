@@ -33,10 +33,9 @@ export function ConstellationOverlay({
 
   return (
     <div
-      className={`fixed top-20 right-4 sm:top-20 sm:right-8 z-50 max-w-[300px] sm:max-w-sm pointer-events-auto transition-all duration-300 ${
-        reducedMotion ? "" : "animate-pulse"
-      } ${className}`}
-      aria-hidden="true"
+      className={`fixed bottom-24 left-3 md:bottom-6 md:left-8 z-50 max-w-[calc(100vw-8rem)] md:max-w-sm pointer-events-auto transition-opacity duration-300 ${className}`}
+      role="status"
+      aria-live="polite"
     >
       <div className="relative border border-star/50 bg-[rgba(14,17,24,0.92)] backdrop-blur-md shadow-[0_4px_24px_rgba(94,225,230,0.15)] p-3 sm:p-4 font-mono">
         {/* Decorative corner brackets in --star teal */}
@@ -86,7 +85,7 @@ export function ConstellationOverlay({
         </p>
 
         {/* Footer info */}
-        <div className="mt-2 pt-1 border-t border-line/40 flex items-center justify-between text-[10px] text-mist/70 font-mono">
+        <div className="mt-2 hidden items-center justify-between border-t border-line/40 pt-1 font-mono text-[10px] text-mist/70 md:flex">
           <span>CHANNEL #8612</span>
           <span className="uppercase">{line.context}</span>
         </div>

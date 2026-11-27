@@ -5,6 +5,7 @@ import { projects } from "@/content/projects";
 import type { Project } from "@/content/types";
 import { renderField } from "@/components/ui/fill-badge";
 import { SystemWindow } from "@/components/system-window";
+import { WorldGlyph } from "./world-glyph";
 import { useMode } from "@/lib/flags";
 import { useScene, gsap } from "@/lib/motion";
 
@@ -77,6 +78,17 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
       <div
         className="pointer-events-none absolute inset-0 system-window-scanlines opacity-40"
         aria-hidden="true"
+      />
+
+      {/* World glow (opacity-only hover) and original world glyph */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{ background: "radial-gradient(ellipse at 85% 0%, color-mix(in srgb, var(--world-primary, var(--star)) 20%, transparent), transparent 60%)" }}
+        aria-hidden="true"
+      />
+      <WorldGlyph
+        world={project.world}
+        className="pointer-events-none absolute right-4 top-14 h-24 w-24 text-[var(--world-primary,var(--star))] opacity-15 transition-opacity duration-300 group-hover:opacity-40 sm:h-28 sm:w-28"
       />
 
       {/* Card Content */}
@@ -286,18 +298,25 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
       }
 
       // In Full mode: staggered entrance via ScrollTrigger
-      gsap.from(cardElements, {
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          once: true,
-        },
-        y: 28,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.65,
-        ease: "power3.out",
-      });
+      // fromTo (explicit end state) so cards can never get stuck at opacity 0
+      // when the scene re-runs after mode/hydration changes.
+      gsap.fromTo(
+        cardElements,
+        { y: 28, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 0.65,
+          ease: "power3.out",
+          clearProps: "transform,opacity",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+            once: true,
+          },
+        }
+      );
     },
     { scope: containerRef, dependencies: [reducedMotion, mode, flagshipProjects.length] }
   );

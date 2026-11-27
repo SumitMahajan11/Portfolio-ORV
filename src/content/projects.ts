@@ -8,8 +8,21 @@ export const projects: Project[] = [
     status: "flagship",
     world: "edge-cloud",
     oneLiner: "Carbon-aware workload routing across edge and cloud.",
-    claims: [], // Edge-Cloud has NO numeric claims until verified
-    limits: [],
+    claims: [
+      {
+        text: "Saga and Transactional Outbox patterns for distributed transactions.",
+        evidence: "verified",
+        source: "README",
+      },
+      {
+        text: "Scheduling load test: 1,000 tasks, 261 ms average, 508 ms P99.",
+        evidence: "verified",
+        source: "tests/load/results/scheduling-latency.json",
+      },
+    ],
+    limits: [
+      "Simulated edge-cloud environment; latency figures come from simulated task placements, not a production deployment.",
+    ],
     links: {
       repo: "https://github.com/SumitMahajan11/Edge-Cloud-Orchestrator",
       demo: "https://edge-cloud-orchestrator-web-swart.vercel.app/",
@@ -124,25 +137,32 @@ export const projects: Project[] = [
     title: "Backtrace",
     status: "sidequest", // Stays sidequest until /docs/03 says otherwise
     world: "backtrace",
-    oneLiner: "reconstructing a repo from clues.",
-    claims: [],
+    oneLiner: "Reconstructs how a public Git repo was built, step by step.",
+    claims: [
+      {
+        text: "11-layer deterministic and AI pipeline from repo ingestion to web dashboard.",
+        evidence: "verified",
+        source: "README",
+      },
+    ],
     limits: [
-      "Provisional candidate awaiting verification of existence, repo, and demo.",
+      "Structure-only checks (Tier 3) do not verify behavior; behavior is verified only where real tests exist.",
+      "Live demo link comes from the resume and was not independently checked.",
     ],
     links: {
-      repo: null,
-      demo: null,
+      repo: "https://github.com/SumitMahajan11/Backtrace",
+      demo: "https://backtrace-pbsk.onrender.com",
       benchmark: null,
     },
     costume: "magnifier",
     bullets: {
-      problem: null, // [FILL]
-      built: null, // [FILL]
+      problem: "Code-exploration tools explain what a codebase is now, not how it was built.",
+      built: "A FastAPI pipeline that parses ASTs, sorts the dependency graph, and rebuilds the build order as milestones.",
       learned: null, // [FILL]
     },
     inDesign: false,
     worldReady: false,
-    published: false,
+    published: true,
   },
   {
     id: "echo",
@@ -199,24 +219,24 @@ export const projects: Project[] = [
     title: "ReelClaim",
     status: "sidequest",
     world: "sidequest",
-    oneLiner: "claim verification for job/internship reels. Status: in design",
+    oneLiner: "Audits promotional claims from YouTube Shorts and Instagram Reels against multi-source evidence.",
     claims: [],
     limits: [
-      "Status: in design.",
+      "Accuracy benchmark figures from the resume are not reproduced in the repo, so none are shown here.",
     ],
     links: {
-      repo: null,
-      demo: null,
+      repo: "https://github.com/SumitMahajan11/ReelClaim",
+      demo: "https://reelclaim-frontend.vercel.app",
       benchmark: null,
     },
     costume: "magnifier",
     bullets: {
-      problem: null, // [FILL]
-      built: null, // [FILL]
+      problem: "Promotional reels make claims that are hard to check against the promoter's own terms and independent sources.",
+      built: "A FastAPI + Next.js ledger that crawls site terms, Wayback history, and WHOIS data, then assigns each claim a confidence tier.",
       learned: null, // [FILL]
     },
-    inDesign: true, // docs/03 explicitly states: 'Status: in design'
+    inDesign: false,
     worldReady: false,
-    published: false,
+    published: true,
   },
 ];

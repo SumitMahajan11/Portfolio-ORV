@@ -482,5 +482,25 @@ body.biyoo-qa-open #sound-permission-prompt {
   }
 }
 
+/* ==========================================================================
+   HERO / CARD VISUAL POLISH (transform + opacity only)
+   ========================================================================== */
+.hero-name-glow {
+  text-shadow: 0 0 28px rgba(94, 225, 230, 0.22), 0 0 90px rgba(94, 225, 230, 0.12);
+}
+
+.hero-beam {
+  background: linear-gradient(90deg, transparent, var(--star), transparent);
+  animation: hero-beam-sweep 4.5s ease-in-out infinite;
+}
+
+@keyframes hero-beam-sweep {
+  0% { transform: translateX(-110%); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(310%); opacity: 0; }
+}
+
+
 
 
