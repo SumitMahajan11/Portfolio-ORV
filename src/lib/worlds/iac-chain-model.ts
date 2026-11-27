@@ -36,34 +36,34 @@ export const CHAIN_EDGES: ReadonlyArray<ChainEdge> = [
 ];
 
 export const INITIAL_EDGES_STATE: ReadonlyArray<number> = [1, 1, 1, 1, 1];
-export const NODE_RADIUS = 36;
+export const NODE_RADIUS = 24;
 
 export const DESKTOP_POSITIONS: ReadonlyArray<[number, number]> = [
-  [80, 230],
-  [290, 230],
-  [510, 100],
-  [510, 360],
-  [720, 230],
+  [85, 135],
+  [230, 135],
+  [410, 65],
+  [410, 205],
+  [610, 135],
 ];
 
 export const MOBILE_POSITIONS: ReadonlyArray<[number, number]> = [
-  [200, 70],
-  [200, 200],
-  [85, 350],
-  [315, 350],
-  [200, 500],
+  [180, 50],
+  [180, 145],
+  [85, 255],
+  [275, 255],
+  [180, 365],
 ];
 
 export const CHAIN_PALETTE = {
-  bg: "#07080B",
-  panel: "#0E1118",
-  panel2: "#161B26",
-  line: "#222735",
-  text: "#F4F6FA",
-  muted: "#8A91A6",
-  red: "#FF3D55",
-  green: "#3DDC97",
-  amber: "#FF7A29",
+  bg: "#05080D",
+  panel: "#0A1119",
+  panel2: "#0D1A24",
+  line: "#1B2A36",
+  text: "#E8F1F5",
+  muted: "#8AA0AD",
+  cyan: "#5EEAD4",
+  amber: "#D9A850",
+  red: "#F43F5E",
 } as const;
 
 /**
@@ -173,9 +173,9 @@ export function buildEdgeLayouts(isMobile: boolean): GeneratedEdgeLayout[] {
     const ux = dx / L;
     const uy = dy / L;
     const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-    const s = NODE_RADIUS + 8;
+    const s = NODE_RADIUS + 6;
     const len = L - 2 * s;
-    const count = Math.max(1, Math.floor(len / 17));
+    const count = Math.max(1, Math.floor(len / 13));
     const mx = (a[0] + b[0]) / 2;
     const my = (a[1] + b[1]) / 2;
 
@@ -185,18 +185,18 @@ export function buildEdgeLayouts(isMobile: boolean): GeneratedEdgeLayout[] {
       const x = a[0] + ux * t;
       const y = a[1] + uy * t;
       const isAlt = j % 2 === 1;
-      const w = isAlt ? 12 : 22;
-      const h = isAlt ? 7 : 12;
+      const w = isAlt ? 8 : 14;
+      const h = isAlt ? 5 : 8;
 
       links.push({
         x: Number(x.toFixed(1)),
         y: Number(y.toFixed(1)),
         width: w,
         height: h,
-        dx: Number((rand() * 50 - 25).toFixed(0)),
-        dy: Number((60 + rand() * 90).toFixed(0)),
-        r: Number((rand() * 260 - 130).toFixed(0)),
-        delay: Number((j * 0.025).toFixed(3)),
+        dx: Number((rand() * 40 - 20).toFixed(0)),
+        dy: Number((40 + rand() * 50).toFixed(0)),
+        r: Number((rand() * 200 - 100).toFixed(0)),
+        delay: Number((j * 0.02).toFixed(3)),
       });
     }
 

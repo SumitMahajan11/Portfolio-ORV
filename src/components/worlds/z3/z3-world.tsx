@@ -82,19 +82,19 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     <section
       id="iac-verifier"
       data-world="z3"
-      className={`relative z-20 w-full min-h-screen py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_top,_rgba(10,24,20,0.65)_0%,_rgba(7,8,11,0.55)_80%)] text-feather ${className}`}
+      className={`relative z-20 w-full min-h-screen py-24 sm:py-32 px-4 sm:px-6 bg-[radial-gradient(ellipse_at_top,_rgba(14,42,51,0.45)_0%,_rgba(5,8,13,0.95)_80%)] text-feather ${className}`}
       aria-labelledby="z3-world-title"
     >
       <div className="max-w-5xl mx-auto space-y-16 sm:space-y-24">
         {/* Navigation & Breadcrumb */}
         <div className="flex items-center justify-between border-b border-line/60 pb-4 font-mono text-xs">
-          <div className="flex items-center gap-2 text-[#1FA37A]">
-            <span className="w-2 h-2 rounded-full bg-[#1FA37A] animate-pulse" />
+          <div className="flex items-center gap-2 text-[#5EEAD4]">
+            <span className="w-2 h-2 rounded-full bg-[#5EEAD4] animate-pulse" />
             <span className="uppercase tracking-widest">[ACT 3 &bull; WORLD: IAC-VERIFIER (Z3)]</span>
           </div>
           <a
             href="#scenario-select"
-            className="text-mist hover:text-[#1FA37A] transition-colors underline underline-offset-4 decoration-mist/40 hover:decoration-[#1FA37A]"
+            className="text-mist hover:text-[#5EEAD4] transition-colors underline underline-offset-4 decoration-mist/40 hover:decoration-[#5EEAD4]"
           >
             &uarr; Back to Scenario Select
           </a>
@@ -105,7 +105,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
           <SystemWindow title="SYSTEM PROMPT: SCENARIO ASSIGNMENT">
             <div className="space-y-4 py-2">
               <div className="space-y-1">
-                <span className="font-mono text-xs text-[#1FA37A] uppercase tracking-widest font-semibold">
+                <span className="font-mono text-xs text-[#5EEAD4] uppercase tracking-widest font-semibold">
                   [SCENARIO 3: NEN VOWS & SMT REACHABILITY]
                 </span>
                 <h2
@@ -155,7 +155,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                   <ul className="space-y-2.5 font-mono text-xs text-feather">
                     {project.claims.map((claim, idx) => (
                       <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
-                        <span className="text-[#1FA37A] font-bold">&bull;</span>
+                        <span className="text-[#5EEAD4] font-bold">&bull;</span>
                         <div className="space-y-0.5">
                           <span>{claim.text}</span>
                           <span className="block text-[10px] text-mist/70">
@@ -198,7 +198,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#1FA37A] hover:text-feather underline transition-colors"
+                      className="text-[#5EEAD4] hover:text-feather underline transition-colors"
                     >
                       {url}
                     </a>
@@ -212,7 +212,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#1FA37A] hover:text-feather underline transition-colors"
+                      className="text-[#5EEAD4] hover:text-feather underline transition-colors"
                     >
                       {url}
                     </a>
@@ -230,7 +230,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
               scenarioCleared ? "scale-100 opacity-100" : "scale-95 opacity-80"
             }`}
           >
-            <div className="inline-flex items-center gap-3 border-2 border-[#1FA37A] bg-[#1FA37A]/10 px-6 py-3 rounded-sm font-mono text-sm sm:text-base uppercase tracking-widest text-[#1FA37A] font-bold shadow-[0_0_24px_rgba(31,163,122,0.25)]">
+            <div className="inline-flex items-center gap-3 border-2 border-[#5EEAD4] bg-[#5EEAD4]/10 px-6 py-3 rounded-sm font-mono text-sm sm:text-base uppercase tracking-widest text-[#5EEAD4] font-bold shadow-[0_0_24px_rgba(94,234,212,0.25)]">
               <span className="text-lg sm:text-xl">&#10003;</span>
               <span>Scenario cleared</span>
             </div>
@@ -239,7 +239,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
           <div className="pt-6">
             <a
               href="#scenario-select"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-[#1FA37A]/40 bg-ink-2/60 hover:bg-ink text-[#1FA37A] font-mono text-xs tracking-wider uppercase transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-[#5EEAD4]/40 bg-ink-2/60 hover:bg-ink text-[#5EEAD4] font-mono text-xs tracking-wider uppercase transition-colors"
             >
               &uarr; Return to Scenario Select
             </a>

@@ -74,15 +74,16 @@ export interface RaftPosition {
 }
 
 export const CLUSTER_PALETTE = {
-  bg: '#07080B',
-  panel: '#0E1118',
-  panel2: '#161B26',
-  text: '#F4F6FA',
-  muted: '#9AA7BD',
-  cyan: '#5EE1E6',
-  amber: '#FBBF24',
-  red: '#F87171',
-  green: '#4ADE80',
+  bg: '#05080D',
+  panel: '#0A1119',
+  panel2: '#0D1A24',
+  line: '#1B2A36',
+  text: '#E8F1F5',
+  muted: '#8AA0AD',
+  cyan: '#5EEAD4',
+  amber: '#D9A850',
+  red: '#F43F5E',
+  green: '#5EEAD4',
 } as const;
 
 // 46 precomputed background ambient stars [xRatio, yRatio, radius, speed]

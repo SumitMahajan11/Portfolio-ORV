@@ -188,7 +188,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
         trigger: containerRef.current,
         start: "top 75%",
         end: "bottom 15%",
-        scrub: 0.8,
+        scrub: 0.6,
         onUpdate: (self) => {
           if (!isPlayingRef.current) {
             progressRef.current = self.progress;
@@ -224,7 +224,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
       progressRef.current = p;
       setProgressVal(p);
       applyScriptedProgress(p);
-    }, 2400); // 2.4s per step: relaxed, comfortable observing pace
+    }, 3000); // 3.0s per step: relaxed, comfortable observing pace
 
     autoPlayTimerRef.current = timer;
 
@@ -305,15 +305,15 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
     : "STATUS: UNPROVEN";
 
   const statusColorClass = graphStatus.sat
-    ? "text-[#FF3D55]"
+    ? "text-[#F43F5E]"
     : graphStatus.sealed
-    ? "text-[#3DDC97]"
-    : "text-[#FF7A29]";
+    ? "text-[#5EEAD4]"
+    : "text-[#D9A850]";
 
   return (
     <div
       ref={containerRef}
-      className="w-full rounded-2xl border border-line/80 bg-ink/90 p-4 sm:p-6 backdrop-blur-md shadow-2xl space-y-4 select-none"
+      className="w-full max-w-4xl mx-auto rounded-xl border border-[#1B2A36] bg-[#0A1119] p-3 sm:p-5 shadow-2xl space-y-3.5 select-none"
       role="region"
       aria-label="Interactive IaC Verifier: Cut the chain SMT model"
     >
@@ -323,89 +323,89 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
         }
         .iac-rg rect {
           fill: none;
-          stroke: var(--st, #8A91A6);
-          stroke-width: 3.5;
+          stroke: var(--st, #2A4150);
+          stroke-width: 2.2;
           transition: stroke 0.3s;
         }
         .iac-edge {
-          --st: #8A91A6;
+          --st: #2A4150;
           cursor: pointer;
           outline: none;
         }
         .iac-edge.hot {
-          --st: #FF3D55;
+          --st: #F43F5E;
         }
         .iac-edge.cut .iac-rg {
           transform: translate(var(--dx), var(--dy)) rotate(var(--r));
           opacity: 0;
         }
         .iac-gh {
-          stroke: #8A91A6;
+          stroke: #1B2A36;
           stroke-width: 2;
-          stroke-dasharray: 3 9;
+          stroke-dasharray: 3 7;
           opacity: 0;
           transition: opacity 0.4s;
         }
         .iac-edge.cut .iac-gh {
-          opacity: 0.6;
+          opacity: 0.7;
         }
         .iac-pl {
-          stroke: #FF3D55;
-          stroke-width: 4;
-          stroke-dasharray: 5 40;
+          stroke: #F43F5E;
+          stroke-width: 3.2;
+          stroke-dasharray: 5 35;
           stroke-linecap: round;
           opacity: 0;
-          filter: drop-shadow(0 0 6px #FF3D55);
+          filter: drop-shadow(0 0 6px #F43F5E);
         }
         .iac-edge.hot .iac-pl {
           opacity: 1;
           animation: iac-fl 1.1s linear infinite;
         }
         @keyframes iac-fl {
-          to { stroke-dashoffset: -45; }
+          to { stroke-dashoffset: -40; }
         }
         .iac-bt circle {
-          fill: #0E1118;
-          stroke: #8A91A6;
-          stroke-width: 2;
+          fill: #0D1A24;
+          stroke: #1B2A36;
+          stroke-width: 1.8;
           transition: stroke 0.2s, transform 0.2s;
           transform-box: fill-box;
           transform-origin: center;
         }
         .iac-bt text {
-          font-size: 15px;
+          font-size: 11px;
           text-anchor: middle;
           dominant-baseline: central;
-          fill: #F4F6FA;
+          fill: #E8F1F5;
           pointer-events: none;
         }
         .iac-edge:hover .iac-bt circle,
         .iac-edge:focus-visible .iac-bt circle {
-          stroke: #FF7A29;
-          transform: scale(1.25);
+          stroke: #D9A850;
+          transform: scale(1.2);
         }
         .iac-edge.hint .iac-bt circle {
-          stroke: #FF7A29;
+          stroke: #D9A850;
           animation: iac-pu 1s ease-in-out infinite;
         }
         .iac-edge.nudge .iac-bt circle {
-          stroke: #FF7A29;
+          stroke: #D9A850;
           animation: iac-pu 1.6s ease-in-out infinite;
         }
         @keyframes iac-pu {
-          50% { transform: scale(1.35); }
+          50% { transform: scale(1.25); }
         }
         .iac-edge.shake {
           animation: iac-sh 0.35s ease-in-out;
         }
         @keyframes iac-sh {
-          25% { transform: translateX(-6px); }
-          75% { transform: translateX(6px); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
         }
         .iac-nc {
-          fill: #0E1118;
-          stroke: #8A91A6;
-          stroke-width: 3;
+          fill: #0A1119;
+          stroke: #1B2A36;
+          stroke-width: 2.2;
           transition: stroke 0.4s, filter 0.4s;
         }
         .iac-n {
@@ -413,18 +413,18 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
         }
         .iac-n.fog {
           opacity: 0.3;
-          filter: blur(3px);
+          filter: blur(2px);
         }
         .iac-n.ext .iac-nc {
-          stroke: #FF7A29;
+          stroke: #D9A850;
         }
         .iac-adm.breach .iac-nc {
-          stroke: #FF3D55;
-          filter: drop-shadow(0 0 16px #FF3D55);
+          stroke: #F43F5E;
+          filter: drop-shadow(0 0 12px #F43F5E);
         }
         .iac-adm.sealed .iac-nc {
-          stroke: #3DDC97;
-          filter: drop-shadow(0 0 14px #3DDC97);
+          stroke: #5EEAD4;
+          filter: drop-shadow(0 0 12px #5EEAD4);
         }
         @media (prefers-reduced-motion: reduce) {
           .iac-edge.hot .iac-pl,
@@ -439,17 +439,17 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
       `}</style>
 
       {/* Control bar */}
-      <div className="flex flex-wrap gap-2.5 items-center justify-between">
+      <div className="flex flex-wrap gap-2 items-center justify-between">
         <div className="flex flex-wrap gap-2 items-center">
           {/* Play / Pause Toggle Button */}
           <button
             type="button"
             onClick={handleTogglePlay}
             aria-label={isPlaying ? "Pause automated chain walkthrough" : "Play automated chain walkthrough"}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-mono font-semibold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-mono font-semibold transition-all cursor-pointer ${
               isPlaying
-                ? "border-[#3DDC97] bg-[#3DDC97]/15 text-[#3DDC97] shadow-[0_0_12px_rgba(61,220,151,0.25)]"
-                : "border-line bg-ink-2 text-feather hover:border-[#3DDC97]/60"
+                ? "border-[#5EEAD4] bg-[#5EEAD4]/15 text-[#5EEAD4] shadow-[0_0_12px_rgba(94,234,212,0.25)]"
+                : "border-[#1B2A36] bg-[#0D1A24] text-[#E8F1F5] hover:border-[#5EEAD4]/60"
             }`}
           >
             <span className="text-[10px]">{isPlaying ? "⏸" : "▶"}</span>
@@ -458,7 +458,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
 
           {/* Bound hop selector */}
           <span
-            className="inline-flex border border-line rounded-full overflow-hidden bg-ink-2/60"
+            className="inline-flex border border-[#1B2A36] rounded-full overflow-hidden bg-[#0D1A24]/60"
             role="group"
             aria-label="Hops the verifier checks"
           >
@@ -472,8 +472,8 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                   aria-pressed={isSelected}
                   className={`px-3 py-1.5 text-xs font-mono font-semibold border-0 transition-colors cursor-pointer ${
                     isSelected
-                      ? "bg-[#FF7A29] text-[#12162B] font-bold"
-                      : "text-mist hover:text-feather hover:bg-ink-2"
+                      ? "bg-[#5EEAD4] text-[#05080D] font-bold"
+                      : "text-[#8AA0AD] hover:text-[#E8F1F5] hover:bg-[#0D1A24]"
                   }`}
                 >
                   {h} hops
@@ -485,7 +485,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
           <button
             type="button"
             onClick={handleHint}
-            className="px-3.5 py-1.5 rounded-full border border-line bg-ink-2 hover:border-[#FF7A29] text-feather text-xs font-mono font-semibold transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded-full border border-[#1B2A36] bg-[#0D1A24] hover:border-[#D9A850] text-[#E8F1F5] text-xs font-mono font-semibold transition-colors cursor-pointer"
           >
             Hint
           </button>
@@ -493,17 +493,17 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
           <button
             type="button"
             onClick={handleReset}
-            className="px-3.5 py-1.5 rounded-full border border-line bg-ink-2 hover:border-mist text-mist hover:text-feather text-xs font-mono font-semibold transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded-full border border-[#1B2A36] bg-[#0D1A24] hover:border-[#8AA0AD] text-[#8AA0AD] hover:text-[#E8F1F5] text-xs font-mono font-semibold transition-colors cursor-pointer"
           >
             Reset
           </button>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-mono text-xs text-mist border border-line px-2.5 py-1 rounded">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-mono text-xs text-[#8AA0AD] border border-[#1B2A36] bg-[#0D1A24] px-2.5 py-1 rounded">
             Par: {par} cuts
           </span>
-          <span className="font-mono text-[11px] text-mist border border-line px-2.5 py-1 rounded">
+          <span className="font-mono text-[11px] text-[#8AA0AD] border border-[#1B2A36] bg-[#0D1A24] px-2.5 py-1 rounded">
             {isPlaying ? "Auto playback" : "Scroll-driven"}
           </span>
         </div>
@@ -518,43 +518,43 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
         aria-label="IaC reachability walkthrough progress"
         onClick={handleProgressBarClick}
         title="Click to jump progress"
-        className="w-full h-1 bg-line relative overflow-hidden cursor-pointer rounded-full"
+        className="w-full h-1 bg-[#1B2A36] relative overflow-hidden cursor-pointer rounded-full"
       >
         <div
-          className="h-full bg-gradient-to-r from-[#FF3D55] via-[#FF7A29] to-[#3DDC97] transition-all duration-75"
+          className="h-full bg-gradient-to-r from-[#F43F5E] via-[#D9A850] to-[#5EEAD4] transition-all duration-75"
           style={{ width: `${(progressVal * 100).toFixed(1)}%` }}
         />
       </div>
 
       {/* Scenario Objectives Summary Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono text-mist">
-        <div className="border border-line/60 bg-ink-2/50 rounded-lg p-2.5">
-          <b className="block text-feather font-semibold text-[11px]">Objective</b>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono text-[#8AA0AD]">
+        <div className="border border-[#1B2A36] bg-[#0D1A24]/60 rounded-lg p-2">
+          <b className="block text-[#E8F1F5] font-semibold text-[11px]">Objective</b>
           <span>Seal admin_role</span>
         </div>
-        <div className="border border-line/60 bg-ink-2/50 rounded-lg p-2.5">
-          <b className="block text-feather font-semibold text-[11px]">Rule</b>
+        <div className="border border-[#1B2A36] bg-[#0D1A24]/60 rounded-lg p-2">
+          <b className="block text-[#E8F1F5] font-semibold text-[11px]">Rule</b>
           <span>CI login must stay</span>
         </div>
-        <div className="border border-line/60 bg-ink-2/50 rounded-lg p-2.5">
-          <b className="block text-feather font-semibold text-[11px]">Par</b>
+        <div className="border border-[#1B2A36] bg-[#0D1A24]/60 rounded-lg p-2">
+          <b className="block text-[#E8F1F5] font-semibold text-[11px]">Par</b>
           <span>{par} cuts</span>
         </div>
-        <div className="border border-line/60 bg-ink-2/50 rounded-lg p-2.5">
-          <b className="block text-feather font-semibold text-[11px]">How</b>
+        <div className="border border-[#1B2A36] bg-[#0D1A24]/60 rounded-lg p-2">
+          <b className="block text-[#E8F1F5] font-semibold text-[11px]">How</b>
           <span>Click chain to cut</span>
         </div>
       </div>
 
       {/* Verdict & Cuts Top Bar */}
-      <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+      <div className="flex items-center justify-between flex-wrap gap-2 pt-0.5">
         <span className={`font-mono text-sm sm:text-base font-bold ${statusColorClass}`}>
           {statusHeading}
         </span>
-        <span className="font-mono text-xs text-mist">
-          Cuts: <b className="text-feather">{graphStatus.cutsCount}</b>{" "}
+        <span className="font-mono text-xs text-[#8AA0AD]">
+          Cuts: <b className="text-[#E8F1F5]">{graphStatus.cutsCount}</b>{" "}
           {graphStatus.sealed && (
-            <b className="text-[#FF7A29] ml-1">
+            <b className="text-[#D9A850] ml-1">
               {"★".repeat(graphStatus.starCount)}
               {"☆".repeat(3 - graphStatus.starCount)}
             </b>
@@ -562,24 +562,24 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
         </span>
       </div>
 
-      {/* Stage Canvas */}
+      {/* Stage Canvas: Compact, Proportional & Dark Architect Palette */}
       <div
-        className={`relative w-full rounded-2xl overflow-hidden border transition-all duration-500 bg-[#07080B] ${
+        className={`relative w-full rounded-xl overflow-hidden border transition-all duration-500 bg-[#05080D] ${
           graphStatus.sat
-            ? "border-[#FF3D55] shadow-[0_0_40px_rgba(255,61,85,0.22)]"
+            ? "border-[#F43F5E]/60 shadow-[0_0_24px_rgba(244,63,94,0.12)]"
             : graphStatus.sealed
-            ? "border-[#3DDC97] shadow-[0_0_40px_rgba(61,220,151,0.2)]"
-            : "border-line"
+            ? "border-[#5EEAD4]/60 shadow-[0_0_24px_rgba(94,234,212,0.12)]"
+            : "border-[#1B2A36]"
         }`}
         style={{
           backgroundImage:
-            "radial-gradient(ellipse at 50% 50%, rgba(14, 17, 23, 0.75), #07080B 78%), linear-gradient(rgba(34, 39, 53, 0.45) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 39, 53, 0.45) 1px, transparent 1px)",
-          backgroundSize: "100% 100%, 40px 40px, 40px 40px",
+            "radial-gradient(ellipse at 50% 50%, rgba(13, 26, 36, 0.6), #05080D 80%), linear-gradient(rgba(27, 42, 54, 0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(27, 42, 54, 0.4) 1px, transparent 1px)",
+          backgroundSize: "100% 100%, 32px 32px, 32px 32px",
         }}
       >
         <svg
-          viewBox={isMobile ? "0 0 400 580" : "0 0 800 460"}
-          className="w-full h-auto block select-none"
+          viewBox={isMobile ? "0 0 360 440" : "0 0 700 270"}
+          className="w-full h-auto max-h-[290px] block select-none mx-auto"
           role="group"
           aria-label="Chains of trust from outside_acct to admin_role"
         >
@@ -671,7 +671,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                 {/* Transparent fat hit target for comfortable touch / clicking */}
                 <line
                   stroke="transparent"
-                  strokeWidth="44"
+                  strokeWidth="36"
                   x1={layout.a[0]}
                   y1={layout.a[1]}
                   x2={layout.b[0]}
@@ -680,7 +680,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
 
                 {/* Cut / Restore button badge */}
                 <g className="iac-bt">
-                  <circle cx={layout.mx} cy={layout.my} r={17} />
+                  <circle cx={layout.mx} cy={layout.my} r={12} />
                   <text x={layout.mx} y={layout.my + 1}>
                     {isCut ? "↺" : edge.locked ? "🔒" : "✂"}
                   </text>
@@ -709,7 +709,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                 <text
                   x={p[0]}
                   y={p[1] + 1}
-                  className="text-2xl"
+                  className="text-base select-none pointer-events-none"
                   textAnchor="middle"
                   dominantBaseline="central"
                 >
@@ -721,16 +721,16 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
                 </text>
                 <text
                   x={p[0]}
-                  y={p[1] + NODE_RADIUS + 22}
-                  className="fill-[#F4F6FA] font-mono text-[14px] sm:text-[15px] font-semibold"
+                  y={p[1] + NODE_RADIUS + 15}
+                  className="fill-[#E8F1F5] font-mono text-[11px] font-semibold"
                   textAnchor="middle"
                 >
                   {node.name}
                 </text>
                 <text
                   x={p[0]}
-                  y={p[1] + NODE_RADIUS + 38}
-                  className="fill-[#8A91A6] font-sans text-[12px] sm:text-[13px] font-medium"
+                  y={p[1] + NODE_RADIUS + 27}
+                  className="fill-[#8AA0AD] font-sans text-[9px] font-medium"
                   textAnchor="middle"
                 >
                   {node.role}
@@ -743,7 +743,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
 
       {/* Dynamic guidance message */}
       <p
-        className="min-h-[2.5em] text-xs sm:text-sm font-sans text-feather leading-relaxed px-1"
+        className="min-h-[2.2em] text-xs sm:text-sm font-sans text-[#E8F1F5] leading-relaxed px-1"
         aria-live="polite"
       >
         {message ||
@@ -757,38 +757,38 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
       </p>
 
       {/* Comparison: Linter vs Verifier Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-0.5">
         {/* Linter Card (Blind spot demonstration) */}
-        <div className="p-4 rounded-xl border border-line bg-ink-2/40 space-y-1">
-          <h4 className="font-mono text-xs uppercase tracking-wider text-mist">
+        <div className="p-3.5 rounded-xl border border-[#1B2A36] bg-[#0A1119] space-y-1">
+          <h4 className="font-mono text-xs uppercase tracking-wider text-[#8AA0AD]">
             Linter · checks each role alone
           </h4>
-          <b className="block text-base font-bold text-[#3DDC97]">0 findings</b>
-          <p className="font-sans text-xs text-mist leading-relaxed">
+          <b className="block text-base font-bold text-[#5EEAD4]">0 findings</b>
+          <p className="font-sans text-xs text-[#8AA0AD] leading-relaxed">
             jump_role, build_role, ops_role and admin_role each pass individually.
           </p>
         </div>
 
         {/* Verifier Card (Transitive reachability) */}
         <div
-          className={`p-4 rounded-xl border space-y-1 transition-colors ${
+          className={`p-3.5 rounded-xl border space-y-1 transition-colors ${
             graphStatus.sat
-              ? "border-[#FF3D55]/60 bg-[#FF3D55]/10"
+              ? "border-[#F43F5E]/40 bg-[#F43F5E]/10"
               : graphStatus.sealed
-              ? "border-[#3DDC97]/60 bg-[#3DDC97]/10"
-              : "border-line bg-ink-2/40"
+              ? "border-[#5EEAD4]/40 bg-[#5EEAD4]/10"
+              : "border-[#1B2A36] bg-[#0A1119]"
           }`}
         >
-          <h4 className="font-mono text-xs uppercase tracking-wider text-mist">
+          <h4 className="font-mono text-xs uppercase tracking-wider text-[#8AA0AD]">
             Verifier · follows the chain
           </h4>
           <b
             className={`block text-base font-bold ${
               graphStatus.sat
-                ? "text-[#FF3D55]"
+                ? "text-[#F43F5E]"
                 : graphStatus.sealed
-                ? "text-[#3DDC97]"
-                : "text-[#FF7A29]"
+                ? "text-[#5EEAD4]"
+                : "text-[#D9A850]"
             }`}
           >
             {graphStatus.sat
@@ -797,7 +797,7 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
               ? "UNSAT: no path to admin"
               : "UNSAT_BOUNDED"}
           </b>
-          <p className="font-sans text-xs text-mist leading-relaxed">
+          <p className="font-sans text-xs text-[#8AA0AD] leading-relaxed">
             {graphStatus.sat
               ? graphStatus.routeNodes.join(" → ")
               : graphStatus.sealed
@@ -808,19 +808,19 @@ export function Z3VizCanvas({ onClearScenario }: Z3VizCanvasProps) {
       </div>
 
       {/* Model explanation note & Real Tool provenance */}
-      <div className="space-y-1 pt-2 border-t border-line/40 font-sans text-xs text-mist/80">
+      <div className="space-y-1 pt-2 border-t border-[#1B2A36] font-sans text-xs text-[#8AA0AD]">
         <p>
           This is a model, not the tool. The real verifier encodes each hop as symbolic variables and asks Z3; here a graph search stands in so it runs in your browser. Recorded runs of the real tool are in the{" "}
           <a
             href="https://github.com/SumitMahajan11/iac-verifier"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#FF7A29] underline hover:text-feather transition-colors"
+            className="text-[#5EEAD4] underline hover:text-[#E8F1F5] transition-colors"
           >
             GitHub repository &rarr;
           </a>
         </p>
-        <div className="text-mist font-mono text-[11px] pt-1">
+        <div className="text-[#8AA0AD] font-mono text-[11px] pt-0.5">
           {Z3_TEST_SUITE.line}
         </div>
       </div>

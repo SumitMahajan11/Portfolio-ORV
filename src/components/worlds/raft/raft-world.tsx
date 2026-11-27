@@ -187,7 +187,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
               <button
                 type="button"
                 onClick={() => setSandboxOpen(true)}
-                className="px-5 py-2.5 rounded border border-[#3E8E41]/60 bg-[#3E8E41]/15 hover:bg-[#3E8E41]/25 text-[#3E8E41] font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_12px_rgba(62,142,65,0.2)]"
+                className="px-5 py-2.5 rounded border border-[#5EEAD4]/60 bg-[#5EEAD4]/15 hover:bg-[#5EEAD4]/25 text-[#5EEAD4] font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_12px_rgba(94,234,212,0.2)]"
                 aria-label="Open interactive consensus sandbox"
               >
                 ▶ Open sandbox
