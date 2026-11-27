@@ -98,7 +98,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     }
   };
 
-  const isStaticMode = reducedMotion || mode === "light" || !isDesktop;
+  const isStaticMode = reducedMotion;
 
   return (
     <section
@@ -145,21 +145,21 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
           </SystemWindow>
         </div>
 
-        {/* Beats 2-4: Village of 3 Nodes Consensus Simulation */}
+        {/* Beats 2-4: Five computers. One truth. Live Model */}
         <div className="space-y-6">
           <div className="text-center space-y-2 max-w-xl mx-auto">
             <h3 className="font-display text-lg sm:text-xl font-bold text-feather">
-              Hidden Leaf Raft Visualizer
+              Five computers. One truth.
             </h3>
             <p className="font-mono text-xs text-mist">
-              Observe leader failure, term increments, majority quorum elections, partition walls, and stale leader demotion.
+              Ratify is a Raft consensus engine written in Rust. This is a live model of it. Try to make the nodes disagree: split the network, crash nodes, then lower the quorum and watch it break.
             </p>
             <p className="font-mono text-xs text-[#F28C28]/90 font-medium">
-              Simplified 3-node teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
+              Simplified teaching model. The real Ratify verification (TLA+, Porcupine) is described in the proof panel.
             </p>
           </div>
 
-          {/* Conditional Progressive Enhancement: Static diagram for reduced-motion/light, dynamic for full interactive */}
+          {/* Conditional Progressive Enhancement: Static diagram for reduced-motion, dynamic for full interactive */}
           {isStaticMode ? (
             <RaftStaticDiagram />
           ) : (
