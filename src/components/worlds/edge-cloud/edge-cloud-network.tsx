@@ -2,15 +2,13 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useMode } from "@/lib/flags";
+import { useScene, ScrollTrigger } from "@/lib/motion";
 import {
   ALL_EDGE_CLOUD_NODES,
   CONSTELLATION_BG,
   PATH_A_D,
   PATH_C_D,
   PIPELINE_STEPS,
-  TIMING_THRESHOLDS,
-  TOTAL_CYCLE_MS,
-  TRAVEL_WINDOW,
   BASE_STEP_LOGS,
   type EdgeCloudNode,
   type LogLine,
@@ -31,12 +29,12 @@ export function EdgeCloudNetwork({
 }: EdgeCloudNetworkProps) {
   const { reducedMotion } = useMode();
 
-  // Route mode: true = carbon-aware (Route C wins), false = shortest path (Route A wins)
+  // Mode: normal (scroll-driven) vs auto playback (via Play button)
+  const [isPlaying, setIsPlaying] = useState(false);
   const [carbonAware, setCarbonAware] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
-  const [logs, setLogs] = useState<LogLine[]>([
-    { text: BASE_STEP_LOGS[0] },
-  ]);
+  const [progressVal, setProgressVal] = useState(0);
+  const [logs, setLogs] = useState<LogLine[]>([{ text: BASE_STEP_LOGS[0] }]);
 
   // Interactive tooltip state
   const [activeTooltip, setActiveTooltip] = useState<{
@@ -46,6 +44,7 @@ export function EdgeCloudNetwork({
   } | null>(null);
 
   // SVG & DOM refs
+  const containerRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const pathARef = useRef<SVGPathElement>(null);
@@ -53,12 +52,15 @@ export function EdgeCloudNetwork({
   const cometRef = useRef<SVGCircleElement>(null);
   const trailRefs = useRef<(SVGCircleElement | null)[]>([]);
 
-  // Animation timeline refs
-  const t0Ref = useRef<number>(0);
-  const curStepRef = useRef<number>(-1);
+  // Mutables tracked without triggering React re-renders every RAF frame
+  const isPlayingRef = useRef(false);
   const carbonAwareRef = useRef(carbonAware);
+  const progressRef = useRef(0);
+  const curStepRef = useRef(-1);
+  const playStartRef = useRef(0);
   const clearedTriggeredRef = useRef(false);
 
+  // Keep ref synchronized with state
   useEffect(() => {
     carbonAwareRef.current = carbonAware;
   }, [carbonAware]);
@@ -83,145 +85,213 @@ export function EdgeCloudNetwork({
     };
   }, []);
 
-  // Update step and execution logs
-  const advanceStep = useCallback((step: number, isGreen: boolean) => {
-    if (step === curStepRef.current) return;
+  // Universal progress application: drives steps, logs, SVG paths, comet, and trail
+  const applyProgress = useCallback(
+    (p: number, isGreen: boolean) => {
+      const clampedP = Math.max(0, Math.min(1, p));
+      progressRef.current = clampedP;
+      setProgressVal(clampedP);
 
-    curStepRef.current = step;
-    setCurrentStep(step);
+      // Determine current pipeline step (0 to 5)
+      let step = 0;
+      if (clampedP >= 0.88) {
+        step = 5;
+      } else if (clampedP >= 0.65) {
+        step = 4;
+      } else if (clampedP >= 0.42) {
+        step = 3;
+      } else if (clampedP >= 0.25) {
+        step = 2;
+      } else if (clampedP >= 0.12) {
+        step = 1;
+      } else {
+        step = 0;
+      }
 
-    if (step === 0 || step < curStepRef.current) {
-      setLogs([{ text: BASE_STEP_LOGS[0] }]);
-    } else {
-      const nextLogs: LogLine[] = [];
-      for (let i = 0; i <= step; i++) {
-        if (i === 2) {
-          nextLogs.push({
-            text: isGreen
-              ? `Carbon-aware ON: ${BASE_STEP_LOGS[2]}`
-              : `Carbon-aware OFF: ${BASE_STEP_LOGS[2]}`,
-          });
-          nextLogs.push({
-            text: isGreen
-              ? "Selected: greener route, slightly longer."
-              : "Selected: shortest route, carbon ignored.",
-            isAmber: !isGreen,
-          });
+      // Update step & logs when threshold changes
+      if (step !== curStepRef.current) {
+        curStepRef.current = step;
+        setCurrentStep(step);
+
+        if (step === 0) {
+          setLogs([{ text: BASE_STEP_LOGS[0] }]);
         } else {
-          nextLogs.push({ text: BASE_STEP_LOGS[i] });
+          const nextLogs: LogLine[] = [];
+          for (let i = 0; i <= step; i++) {
+            if (i === 2) {
+              nextLogs.push({
+                text: isGreen
+                  ? `Carbon-aware ON: ${BASE_STEP_LOGS[2]}`
+                  : `Carbon-aware OFF: ${BASE_STEP_LOGS[2]}`,
+              });
+              nextLogs.push({
+                text: isGreen
+                  ? "Selected: greener route, slightly longer."
+                  : "Selected: shortest route, carbon ignored.",
+                isAmber: !isGreen,
+              });
+            } else {
+              nextLogs.push({ text: BASE_STEP_LOGS[i] });
+            }
+          }
+          setLogs(nextLogs);
+        }
+
+        if (step === 5 && !clearedTriggeredRef.current) {
+          clearedTriggeredRef.current = true;
+          onClearScenario?.();
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("biyoo:action", {
+                detail: { state: "proud", line: "Evidence found." },
+              })
+            );
+          }
         }
       }
-      setLogs(nextLogs);
-    }
 
-    if (step === 5 && !clearedTriggeredRef.current) {
-      clearedTriggeredRef.current = true;
-      onClearScenario?.();
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("biyoo:action", {
-            detail: { state: "proud", line: "Evidence found." },
-          })
-        );
-      }
-    }
-  }, [onClearScenario]);
-
-  // Main animation frame handler
-  useEffect(() => {
-    if (reducedMotion) {
-      advanceStep(5, carbonAware);
-      return;
-    }
-
-    t0Ref.current = performance.now();
-    curStepRef.current = -1;
-    let animId: number;
-
-    const tick = (now: number) => {
-      const isGreen = carbonAwareRef.current;
-      const elapsed = (now - t0Ref.current) % TOTAL_CYCLE_MS;
-
-      // Determine current pipeline step
-      let s = 0;
-      for (let i = 0; i < 6; i++) {
-        if (elapsed >= TIMING_THRESHOLDS[i]) s = i;
-      }
-      if (s === 3 && elapsed > (TRAVEL_WINDOW[0] + TRAVEL_WINDOW[1]) / 2) {
-        s = 4;
-      }
-      advanceStep(s, isGreen);
-
-      // Path opacity & packet travel along active curve
+      // Update SVG path opacities, comet position & trail directly on DOM
       const activePath = isGreen ? pathCRef.current : pathARef.current;
       const otherPath = isGreen ? pathARef.current : pathCRef.current;
       const comet = cometRef.current;
 
       if (activePath && otherPath && comet) {
         const totalLen = activePath.getTotalLength();
-        let p = 0;
+        let cometTravelFrac = 0;
 
-        if (elapsed < TIMING_THRESHOLDS[2]) {
-          p = 0;
+        if (clampedP < 0.25) {
           activePath.style.opacity = "0.55";
           otherPath.style.opacity = "0.55";
-        } else if (elapsed < TIMING_THRESHOLDS[3]) {
-          const phase = Math.floor((elapsed - TIMING_THRESHOLDS[2]) / 300) % 2;
-          if (phase === 1) {
+          cometTravelFrac = 0;
+          comet.style.opacity = clampedP > 0.04 ? "0.8" : "0.3";
+        } else if (clampedP < 0.42) {
+          // Evaluation & scoring phase oscillation
+          const osc = Math.floor((clampedP - 0.25) * 40) % 2;
+          if (osc === 1) {
             activePath.style.opacity = "1";
             otherPath.style.opacity = "0.25";
           } else {
             activePath.style.opacity = "0.25";
             otherPath.style.opacity = "1";
           }
-          p = 0;
-        } else {
+          cometTravelFrac = 0;
+          comet.style.opacity = "1";
+        } else if (clampedP < 0.88) {
+          // Packet travel along chosen route
           activePath.style.opacity = "1";
           otherPath.style.opacity = "0.2";
 
-          if (elapsed < TRAVEL_WINDOW[1]) {
-            const travelProgress =
-              (elapsed - TRAVEL_WINDOW[0]) / (TRAVEL_WINDOW[1] - TRAVEL_WINDOW[0]);
-            p = easeInOutQuad(travelProgress);
-          } else if (elapsed >= TIMING_THRESHOLDS[5]) {
-            p = 1 - (elapsed - TIMING_THRESHOLDS[5]) / (TOTAL_CYCLE_MS - TIMING_THRESHOLDS[5]);
-          } else {
-            p = 1;
-          }
+          const travelNorm = (clampedP - 0.42) / (0.88 - 0.42);
+          cometTravelFrac = easeInOutQuad(travelNorm);
+          comet.style.opacity = "1";
+        } else {
+          // Destination arrival & feedback
+          activePath.style.opacity = "1";
+          otherPath.style.opacity = "0.2";
+          cometTravelFrac = 1;
+          comet.style.opacity = "1";
         }
 
-        const clampedP = Math.max(0, Math.min(1, p));
-        const pt = activePath.getPointAtLength(clampedP * totalLen);
+        // Place comet
+        const pt = activePath.getPointAtLength(cometTravelFrac * totalLen);
         comet.setAttribute("cx", pt.x.toFixed(2));
         comet.setAttribute("cy", pt.y.toFixed(2));
 
         // Update trail particles
         trailRefs.current.forEach((trailEl, idx) => {
           if (!trailEl) return;
-          const trailLag =
-            p - (idx + 1) * 0.014 * (elapsed >= TIMING_THRESHOLDS[5] ? -1 : 1);
-          const clampedLag = Math.max(0, Math.min(1, trailLag));
-          const tPt = activePath.getPointAtLength(clampedLag * totalLen);
-          trailEl.setAttribute("cx", tPt.x.toFixed(2));
-          trailEl.setAttribute("cy", tPt.y.toFixed(2));
-          trailEl.style.opacity =
-            p <= 0 || elapsed >= TIMING_THRESHOLDS[5] ? "0" : "";
+          const trailLag = cometTravelFrac - (idx + 1) * 0.016;
+          if (cometTravelFrac > 0 && cometTravelFrac < 1 && trailLag > 0) {
+            const tPt = activePath.getPointAtLength(trailLag * totalLen);
+            trailEl.setAttribute("cx", tPt.x.toFixed(2));
+            trailEl.setAttribute("cy", tPt.y.toFixed(2));
+            trailEl.style.opacity = (0.5 - idx * 0.05).toFixed(2);
+          } else {
+            trailEl.style.opacity = "0";
+          }
         });
       }
+    },
+    [onClearScenario]
+  );
 
+  // Normal Scroll-Driven Mode: GSAP ScrollTrigger scrubs progress as user scrolls
+  useScene(
+    () => {
+      if (reducedMotion || !containerRef.current) return;
+
+      const trigger = ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top 75%",
+        end: "bottom 25%",
+        scrub: 0.6,
+        onUpdate: (self) => {
+          if (!isPlayingRef.current) {
+            applyProgress(self.progress, carbonAwareRef.current);
+          }
+        },
+      });
+
+      return () => {
+        trigger.kill();
+      };
+    },
+    { scope: containerRef, dependencies: [reducedMotion, applyProgress] }
+  );
+
+  // Auto-Play Mode: Continuous animation loop when user presses Play button
+  useEffect(() => {
+    if (!isPlaying || reducedMotion) return;
+
+    let animId: number;
+    const loopDuration = 8000;
+
+    const tick = (now: number) => {
+      const elapsed = (now - playStartRef.current) % loopDuration;
+      const p = elapsed / loopDuration;
+      applyProgress(p, carbonAwareRef.current);
       animId = requestAnimationFrame(tick);
     };
 
     animId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animId);
-  }, [carbonAware, reducedMotion, advanceStep]);
+  }, [isPlaying, reducedMotion, applyProgress]);
 
-  // Handle route toggle
+  // Handle Play / Pause toggle
+  const handleTogglePlay = () => {
+    setIsPlaying((prev) => {
+      const next = !prev;
+      isPlayingRef.current = next;
+
+      if (next) {
+        // Resume seamlessly from current progress
+        playStartRef.current = performance.now() - progressRef.current * 8000;
+      }
+      return next;
+    });
+  };
+
+  // Handle route toggle (Carbon-aware ON vs OFF)
   const handleToggleCarbonAware = () => {
-    setCarbonAware((prev) => !prev);
-    t0Ref.current = performance.now();
-    curStepRef.current = -1;
+    setCarbonAware((prev) => {
+      const next = !prev;
+      carbonAwareRef.current = next;
+      // Re-apply progress to update active path and colors immediately
+      curStepRef.current = -1;
+      applyProgress(progressRef.current, next);
+      return next;
+    });
     clearedTriggeredRef.current = false;
+  };
+
+  // Click on progress bar to jump/scrub
+  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickP = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (isPlaying) {
+      playStartRef.current = performance.now() - clickP * 8000;
+    }
+    applyProgress(clickP, carbonAwareRef.current);
   };
 
   // Node tooltip trigger
@@ -249,10 +319,11 @@ export function EdgeCloudNetwork({
 
   return (
     <section
+      ref={containerRef}
       className={`w-full rounded-md border border-[#1b2a36] bg-gradient-to-b from-[#0b141d] to-[#0a1119] text-[#e8f1f5] shadow-2xl overflow-hidden select-none ${className}`}
       aria-label="Edge-Cloud Orchestrator mission view"
     >
-      {/* Header bar */}
+      {/* Header bar with controls */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[#1b2a36]">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#5eead4] animate-pulse" />
@@ -261,7 +332,23 @@ export function EdgeCloudNetwork({
           </span>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Play / Pause Toggle Button */}
+          <button
+            type="button"
+            onClick={handleTogglePlay}
+            aria-label={isPlaying ? "Pause automatic animation" : "Play automatic animation"}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-mono transition-all cursor-pointer ${
+              isPlaying
+                ? "border-[#5eead4] bg-[#5eead4]/15 text-[#5eead4] shadow-[0_0_12px_rgba(94,234,212,0.2)]"
+                : "border-[#1b2a36] bg-[#0d1a24] text-[#e8f1f5] hover:border-[#5eead4]/60"
+            }`}
+          >
+            <span className="text-[10px]">{isPlaying ? "⏸" : "▶"}</span>
+            <span>{isPlaying ? "Pause" : "Play auto"}</span>
+          </button>
+
+          {/* Carbon-aware Switch Button */}
           <button
             type="button"
             role="switch"
@@ -283,10 +370,28 @@ export function EdgeCloudNetwork({
             </span>
           </button>
 
+          {/* Mode Indicator Badge */}
           <span className="font-mono text-[11px] text-[#8aa0ad] border border-[#1b2a36] px-2.5 py-1 rounded">
-            Illustrative diagram
+            {isPlaying ? "Auto playback" : "Scroll-driven"}
           </span>
         </div>
+      </div>
+
+      {/* Progress & Scrub Bar */}
+      <div
+        role="progressbar"
+        aria-valuenow={Math.round(progressVal * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Simulation progress track"
+        onClick={handleProgressBarClick}
+        title="Click to jump simulation progress"
+        className="w-full h-1 bg-[#1b2a36] relative overflow-hidden cursor-pointer group"
+      >
+        <div
+          className="h-full bg-gradient-to-r from-[#5eead4] to-[#6ee7a8] transition-all duration-75"
+          style={{ width: `${(progressVal * 100).toFixed(1)}%` }}
+        />
       </div>
 
       {/* Main 3-column grid */}
