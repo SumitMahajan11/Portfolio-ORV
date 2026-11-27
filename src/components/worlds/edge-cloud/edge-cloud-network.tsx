@@ -10,6 +10,7 @@ import {
   PATH_C_D,
   PIPELINE_STEPS,
   BASE_STEP_LOGS,
+  TOTAL_CYCLE_MS,
   type EdgeCloudNode,
   type LogLine,
 } from "@/lib/worlds/edge-cloud-data";
@@ -223,8 +224,8 @@ export function EdgeCloudNetwork({
       const trigger = ScrollTrigger.create({
         trigger: containerRef.current,
         start: "top 75%",
-        end: "bottom 25%",
-        scrub: 0.6,
+        end: "bottom 15%",
+        scrub: 0.8,
         onUpdate: (self) => {
           if (!isPlayingRef.current) {
             applyProgress(self.progress, carbonAwareRef.current);
@@ -244,7 +245,7 @@ export function EdgeCloudNetwork({
     if (!isPlaying || reducedMotion) return;
 
     let animId: number;
-    const loopDuration = 8000;
+    const loopDuration = TOTAL_CYCLE_MS;
 
     const tick = (now: number) => {
       const elapsed = (now - playStartRef.current) % loopDuration;
@@ -265,7 +266,7 @@ export function EdgeCloudNetwork({
 
       if (next) {
         // Resume seamlessly from current progress
-        playStartRef.current = performance.now() - progressRef.current * 8000;
+        playStartRef.current = performance.now() - progressRef.current * TOTAL_CYCLE_MS;
       }
       return next;
     });
@@ -289,7 +290,7 @@ export function EdgeCloudNetwork({
     const rect = e.currentTarget.getBoundingClientRect();
     const clickP = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     if (isPlaying) {
-      playStartRef.current = performance.now() - clickP * 8000;
+      playStartRef.current = performance.now() - clickP * TOTAL_CYCLE_MS;
     }
     applyProgress(clickP, carbonAwareRef.current);
   };

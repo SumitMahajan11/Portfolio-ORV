@@ -203,7 +203,7 @@ export const PIPELINE_STEPS = [
 ] as const;
 
 export const TIMING_THRESHOLDS = [0, 700, 1400, 2900, 6300, 7100] as const;
-export const TOTAL_CYCLE_MS = 8000;
+export const TOTAL_CYCLE_MS = 11500; // Calibrated for readable, graceful animation speed
 export const TRAVEL_WINDOW = [2900, 6300] as const;
 
 export interface LogLine {
