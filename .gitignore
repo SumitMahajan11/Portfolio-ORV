@@ -67,6 +67,7 @@ Docs/*.docx
 public/resume/*
 !public/resume/.gitkeep
 !public/resume/Sumit_Mahajan_Resume_Public.pdf
+!public/resume/Sumit-Mahajan-Backend.pdf
 
 # Screen proofs
 docs/proofs/screens/

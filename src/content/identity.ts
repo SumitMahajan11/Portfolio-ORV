@@ -13,6 +13,6 @@ export const identity: Identity = {
     formAvailable: true, // Contact form active in Phase 3
     github: "https://github.com/SumitMahajan11",
     linkedin: "https://www.linkedin.com/in/sumit-mahajan-142903324", // [VERIFIED: resume]
-    resumePdf: null, // [FILL] public/resume/* is git-ignored, so a path here would 404 on Vercel; see handoff notes
+    resumePdf: "/resume/Sumit-Mahajan-Backend.pdf",
   },
 };
