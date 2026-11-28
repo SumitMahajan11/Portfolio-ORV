@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useCallback } from "react";
+import Image from "next/image";
 import { projects } from "@/content/projects";
 import type { Project } from "@/content/types";
 import { renderField } from "@/components/ui/fill-badge";
@@ -95,7 +96,7 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
       <div className="relative z-10 space-y-4">
         {/* Scenario Status Label */}
         <div className="flex items-center justify-between border-b border-line/60 pb-2.5">
-          <span className="font-mono text-xs tracking-wider uppercase text-[var(--world-primary,var(--star))] font-semibold">
+          <span className="font-mono text-xs sm:text-[13px] tracking-wider uppercase text-[var(--world-primary,var(--star))] font-semibold">
             [SCENARIO &bull; {project.world.toUpperCase()}]
           </span>
           <span className="h-2 w-2 rounded-full bg-[var(--world-accent,var(--star))] animate-pulse" />
@@ -106,6 +107,25 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
           {project.title}
         </h3>
 
+        {/* Visual Proof Thumbnail */}
+        {project.proofAsset && (
+          <div className="relative overflow-hidden rounded border border-line/60 bg-ink-2/60 aspect-[16/9] group/thumb">
+            <Image
+              src={project.proofAsset.src}
+              alt={project.proofAsset.alt}
+              width={project.proofAsset.width}
+              height={project.proofAsset.height}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover object-top transition-transform duration-300 group-hover/thumb:scale-105"
+            />
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-2 text-[11px] font-mono text-mist flex items-center justify-between">
+              <span className="truncate text-feather/90">{project.proofAsset.source}</span>
+              <span className="text-[10px] text-[var(--world-primary,var(--star))] uppercase font-bold tracking-wider shrink-0 ml-1">Proof</span>
+            </div>
+          </div>
+        )}
+
         {/* One-Liner */}
         <div className="font-ui text-sm text-mist leading-relaxed min-h-[3rem]">
           {renderField(project.oneLiner)}
@@ -115,17 +135,17 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
       {/* Footer / Proof & Explore Actions */}
       <div className="relative z-10 pt-5 mt-4 border-t border-line/60 flex items-center justify-between gap-3">
         {/* Direct Proof Links for immediate recruiter access */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {project.links.repo && (
             <a
               href={project.links.repo}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="font-mono text-xs text-star hover:text-feather underline underline-offset-4 transition-colors"
-              title={`View ${project.title} on GitHub`}
+              className="font-mono text-xs sm:text-[13px] text-star hover:text-feather underline underline-offset-4 transition-colors"
+              title={`View ${project.title} source code on GitHub`}
             >
-              GitHub ↗
+              Source Code ↗
             </a>
           )}
           {project.links.demo && (
@@ -134,10 +154,50 @@ function FlagshipCard({ project, onHover, onClick }: FlagshipCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="font-mono text-xs text-star hover:text-feather underline underline-offset-4 transition-colors"
-              title={`View preview / demo for ${project.title}`}
+              className="font-mono text-xs sm:text-[13px] text-star hover:text-feather underline underline-offset-4 transition-colors"
+              title={`View live demo for ${project.title}`}
             >
-              {project.id === "edge-cloud" ? "Live Preview ↗" : "Demo ↗"}
+              Live Demo ↗
+            </a>
+          )}
+          {project.links.recording && (
+            <a
+              href={project.links.recording}
+              onClick={(e) => {
+                e.stopPropagation();
+                const el = document.getElementById("ratify-recording");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="font-mono text-xs sm:text-[13px] text-[#F28C28] hover:text-feather underline underline-offset-4 transition-colors"
+              title="Jump to embedded terminal recording"
+            >
+              Recording ↓
+            </a>
+          )}
+          {project.links.proof && (
+            <a
+              href={project.links.proof}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-xs sm:text-[13px] text-[#5EEAD4] hover:text-feather underline underline-offset-4 transition-colors"
+              title="View Checkov/TFSec gap reproduction proof"
+            >
+              Proof ↗
+            </a>
+          )}
+          {project.links.benchmark && (
+            <a
+              href={project.links.benchmark}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-xs sm:text-[13px] text-star hover:text-feather underline underline-offset-4 transition-colors"
+              title="View benchmark documentation and raw data"
+            >
+              Benchmark ↗
             </a>
           )}
         </div>
@@ -207,11 +267,11 @@ function SideQuestCard({ project, onHover, onClick }: SideQuestCardProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="font-mono text-[10px] tracking-wider uppercase text-[var(--world-primary,var(--mist))]">
+            <span className="font-mono text-xs sm:text-[13px] tracking-wider uppercase text-[var(--world-primary,var(--mist))] font-medium">
               [SIDE QUEST]
             </span>
             {!project.published && (
-              <span className="font-mono text-[9px] uppercase px-1.5 py-0.2 border border-amber-500/60 bg-amber-500/10 text-amber-400 rounded">
+              <span className="font-mono text-xs uppercase px-1.5 py-0.2 border border-amber-500/60 bg-amber-500/10 text-amber-400 rounded">
                 DEV: UNPUBLISHED
               </span>
             )}
@@ -228,7 +288,7 @@ function SideQuestCard({ project, onHover, onClick }: SideQuestCardProps) {
         </div>
       </div>
 
-      <div className="pt-3 mt-3 border-t border-line/40 flex items-center justify-between text-[10px] font-mono text-mist/60">
+      <div className="pt-3 mt-3 border-t border-line/40 flex items-center justify-between text-xs sm:text-[13px] font-mono text-mist/60">
         <span>STATUS: LOGGED</span>
         <span className="group-hover:text-feather transition-colors">&rarr;</span>
       </div>
@@ -348,11 +408,11 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
       {/* Flagship Scenarios Grid */}
       <div className="space-y-6 mb-16 sm:mb-20">
         <div className="flex items-center gap-3 border-b border-line pb-3">
-          <span className="font-mono text-xs text-star uppercase tracking-widest">
+          <span className="font-mono text-xs sm:text-[13px] text-star uppercase tracking-widest font-semibold">
             [MAIN_SCENARIOS]
           </span>
           <span className="h-px flex-1 bg-line/60" />
-          <span className="font-mono text-[11px] text-mist">
+          <span className="font-mono text-xs sm:text-[13px] text-mist">
             {flagshipProjects.length} AVAILABLE
           </span>
         </div>
@@ -373,11 +433,11 @@ export function ScenarioSelect({ className = "" }: ScenarioSelectProps) {
       {sideQuestProjects.length > 0 && (
         <div className="space-y-6 pt-6 border-t border-line/60">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs text-mist uppercase tracking-widest">
+            <span className="font-mono text-xs sm:text-[13px] text-mist uppercase tracking-widest font-semibold">
               [SIDE_QUESTS]
             </span>
             <span className="h-px flex-1 bg-line/40" />
-            <span className="font-mono text-[11px] text-mist/70">
+            <span className="font-mono text-xs sm:text-[13px] text-mist/70">
               {sideQuestProjects.length} DISCOVERIES
             </span>
           </div>

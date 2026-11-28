@@ -78,16 +78,21 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
                   className="pointer-events-none absolute -bottom-4 -right-4 hidden h-20 w-20 text-[var(--world-primary)] opacity-15 md:block transition-opacity duration-300 group-hover:opacity-35"
                 />
                 <span className="relative flex items-baseline justify-between gap-3 md:block">
-                  <span className="block font-mono text-[10px] uppercase tracking-widest text-[var(--world-primary)]">
+                  <span className="block font-mono text-xs sm:text-[13px] uppercase tracking-widest text-[var(--world-primary)]">
                     {card.label}
                   </span>
                   <span className="block font-display text-lg font-bold text-feather md:mt-2 md:text-2xl">
                     {card.metric}
                   </span>
                 </span>
-                <span className="relative mt-1 hidden max-w-[13rem] font-ui text-xs leading-snug text-mist md:block">
+                <span className="relative mt-1 hidden max-w-[13rem] font-ui text-xs sm:text-[13px] leading-snug text-mist md:block">
                   {card.detail}
                 </span>
+                {card.link && card.linkLabel && (
+                  <span className="relative mt-2 inline-flex items-center gap-1 font-mono text-xs sm:text-[13px] text-star group-hover:text-feather underline underline-offset-4 transition-colors">
+                    {card.linkLabel}
+                  </span>
+                )}
               </Link>
             </li>
           ))}
@@ -118,7 +123,7 @@ export function ArchiveHero({ className = "" }: ArchiveHeroProps) {
         className="pb-2 sm:pb-4 flex flex-col items-center justify-center gap-2 select-none pointer-events-none"
         aria-hidden="true"
       >
-        <span className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-mist">
+        <span className="font-mono text-xs sm:text-[13px] uppercase tracking-widest text-mist">
           SCROLL
         </span>
         <svg

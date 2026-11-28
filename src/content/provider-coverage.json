@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-11-28",
+  "providers": [
+    "AWS",
+    "Azure",
+    "GCP"
+  ],
+  "capabilities": [
+    "reachability_analysis",
+    "privilege_escalation_detection",
+    "auto_repair",
+    "k8s_admission_webhook"
+  ],
+  "matrix": {
+    "reachability_analysis": {
+      "name": "Reachability Analysis",
+      "aws": {
+        "status": "Supported",
+        "details": "BitVector SMT reachability on Security Groups (sg_encoder.py) and BMC SMT reachability over IAM trust graph (reachability_encoder.py)."
+      },
+      "azure": {
+        "status": "Supported",
+        "details": "BitVector SMT evaluation of NSG rules with RFC1918 scoping (azure_nsg_encoder.py) and RBAC scope hierarchy reachability (azure_trust_graph.py)."
+      },
+      "gcp": {
+        "status": "Supported",
+        "details": "32-bit BitVector SMT constraints over Compute Firewall rules (gcp_firewall_encoder.py) and Service Account token impersonation chains (gcp_trust_graph.py)."
+      }
+    },
+    "privilege_escalation_detection": {
+      "name": "Privilege-Escalation Detection",
+      "aws": {
+        "status": "Supported",
+        "details": "Bounded Model Checking over dual-policy IAM trust graph detecting multi-hop sts:AssumeRole escalation paths."
+      },
+      "azure": {
+        "status": "Supported",
+        "details": "Models Azure RBAC role assignments, custom definitions, and hierarchical scope inheritance (Management Group -> Subscription -> Resource Group)."
+      },
+      "gcp": {
+        "status": "Supported",
+        "details": "Models Service Account TokenCreator 2/3-hop impersonation chains and GKE Workload Identity federation with cycle detection."
+      }
+    },
+    "auto_repair": {
+      "name": "Auto-Repair",
+      "aws": {
+        "status": "Supported",
+        "details": "Subset-minimal AST deletion repair for Security Groups and IAM policies/privilege escalation (SG_OVER_EXPOSURE, IAM_WILDCARD_ALLOW, PRIVILEGE_ESCALATION_REACHABILITY)."
+      },
+      "azure": {
+        "status": "Partial",
+        "details": "Supported for azurerm_network_security_group NSG rules (NSG_OVER_EXPOSURE). Not supported for ARM JSON, Azure Governance Policy, or RBAC privilege escalation."
+      },
+      "gcp": {
+        "status": "Not supported",
+        "details": "No repair engine implemented for GCP Compute Firewall rules or GCP IAM bindings (unhandled in solver/repair.py)."
+      }
+    },
+    "k8s_admission_webhook": {
+      "name": "K8s Admission Webhook",
+      "aws": {
+        "status": "Supported",
+        "details": "Validating admission webhook intercepts ConfigMaps with AWS Terraform HCL and verifies SMT invariants with fail-closed timeout."
+      },
+      "azure": {
+        "status": "Partial",
+        "details": "Supported for Terraform HCL configurations containing azurerm resources in ConfigMaps; ARM JSON templates are unsupported as webhook only ingests .tf files."
+      },
+      "gcp": {
+        "status": "Supported",
+        "details": "Supported for Terraform HCL configurations containing GCP Compute Firewall and IAM resources in ConfigMaps."
+      }
+    }
+  }
+}

@@ -156,7 +156,7 @@ export function SkillSystemWindow({ skill, onClose }: SkillSystemWindowProps) {
         {/* Content Body */}
         <div className="space-y-4">
           <div className="space-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-mist">
+            <span className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist">
               Item Name:
             </span>
             <h2
@@ -169,7 +169,7 @@ export function SkillSystemWindow({ skill, onClose }: SkillSystemWindowProps) {
 
           {/* Story / Description */}
           <div className="space-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-mist">
+            <span className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist">
               One-Line Story:
             </span>
             <div
@@ -188,7 +188,7 @@ export function SkillSystemWindow({ skill, onClose }: SkillSystemWindowProps) {
 
           {/* Evidence / Proof Links */}
           <div className="space-y-2 pt-2 border-t border-line/40">
-            <span className="font-mono text-xs uppercase tracking-wider text-star font-semibold block">
+            <span className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-star font-semibold block">
               Evidence &amp; Verification Proofs:
             </span>
 
@@ -201,13 +201,13 @@ export function SkillSystemWindow({ skill, onClose }: SkillSystemWindowProps) {
                       key={proj.id}
                       href={`#${proj.id}`}
                       onClick={handleProofClick}
-                      className="group flex items-center justify-between p-3 rounded border border-star/40 bg-star/5 hover:bg-star/15 transition-all text-xs font-mono focus:outline-none focus:ring-2 focus:ring-star"
+                      className="group flex items-center justify-between p-3 rounded border border-star/40 bg-star/5 hover:bg-star/15 transition-all text-xs sm:text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-star"
                     >
                       <div className="space-y-0.5">
                         <span className="text-feather font-bold group-hover:text-star transition-colors">
                           Scenario: {proj.title}
                         </span>
-                        <span className="block text-[10px] text-mist/80">
+                        <span className="block text-xs sm:text-[13px] text-mist/80">
                           World: {proj.world} &bull; {proj.claims.length} verified claims
                         </span>
                       </div>
@@ -219,7 +219,7 @@ export function SkillSystemWindow({ skill, onClose }: SkillSystemWindowProps) {
                 })}
               </div>
             ) : (
-              <div className="text-xs font-mono text-mist/60 italic">
+              <div className="text-xs sm:text-[13px] font-mono text-mist/60 italic">
                 No verified proof project linked.
               </div>
             )}
@@ -227,7 +227,7 @@ export function SkillSystemWindow({ skill, onClose }: SkillSystemWindowProps) {
         </div>
 
         {/* Footer Note */}
-        <div className="pt-3 border-t border-line/40 flex items-center justify-between font-mono text-[10px] text-mist/60">
+        <div className="pt-3 border-t border-line/40 flex items-center justify-between font-mono text-xs sm:text-[13px] text-mist/60">
           <span>CLASSIFICATION: TECHNICAL CAPABILITY</span>
           <span>PRESS [ESC] TO CLOSE</span>
         </div>

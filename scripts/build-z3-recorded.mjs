@@ -44,13 +44,17 @@ export function buildZ3Recorded() {
   const shaRun4 = sha256File(fileRun4);
   const shaPytestRun = sha256File(filePytestRun);
 
-  // Parse test count and date from pytest-run.txt
-  const pytestRunRaw = fs.readFileSync(filePytestRun, 'utf8');
-  const pytestDateMatch = pytestRunRaw.match(/^# Date:\s*([0-9-]+)/m);
-  if (!pytestDateMatch) {
-    throw new Error('Failed to parse date from pytest-run.txt');
+  // Parse test count from pytest-run.txt and date from pytest-run.date
+  const filePytestDate = path.join(RUNS_DIR, 'pytest-run.date');
+  if (!fs.existsSync(filePytestDate)) {
+    throw new Error(`Missing pytest date file: ${filePytestDate}`);
   }
-  const pytestDate = pytestDateMatch[1].trim();
+  const pytestDate = fs.readFileSync(filePytestDate, 'utf8').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(pytestDate)) {
+    throw new Error(`Invalid pytest run date in ${filePytestDate}: expected YYYY-MM-DD, got "${pytestDate}"`);
+  }
+
+  const pytestRunRaw = fs.readFileSync(filePytestRun, 'utf8');
 
   const pytestCountMatch = pytestRunRaw.match(/(\d+)\s+passed/);
   if (!pytestCountMatch) {

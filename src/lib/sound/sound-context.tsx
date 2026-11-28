@@ -47,7 +47,7 @@ export function SoundProvider({ children }: SoundProviderProps) {
   const isTabHiddenRef = useRef<boolean>(false);
   const wasBreathPlayingBeforeHiddenRef = useRef<boolean>(false);
 
-  // Schedule prompt after initial arrival / intro (~4.5s) if first-time visitor
+  // Gate sound prompt to user interaction (first pointerdown or keydown)
   useEffect(() => {
     try {
       if (localStorage.getItem(STORAGE_KEY)) return;
@@ -55,17 +55,31 @@ export function SoundProvider({ children }: SoundProviderProps) {
       return;
     }
 
-    const promptTimer = setTimeout(() => {
-      try {
-        if (!localStorage.getItem(STORAGE_KEY)) {
-          setPromptVisible(true);
-        }
-      } catch {
-        // storage error
-      }
-    }, 4500);
+    let promptTimer: ReturnType<typeof setTimeout> | null = null;
 
-    return () => clearTimeout(promptTimer);
+    const handleUserInteraction = () => {
+      window.removeEventListener("pointerdown", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+
+      promptTimer = setTimeout(() => {
+        try {
+          if (!localStorage.getItem(STORAGE_KEY)) {
+            setPromptVisible(true);
+          }
+        } catch {
+          // storage error
+        }
+      }, 1500);
+    };
+
+    window.addEventListener("pointerdown", handleUserInteraction, { once: true, passive: true });
+    window.addEventListener("keydown", handleUserInteraction, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+      if (promptTimer) clearTimeout(promptTimer);
+    };
   }, []);
 
   const setSoundEnabled = useCallback((enabled: boolean) => {

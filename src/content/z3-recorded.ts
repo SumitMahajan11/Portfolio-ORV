@@ -18,13 +18,13 @@ export interface HopTrace {
 }
 
 export const Z3_RECORDED_TESTS = {
-  count: 276,
-  date: "2026-11-08",
-  line: "Test suite: 276 passed (pytest run, 2026-11-08)",
-  summary: "Test suite: 276 passed (pytest run, 2026-11-08)",
-  claimText: "276 passing tests.",
+  count: 277,
+  date: "2026-11-28",
+  line: "Test suite: 277 passed (pytest run, 2026-11-28)",
+  summary: "Test suite: 277 passed (pytest run, 2026-11-28)",
+  claimText: "277 passing tests.",
   sourceFile: "docs/sources/z3/runs/pytest-run.txt",
-  sourceFileSha256: "1f81fefae15a22b097b15932823a4baa01eb4d0bc4973fd86c285f3a1c25ab0a",
+  sourceFileSha256: "81feca7963c908a563286d28f4922f1ce9dc7f9349f2595c28c93fea3f9b4416",
 } as const;
 
 export const Z3_TEST_SUITE = Z3_RECORDED_TESTS;
@@ -32,9 +32,9 @@ export const Z3_TEST_SUITE = Z3_RECORDED_TESTS;
 export const Z3_RECORDED_METADATA = {
   tool: "iac-verifier",
   commit: "6ed26e409270f296a2ecb7a1b3d01e0689ade954",
-  date: "2026-11-08",
-  testCount: 276,
-  label: "Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, 2026-11-08)",
+  date: "2026-11-28",
+  testCount: 277,
+  label: "Recorded output of the real tool (iac-verifier, commit 6ed26e409270f296a2ecb7a1b3d01e0689ade954, 2026-11-28)",
   honestyLine: "illustrative example, not real Z3 execution",
   browserHonesty: "Nothing is computed in the browser. All verdicts, traces, diffs, and proof certificates are recorded outputs from real Z3 execution on committed repository fixtures.",
 } as const;

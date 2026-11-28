@@ -14,6 +14,17 @@ export interface ProjectLinks {
   repo: string | null;
   demo: string | null;
   benchmark: string | null;
+  proof?: string | null;
+  recording?: string | null;
+}
+
+export interface ProofAsset {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  caption: string;
+  source: string;
 }
 
 export interface SideQuestBullets {
@@ -33,6 +44,7 @@ export interface Project {
   links: ProjectLinks;
   costume: string;
   bullets?: SideQuestBullets;
+  proofAsset?: ProofAsset;
   inDesign?: boolean;
   worldReady?: boolean;
   published: boolean;

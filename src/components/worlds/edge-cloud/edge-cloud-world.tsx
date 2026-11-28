@@ -297,16 +297,16 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
             href={PROJECT_LINKS.repo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs sm:text-[13px] font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
           >
-            <span>REPO</span>
+            <span>SOURCE CODE</span>
             <span aria-hidden="true">&nearr;</span>
           </a>
           <a
             href={PROJECT_LINKS.architecture}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs sm:text-[13px] font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
           >
             <span>ARCHITECTURE</span>
             <span aria-hidden="true">&nearr;</span>
@@ -316,9 +316,20 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
               href={PROJECT_LINKS.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#1b2a36] text-xs sm:text-[13px] font-mono text-[#e8f1f5] hover:border-[#5eead4] hover:text-[#5eead4] transition-colors"
             >
               <span>LIVE DEMO</span>
+              <span aria-hidden="true">&nearr;</span>
+            </a>
+          )}
+          {PROJECT_LINKS.benchmark && (
+            <a
+              href={PROJECT_LINKS.benchmark}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#5eead4]/40 bg-[#5eead4]/10 text-xs sm:text-[13px] font-mono text-[#5eead4] hover:bg-[#5eead4]/20 transition-colors"
+            >
+              <span>BENCHMARK</span>
               <span aria-hidden="true">&nearr;</span>
             </a>
           )}

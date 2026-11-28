@@ -164,7 +164,7 @@
       "bugs",
       "detect"
     ],
-    "answer": "276 tests pass in the recorded pytest run (2026-11-08), and a separate recorded run on a test fixture found a privilege-escalation path.",
+    "answer": "277 tests pass in the recorded pytest run, and a separate recorded run on a test fixture found a privilege-escalation path.",
     "sourceLabel": "iac-verifier Scenario",
     "sourceHref": "#iac-verifier"
   },
@@ -199,7 +199,7 @@
       "results",
       "true"
     ],
-    "answer": "The strongest evidence includes 68 passing tests with TLA+ model checking and Porcupine linearizability verification for Ratify, alongside 276 tests passing in the recorded run on 2026-11-08 for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
+    "answer": "The strongest evidence includes 68 passing tests with TLA+ model checking and Porcupine linearizability verification for Ratify, alongside 277 tests passing in the recorded run for iac-verifier. The site enforces a zero-unverified-claims rule linking directly to test suites and verification artifacts.",
     "sourceLabel": "Reader's Record",
     "sourceHref": "#readers-record"
   },

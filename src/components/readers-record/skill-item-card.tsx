@@ -74,7 +74,7 @@ export function SkillItemCard({
 
       {/* Item Slot Header */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between font-mono text-[10px] text-mist/70 uppercase tracking-widest">
+        <div className="flex items-center justify-between font-mono text-xs sm:text-[13px] text-mist/70 uppercase tracking-widest">
           <span>[ITEM_RECORD]</span>
           <span className="text-star/80 group-hover:text-star">Inspect &rarr;</span>
         </div>
@@ -85,8 +85,8 @@ export function SkillItemCard({
       </div>
 
       {/* Proof Scenarios Summary */}
-      <div className="pt-2 border-t border-line/40 flex items-center justify-between text-[11px] font-mono text-mist">
-        <span className="text-[10px] uppercase tracking-wider text-mist/60">
+      <div className="pt-2 border-t border-line/40 flex items-center justify-between text-xs sm:text-[13px] font-mono text-mist">
+        <span className="text-xs sm:text-[13px] uppercase tracking-wider text-mist/60">
           Proof:
         </span>
         <span className="text-star truncate max-w-[140px] text-right font-medium">

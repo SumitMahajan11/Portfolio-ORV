@@ -244,13 +244,20 @@ export function checkProvenance() {
       console.error(`[FAIL] ${msg}`);
       failures.push(msg);
     }
-    const mDate = pytestText.match(/^# Date:\s*([0-9-]+)/m);
-    if (mDate) {
-      expectedRunDate = mDate[1].trim();
-    } else {
-      const msg = `Could not parse date from ${path.basename(filePytestRun)}`;
+    const filePytestDate = path.join(RUNS_DIR, 'pytest-run.date');
+    if (!fs.existsSync(filePytestDate)) {
+      const msg = `pytest-run.date source file missing: ${filePytestDate}`;
       console.error(`[FAIL] ${msg}`);
       failures.push(msg);
+    } else {
+      const dText = fs.readFileSync(filePytestDate, 'utf8').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dText)) {
+        const msg = `Invalid date format in ${path.basename(filePytestDate)}: expected YYYY-MM-DD, got "${dText}"`;
+        console.error(`[FAIL] ${msg}`);
+        failures.push(msg);
+      } else {
+        expectedRunDate = dText;
+      }
     }
   }
 

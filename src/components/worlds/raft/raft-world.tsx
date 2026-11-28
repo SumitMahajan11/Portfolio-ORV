@@ -2,6 +2,7 @@
 
 import React, { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
 import { SystemWindow } from "@/components/system-window";
@@ -23,8 +24,21 @@ const DynamicRaftSandbox = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="p-8 rounded border border-line bg-ink-2/60 text-center font-mono text-xs text-mist animate-pulse">
+      <div className="p-8 rounded border border-line bg-ink-2/60 text-center font-mono text-xs sm:text-[13px] text-mist animate-pulse">
         Loading interactive consensus sandbox...
+      </div>
+    ),
+  }
+);
+
+// Lazy-load the asciinema terminal player (client-only, lazy, no autoplay, fits width)
+const DynamicAsciinemaPlayer = dynamic(
+  () => import("@/components/ui/asciinema-player").then((mod) => mod.AsciinemaPlayer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="p-8 rounded border border-line bg-ink-2/60 text-center font-mono text-xs sm:text-[13px] text-mist animate-pulse">
+        Loading terminal session recording...
       </div>
     ),
   }
@@ -109,10 +123,10 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
     >
       <div className="max-w-5xl mx-auto space-y-16 sm:space-y-24">
         {/* Navigation & Breadcrumb */}
-        <div className="flex items-center justify-between border-b border-line/60 pb-4 font-mono text-xs">
+        <div className="flex items-center justify-between border-b border-line/60 pb-4 font-mono text-xs sm:text-[13px]">
           <div className="flex items-center gap-2 text-[#F28C28]">
             <span className="w-2 h-2 rounded-full bg-[#F28C28] animate-pulse" />
-            <span className="uppercase tracking-widest">[ACT 3 &bull; WORLD: RATIFY (RAFT)]</span>
+            <span className="uppercase tracking-widest font-semibold">[ACT 3 &bull; WORLD: RATIFY (RAFT)]</span>
           </div>
           <a
             href="#scenario-select"
@@ -127,7 +141,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
           <SystemWindow title="SYSTEM PROMPT: SCENARIO ASSIGNMENT">
             <div className="space-y-4 py-2">
               <div className="space-y-1">
-                <span className="font-mono text-xs text-[#F28C28] uppercase tracking-widest font-semibold">
+                <span className="font-mono text-xs sm:text-[13px] text-[#F28C28] uppercase tracking-widest font-semibold">
                   [SCENARIO 2: HIDDEN LEAF CONSENSUS]
                 </span>
                 <h2
@@ -198,6 +212,49 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
           )}
         </div>
 
+        {/* Terminal Session Recording & Visual Proof (asciinema player + still frame) */}
+        <div id="ratify-recording" className="scroll-mt-24 space-y-4 max-w-4xl mx-auto w-full">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-2">
+            <h4 className="font-display text-base sm:text-lg font-bold text-feather flex items-center gap-2">
+              <span>[VISUAL PROOF &bull; RECORDING STILL FRAME]</span>
+            </h4>
+            <span className="font-mono text-[11px] text-[#F28C28] border border-[#F28C28]/40 bg-[#F28C28]/10 px-2 py-0.5 rounded">
+              Source: local run (artifacts/demo_recording.cast)
+            </span>
+          </div>
+
+          <div className="relative overflow-hidden rounded-lg border border-line bg-black/60 shadow-2xl">
+            <Image
+              src="/proofs/ratify-proof.webp"
+              alt="Ratify 3-node cluster test execution and deterministic fault fuzzer recording terminal frame"
+              width={2200}
+              height={1236}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto block"
+            />
+          </div>
+
+          <p className="font-mono text-xs sm:text-[13px] text-mist leading-relaxed">
+            Terminal still frame showing cargo test output from the recording (<code className="text-[#F28C28]">artifacts/demo_recording.cast</code>).
+          </p>
+
+          <div className="pt-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-line/40 pb-2">
+              <span className="font-mono text-xs text-star uppercase tracking-wider font-semibold">
+                Interactive Asciicast Player:
+              </span>
+              <span className="font-mono text-[11px] text-[#F28C28]">
+                Play / Pause &bull; Seekable
+              </span>
+            </div>
+            <DynamicAsciinemaPlayer src="/demo_recording.cast" />
+            <p className="font-mono text-xs sm:text-[13px] text-center text-[#F28C28]/90 font-medium">
+              Three-node correctness and verification project, not a throughput benchmark.
+            </p>
+          </div>
+        </div>
+
         {/* Beat 5: Proof Panel (Verification & Prominent Limit) */}
         <div data-proof-panel="true" className="max-w-2xl mx-auto w-full">
           <SystemWindow title="[READER'S RECORD &bull; VERIFICATION]">
@@ -215,17 +272,17 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
 
               {/* Claims / Findings */}
               <div className="space-y-3">
-                <span className="font-mono text-[11px] text-mist uppercase tracking-wider">
+                <span className="font-mono text-xs sm:text-[13px] text-mist uppercase tracking-wider font-semibold">
                   VERIFIED CLAIMS (/docs/03-CONTENT-BIBLE.md):
                 </span>
                 {project.claims && project.claims.length > 0 ? (
-                  <ul className="space-y-2.5 font-mono text-xs text-feather">
+                  <ul className="space-y-2.5 font-mono text-xs sm:text-[13px] text-feather">
                     {project.claims.map((claim, idx) => (
                       <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
                         <span className="text-[#F28C28] font-bold">&bull;</span>
                         <div className="space-y-0.5">
                           <span>{claim.text}</span>
-                          <span className="block text-[10px] text-mist/70">
+                          <span className="block text-xs sm:text-[13px] text-mist/70">
                             [evidence: {claim.evidence} &bull; source: {claim.source ?? "README"}]
                           </span>
                         </div>
@@ -240,7 +297,7 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
               </div>
 
               {/* Links */}
-              <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+              <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs sm:text-[13px]">
                 <div className="flex items-center gap-2">
                   <span className="text-mist">Repository:</span>
                   {renderField(project.links.repo, (url) => (
@@ -256,17 +313,21 @@ export function RaftWorld({ className = "" }: RaftWorldProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-mist">Demo:</span>
-                  {renderField(project.links.demo, (url) => (
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#F28C28] hover:text-feather underline transition-colors"
-                    >
-                      Recorded demo (asciicast)
-                    </a>
-                  ))}
+                  <span className="text-mist">Recording:</span>
+                  <a
+                    href="#ratify-recording"
+                    className="text-[#F28C28] hover:text-feather underline transition-colors"
+                  >
+                    Embedded player
+                  </a>
+                  <span className="text-mist/60">&bull;</span>
+                  <a
+                    href="/demo_recording.cast"
+                    download="demo_recording.cast"
+                    className="text-mist hover:text-[#F28C28] underline transition-colors"
+                  >
+                    Fallback (.cast) ↗
+                  </a>
                 </div>
               </div>
             </div>

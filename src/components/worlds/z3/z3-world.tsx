@@ -2,12 +2,14 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { projects } from "@/content/projects";
 import { renderField } from "@/components/ui/fill-badge";
 import { SystemWindow } from "@/components/system-window";
 import { useMode } from "@/lib/flags";
 import { Z3_TEST_SUITE } from "@/lib/worlds/z3-viz";
 import { Z3StaticDiagram } from "./z3-static-diagram";
+import { ProviderCoverageTable } from "./provider-coverage-table";
 
 // Lazy-load the interactive Z3 visualizer canvas
 const DynamicZ3VizCanvas = dynamic(
@@ -87,10 +89,10 @@ export function Z3World({ className = "" }: Z3WorldProps) {
     >
       <div className="max-w-5xl mx-auto space-y-16 sm:space-y-24">
         {/* Navigation & Breadcrumb */}
-        <div className="flex items-center justify-between border-b border-line/60 pb-4 font-mono text-xs">
+        <div className="flex items-center justify-between border-b border-line/60 pb-4 font-mono text-xs sm:text-[13px]">
           <div className="flex items-center gap-2 text-[#5EEAD4]">
             <span className="w-2 h-2 rounded-full bg-[#5EEAD4] animate-pulse" />
-            <span className="uppercase tracking-widest">[ACT 3 &bull; WORLD: IAC-VERIFIER (Z3)]</span>
+            <span className="uppercase tracking-widest font-semibold">[ACT 3 &bull; WORLD: IAC-VERIFIER (Z3)]</span>
           </div>
           <a
             href="#scenario-select"
@@ -105,7 +107,7 @@ export function Z3World({ className = "" }: Z3WorldProps) {
           <SystemWindow title="SYSTEM PROMPT: SCENARIO ASSIGNMENT">
             <div className="space-y-4 py-2">
               <div className="space-y-1">
-                <span className="font-mono text-xs text-[#5EEAD4] uppercase tracking-widest font-semibold">
+                <span className="font-mono text-xs sm:text-[13px] text-[#5EEAD4] uppercase tracking-widest font-semibold">
                   [SCENARIO 3: NEN VOWS & SMT REACHABILITY]
                 </span>
                 <h2
@@ -142,23 +144,51 @@ export function Z3World({ className = "" }: Z3WorldProps) {
           )}
         </div>
 
+        {/* Real Visual Proof Asset: Terminal Capture */}
+        <div className="max-w-4xl mx-auto w-full space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-2">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#5EEAD4] font-semibold">
+              [VISUAL PROOF &bull; Z3 VERIFICATION VERDICT &amp; REPAIR STATUS]
+            </span>
+            <span className="font-mono text-[11px] text-[#5EEAD4] border border-[#5EEAD4]/40 bg-[#5EEAD4]/10 px-2 py-0.5 rounded">
+              Source: real tool output
+            </span>
+          </div>
+
+          <div className="relative overflow-hidden rounded-lg border border-line bg-black/70 shadow-2xl">
+            <Image
+              src="/proofs/iac-verifier-proof.webp"
+              alt="iac-verifier Z3 SMT solver verification output finding multi-hop privilege escalation path missed by Checkov and TFSec in the included example"
+              width={2200}
+              height={1012}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto block"
+            />
+          </div>
+
+          <p className="font-mono text-xs sm:text-[13px] text-mist leading-relaxed">
+            Real tool output from <code className="text-[#5EEAD4]">examples/checkov-tfsec-gap/</code>: Z3 SMT finds 2-hop escalation path (<code className="text-red-400">[SAT]</code>); auto-repair removes the trust statement that lets the account assume jump_role; re-verified UNSAT.
+          </p>
+        </div>
+
         {/* Beat 5: Proof Panel (Verification strictly from /docs/03) */}
         <div data-proof-panel="true" className="max-w-2xl mx-auto w-full">
           <SystemWindow title="[READER'S RECORD &bull; VERIFICATION]">
             <div className="space-y-6 py-2">
               {/* Claims / Findings */}
               <div className="space-y-3">
-                <span className="font-mono text-[11px] text-mist uppercase tracking-wider">
+                <span className="font-mono text-xs sm:text-[13px] text-mist uppercase tracking-wider font-semibold">
                   VERIFIED CLAIMS (/docs/03-CONTENT-BIBLE.md):
                 </span>
                 {project.claims && project.claims.length > 0 ? (
-                  <ul className="space-y-2.5 font-mono text-xs text-feather">
+                  <ul className="space-y-2.5 font-mono text-xs sm:text-[13px] text-feather">
                     {project.claims.map((claim, idx) => (
                       <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
                         <span className="text-[#5EEAD4] font-bold">&bull;</span>
                         <div className="space-y-0.5">
                           <span>{claim.text}</span>
-                          <span className="block text-[10px] text-mist/70">
+                          <span className="block text-xs sm:text-[13px] text-mist/70">
                             [evidence: {claim.evidence} &bull; source: {claim.source ?? "README"}]
                           </span>
                         </div>
@@ -172,13 +202,26 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                 )}
               </div>
 
+              {/* Provider Coverage Matrix (AWS / Azure / GCP x capability) */}
+              <div className="space-y-3 pt-4 border-t border-line/60">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-mono text-xs sm:text-[13px] text-mist uppercase tracking-wider font-semibold">
+                    PROVIDER COVERAGE MATRIX (docs/provider-coverage.json):
+                  </span>
+                  <span className="font-mono text-xs text-[#EF4444] font-medium">
+                    GCP Auto-Repair: Not supported
+                  </span>
+                </div>
+                <ProviderCoverageTable />
+              </div>
+
               {/* Verified Limitations (FACTS.md) */}
               {project.limits && project.limits.length > 0 && (
                 <div data-testid="z3-limitations-block" className="space-y-3 pt-4 border-t border-line/60">
-                  <span className="font-mono text-[11px] text-mist uppercase tracking-wider">
+                  <span className="font-mono text-xs sm:text-[13px] text-mist uppercase tracking-wider font-semibold">
                     VERIFIED LIMITATIONS (docs/sources/z3/FACTS.md):
                   </span>
-                  <ul className="space-y-2 font-mono text-xs text-feather/90">
+                  <ul className="space-y-2 font-mono text-xs sm:text-[13px] text-feather/90">
                     {project.limits.map((limit, idx) => (
                       <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
                         <span className="text-[#EF4444] font-bold">&bull;</span>
@@ -190,9 +233,9 @@ export function Z3World({ className = "" }: Z3WorldProps) {
               )}
 
               {/* Links */}
-              <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+              <div className="pt-4 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs sm:text-[13px]">
                 <div className="flex items-center gap-2">
-                  <span className="text-mist">Repository:</span>
+                  <span className="text-mist">Source Code:</span>
                   {renderField(project.links.repo, (url) => (
                     <a
                       href={url}
@@ -206,17 +249,15 @@ export function Z3World({ className = "" }: Z3WorldProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-mist">Benchmark:</span>
-                  {renderField(project.links.benchmark, (url) => (
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#5EEAD4] hover:text-feather underline transition-colors"
-                    >
-                      {url}
-                    </a>
-                  ))}
+                  <span className="text-mist">Proof:</span>
+                  <a
+                    href="https://github.com/SumitMahajan11/iac-verifier/tree/main/examples/checkov-tfsec-gap"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#5EEAD4] hover:text-feather underline transition-colors"
+                  >
+                    examples/checkov-tfsec-gap ↗
+                  </a>
                 </div>
               </div>
             </div>

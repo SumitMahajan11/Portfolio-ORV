@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { identity, projects, skills, about } from "@/content";
 import { renderField } from "@/components/ui/fill-badge";
+import { ProviderCoverageTable } from "@/components/worlds/z3/provider-coverage-table";
 
 export const metadata: Metadata = {
   title: "Plain Version",
@@ -45,11 +47,11 @@ export default function SkipPage() {
         <Link
           href="/"
           prefetch={false}
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono text-star hover:text-feather underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-1.5 py-0.5"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-mono text-star hover:text-feather underline underline-offset-4 decoration-star/40 hover:decoration-star transition-colors focus:ring-2 focus:ring-star focus:outline-none rounded px-1.5 py-0.5"
         >
           &larr; Back to the story
         </Link>
-        <span className="font-mono text-[11px] text-mist uppercase tracking-widest">
+        <span className="font-mono text-xs sm:text-[13px] text-mist uppercase tracking-widest">
           Plain / Accessible Mode
         </span>
       </nav>
@@ -155,7 +157,10 @@ export default function SkipPage() {
               const hasRepo = Boolean(project.links.repo);
               const hasDemo = Boolean(project.links.demo);
               const hasBenchmark = Boolean(project.links.benchmark);
-              const showLinksSection = isDev || hasRepo || hasDemo || hasBenchmark;
+              const hasProof = Boolean(project.links.proof);
+              const hasRecording = project.id === "ratify";
+              const showLinksSection =
+                isDev || hasRepo || hasDemo || hasBenchmark || hasProof || hasRecording;
 
               return (
                 <article
@@ -200,10 +205,38 @@ export default function SkipPage() {
                     </p>
                   </div>
 
+                  {/* Visual Proof Asset */}
+                  {project.proofAsset && (
+                    <div className="space-y-2 pt-2 border-t border-line/40">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h4 className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist font-semibold">
+                          Visual Proof &bull; Real Capture
+                        </h4>
+                        <span className="font-mono text-[11px] text-star border border-star/40 bg-star/10 px-2 py-0.5 rounded uppercase">
+                          Source: {project.proofAsset.source}
+                        </span>
+                      </div>
+                      <div className="relative overflow-hidden rounded border border-line bg-ink-2/60 max-w-2xl">
+                        <Image
+                          src={project.proofAsset.src}
+                          alt={project.proofAsset.alt}
+                          width={project.proofAsset.width}
+                          height={project.proofAsset.height}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-auto block"
+                        />
+                      </div>
+                      <p className="font-mono text-xs sm:text-[13px] text-mist leading-relaxed max-w-2xl">
+                        {project.proofAsset.caption}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Claims & Evidence */}
                   {projectClaims.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="font-mono text-xs uppercase tracking-wider text-mist">
+                      <h4 className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist">
                         Claims &amp; Evidence
                       </h4>
                       <ul className="space-y-1.5 list-disc list-inside text-sm text-feather">
@@ -211,7 +244,7 @@ export default function SkipPage() {
                           <li key={idx} className="leading-relaxed">
                             <span>{claim.text}</span>{" "}
                             <span
-                              className={`inline-block font-mono text-[10px] px-1.5 py-0.2 rounded border uppercase tracking-wider ml-1 ${
+                              className={`inline-block font-mono text-xs sm:text-[13px] px-1.5 py-0.2 rounded border uppercase tracking-wider ml-1 ${
                                 claim.evidence === "verified"
                                   ? "text-star border-star/40 bg-star/10 font-semibold"
                                   : "text-mist border-line bg-ink-2"
@@ -220,7 +253,7 @@ export default function SkipPage() {
                               [{claim.evidence}]
                             </span>
                             {claim.source && (
-                              <span className="font-mono text-[11px] text-mist ml-1">
+                              <span className="font-mono text-xs sm:text-[13px] text-mist ml-1">
                                 (source: {claim.source})
                               </span>
                             )}
@@ -233,10 +266,10 @@ export default function SkipPage() {
                   {/* Limits & Scope */}
                   {projectLimits.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="font-mono text-xs uppercase tracking-wider text-mist">
+                      <h4 className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist">
                         Limits &amp; Boundaries
                       </h4>
-                      <ul className="space-y-1 list-disc list-inside text-sm text-mist font-mono text-xs">
+                      <ul className="space-y-1 list-disc list-inside text-xs sm:text-[13px] text-mist font-mono">
                         {projectLimits.map((limit, idx) => (
                           <li key={idx} className="leading-relaxed">
                             {limit}
@@ -246,44 +279,94 @@ export default function SkipPage() {
                     </div>
                   )}
 
-                  {/* Artifacts & Links (Hidden in production if all links are empty) */}
+                  {/* Provider Coverage Matrix (rendered for iac-verifier) */}
+                  {project.id === "iac-verifier" && (
+                    <div className="space-y-2 pt-2 border-t border-line/40">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h4 className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist font-semibold">
+                          Provider Coverage Matrix (docs/provider-coverage.json)
+                        </h4>
+                        <span className="font-mono text-xs text-[#EF4444] font-medium">
+                          GCP Auto-Repair: Not supported
+                        </span>
+                      </div>
+                      <ProviderCoverageTable />
+                    </div>
+                  )}
+
+                  {/* Ratify disclaimer sentence */}
+                  {project.id === "ratify" && (
+                    <div className="p-3 rounded border border-[#F28C28]/40 bg-[#F28C28]/10 text-xs sm:text-[13px] font-mono text-feather">
+                      Three-node correctness and verification project, not a throughput benchmark.
+                    </div>
+                  )}
+
+                  {/* Edge-Cloud disclaimer sentence */}
+                  {project.id === "edge-cloud" && (
+                    <div className="p-3 rounded border border-[#5eead4]/40 bg-[#5eead4]/10 text-xs sm:text-[13px] font-mono text-feather">
+                      Full-stack run (1,000 tasks at 100 req/s, 100 nodes, PostgreSQL); not re-run on 2026-11-28.
+                    </div>
+                  )}
+
+                  {/* Artifacts & Links */}
                   {showLinksSection && (
                     <div className="space-y-2 pt-2 border-t border-line/40">
-                      <h4 className="font-mono text-xs uppercase tracking-wider text-mist">
+                      <h4 className="font-mono text-xs sm:text-[13px] uppercase tracking-wider text-mist">
                         Artifacts &amp; Links
                       </h4>
-                      <div className="flex flex-wrap gap-4 text-xs font-mono">
-                        {(isDev || hasRepo) && (
+                      <div className="flex flex-wrap gap-4 text-xs sm:text-[13px] font-mono">
+                        {project.links.repo && (
                           <div>
-                            <span className="text-mist mr-1.5">Repository:</span>
-                            {renderField(project.links.repo, (url) => (
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
-                              >
-                                {url} ↗
-                              </a>
-                            ))}
+                            <span className="text-mist mr-1.5">Source Code:</span>
+                            <a
+                              href={project.links.repo}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
+                            >
+                              GitHub ↗
+                            </a>
                           </div>
                         )}
-                        {(isDev || hasDemo) && (
+                        {project.links.demo && (
                           <div>
-                            <span className="text-mist mr-1.5">Demo:</span>
-                            {renderField(project.links.demo, (url) => (
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
-                              >
-                                View Demo ↗
-                              </a>
-                            ))}
+                            <span className="text-mist mr-1.5">Live Demo:</span>
+                            <a
+                              href={project.links.demo}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
+                            >
+                              View Live Demo ↗
+                            </a>
                           </div>
                         )}
-                        {hasBenchmark && project.links.benchmark && (
+                        {project.id === "ratify" && (
+                          <div>
+                            <span className="text-mist mr-1.5">Recording:</span>
+                            <a
+                              href="/demo_recording.cast"
+                              download="demo_recording.cast"
+                              className="text-[#F28C28] hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-[#F28C28] rounded px-1"
+                            >
+                              Download Recording (.cast) ↗
+                            </a>
+                          </div>
+                        )}
+                        {project.links.proof && (
+                          <div>
+                            <span className="text-mist mr-1.5">Proof:</span>
+                            <a
+                              href={project.links.proof}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#5EEAD4] hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-[#5EEAD4] rounded px-1"
+                            >
+                              Checkov/TFSec Gap Proof ↗
+                            </a>
+                          </div>
+                        )}
+                        {project.links.benchmark && (
                           <div>
                             <span className="text-mist mr-1.5">Benchmark:</span>
                             <a
@@ -292,7 +375,7 @@ export default function SkipPage() {
                               rel="noopener noreferrer"
                               className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
                             >
-                              View Benchmark ↗
+                              View Benchmark Documentation ↗
                             </a>
                           </div>
                         )}
@@ -347,8 +430,8 @@ export default function SkipPage() {
                     </div>
 
                     {proofLinks.length > 0 && (
-                      <div className="pt-2 border-t border-line/40 text-xs font-mono text-mist flex flex-wrap items-center gap-1.5">
-                        <span className="text-[11px] uppercase tracking-wider">Proof:</span>
+                      <div className="pt-2 border-t border-line/40 text-xs sm:text-[13px] font-mono text-mist flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs sm:text-[13px] uppercase tracking-wider">Proof:</span>
                         {proofLinks.map(({ id: projId, title }) => (
                           <a
                             key={projId}

@@ -240,8 +240,10 @@ export const LEDGER_DATA: LedgerCategory[] = [
     title: 'SIMULATED',
     badgeColor: 'amber',
     items: [
-      '1,000-task load test: 261 ms average, 508 ms P99',
-      'Carbon benchmark on simulated grid data',
+      'Placement latency (508 ms P99, measured 2026-06-19): End-to-end task scheduling achieved a 508 ms P99 latency across 1,000 synthetic HTTP/database placements.',
+      'Carbon-reduction benchmark (11.41%): Diurnal workload shifting deferred 416 tasks to clean energy windows, reducing total carbon emissions by 11.41%.',
+      'Load benchmark (216k–366k placements/sec across runs: 366,387.6 RPS original run, 216,225.6 RPS re-run 2026-11-28; P95 0.008–0.020 ms): In-memory multi-objective scheduler micro-benchmark.',
+      'Note: These three benchmarks measure distinct system layers and must not be compared. Full-stack run (1,000 tasks at 100 req/s, 100 nodes, PostgreSQL); not re-run on 2026-11-28.',
     ],
   },
   {
@@ -258,4 +260,6 @@ export const PROJECT_LINKS = {
   architecture:
     'https://github.com/SumitMahajan11/Edge-Cloud-Orchestrator/blob/main/ARCHITECTURE.md',
   demo: 'https://edge-cloud-orchestrator-web-swart.vercel.app/',
+  benchmark:
+    'https://github.com/SumitMahajan11/edge-cloud-orchestrator/tree/main/docs/benchmarks',
 };
