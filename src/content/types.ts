@@ -16,6 +16,7 @@ export interface ProjectLinks {
   benchmark: string | null;
   proof?: string | null;
   recording?: string | null;
+  caseStudy?: string | null;
 }
 
 export interface ProofAsset {

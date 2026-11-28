@@ -39,6 +39,7 @@ export const projects: Project[] = [
       repo: "https://github.com/SumitMahajan11/Edge-Cloud-Orchestrator",
       demo: "https://edge-cloud-orchestrator-web-swart.vercel.app/",
       benchmark: "https://github.com/SumitMahajan11/edge-cloud-orchestrator/tree/main/docs/benchmarks",
+      caseStudy: "https://resume-showcase-one.vercel.app/",
     },
     costume: "star goggles",
     worldReady: true,

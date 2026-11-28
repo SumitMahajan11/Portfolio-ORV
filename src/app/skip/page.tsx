@@ -159,8 +159,9 @@ export default function SkipPage() {
               const hasBenchmark = Boolean(project.links.benchmark);
               const hasProof = Boolean(project.links.proof);
               const hasRecording = project.id === "ratify";
+              const hasCaseStudy = Boolean(project.links.caseStudy);
               const showLinksSection =
-                isDev || hasRepo || hasDemo || hasBenchmark || hasProof || hasRecording;
+                isDev || hasRepo || hasDemo || hasBenchmark || hasProof || hasRecording || hasCaseStudy;
 
               return (
                 <article
@@ -376,6 +377,19 @@ export default function SkipPage() {
                               className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
                             >
                               View Benchmark Documentation ↗
+                            </a>
+                          </div>
+                        )}
+                        {project.links.caseStudy && (
+                          <div>
+                            <span className="text-mist mr-1.5">Case Study:</span>
+                            <a
+                              href={project.links.caseStudy}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-star hover:underline underline-offset-4 font-semibold focus:ring-1 focus:ring-star rounded px-1"
+                            >
+                              Case study ↗
                             </a>
                           </div>
                         )}

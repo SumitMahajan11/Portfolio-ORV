@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { useMode } from "@/lib/flags";
+import { projects } from "@/content/projects";
 import {
   ALL_EDGE_CLOUD_NODES,
   CONSTELLATION_BG,
@@ -330,6 +331,18 @@ export function EdgeCloudWorld({ className = "" }: EdgeCloudWorldProps) {
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#5eead4]/40 bg-[#5eead4]/10 text-xs sm:text-[13px] font-mono text-[#5eead4] hover:bg-[#5eead4]/20 transition-colors"
             >
               <span>BENCHMARK</span>
+              <span aria-hidden="true">&nearr;</span>
+            </a>
+          )}
+          {projects.find((p) => p.id === "edge-cloud")?.links.caseStudy && (
+            <a
+              href={projects.find((p) => p.id === "edge-cloud")!.links.caseStudy!}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Case study ↗"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded border border-[#5eead4]/40 bg-[#5eead4]/10 text-xs sm:text-[13px] font-mono text-[#5eead4] hover:bg-[#5eead4]/20 transition-colors"
+            >
+              <span>CASE STUDY</span>
               <span aria-hidden="true">&nearr;</span>
             </a>
           )}

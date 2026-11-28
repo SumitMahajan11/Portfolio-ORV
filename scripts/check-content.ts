@@ -16,6 +16,9 @@ interface ProjectLinks {
   repo: string | null;
   demo: string | null;
   benchmark: string | null;
+  proof?: string | null;
+  recording?: string | null;
+  caseStudy?: string | null;
 }
 
 interface Project {
